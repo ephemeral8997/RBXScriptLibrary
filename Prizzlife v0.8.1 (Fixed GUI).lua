@@ -1,32 +1,46 @@
---// PRIZZLIFE, Fix by H17S3 and Riotscripter
---// refined and made more readable and minor bug fixes by ephemeral8997
---// They Had Ip Loggers and grabbify links but we removed em :)
---// This script is skidded from wrath admin tiger admin and my script chaos admin and local players script
+--// PRIZZLIFE - Command GUI  
+--// Originally sourced from various admin scripts  
+--// Fixed, refined, and optimized by H17S3, Riotscripter, and ephemeral8997  
+--// based on concepts from Wrath Admin, Tiger Admin, Chaos Admin, and local player scripts
 
-Execution_Runtime = tick()
-PLadmin_Settings = {
+Execution_Runtime = Execution_Runtime or tick()
+PLadmin_Settings = PLadmin_Settings or {}
+
+PLadmin_Defaults = {
     DefaultPrefix = "?",
     JoinNotify = false,
-    AutoRespawn = false, --Automatically loadcharacter when dying
-    AntiVoid = false, --Automatically teleport up when falling into void
-    AntiTase = false, --Prevents you from being tased (100% no getconnections used because its absolute garbage)
-    AntiArrest = false, --Prevents you from being arrested (100% no getconnections used because its absolute garbage)
-    AntiShoot = false, --Kills player who tries to shoot you (Will be delayed if you have shitty ping, *COUGH* PLDT Users)
-    AntiPunch = false, --Instantly kill players who try to punch you
-    AntiFling = false, --Prevent exploiters from flinging you
-    AntiShield = true, --stop pay2win people and bypass their shields
-    AntiBring = false, --Prevent other exploiter(s) from bringing you
-    SilentAim = false, --Makes you shoot without missing a target
-    AutoGuns = false, --Automatically get all guns
-    OldItemMethod = false, --Use teleport for getting items (USE THIS IF PRISON LIFE PATCHES THE TABLE METHOD)
-    Fullbright = true, --Enable fullbrightness
-    WhitelistRanked = false, --Automatically whitelist ranked players (DO NOT USE WHEN RANKING ALL PLAYERS)
-    RankedNukeCmds = false, --Allow ranked players to use nuke commands (Very annoying)
-    RankedMultiCmd = false, --Allow ranked players to use the arguments: "all, and team", EX: ?kill all
-    RankedOutput = true, --Chat the output commands of ranked players
-    WhisperToRanked = true, --Use whisper for outputing commands for ranked players
+    AutoRespawn = false,
+    AntiVoid = false,
+    AntiTase = false,
+    AntiArrest = false,
+    AntiShoot = false,
+    AntiPunch = false,
+    AntiFling = false,
+    AntiShield = true,
+    AntiBring = false,
+    SilentAim = false,
+    AutoGuns = false,
+    OldItemMethod = false,
+    Fullbright = true,
+    WhitelistRanked = false,
+    RankedNukeCmds = false,
+    RankedMultiCmd = false,
+    RankedOutput = true,
+    WhisperToRanked = true
 }
-wait()
+
+-- remove any extras
+for key in pairs(PLadmin_Settings) do
+    if PLadmin_Defaults[key] == nil then
+        PLadmin_Settings[key] = nil
+    end
+end
+
+for key, value in pairs(PLadmin_Defaults) do
+    if PLadmin_Settings[key] == nil then
+        PLadmin_Settings[key] = value
+    end
+end
 
 Instance.new("Folder", game:GetService("Workspace")).Name = "PLADMIN LOADED SUCCESS"
 local PLAdmin = Instance.new("ScreenGui")
@@ -10536,7 +10550,9 @@ coroutine.wrap(function()
     local VirtualRayDebounce = false
     local SoundS = game:GetService("SoundService")
     Connections.VirtualRayHandler = Rstorage:WaitForChild("ReplicateEvent", 8).OnClientEvent:Connect(function(Tables)
-        if not Tables then return end
+        if not Tables then
+            return
+        end
         if LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled and States.ReplicateEvent and not Tables[69] then
             local Counting = #Tables
             if Counting < 69 and not VirtualRayDebounce then
@@ -10696,11 +10712,10 @@ task.spawn(function()
         tasking()
     end
 
-    --// h17s3 was here...
 
     local TPrefix = PLadmin_Settings and tostring(PLadmin_Settings.DefaultPrefix) or "?"
 
-    AddList("Invite: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false)
+    AddList("Diddy: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false)
     AddList("prefix [Prefix]", "Changes prefix (Default set to " .. TPrefix .. ")", false) --V
     AddList("KILL CMDS", false, true) --KILL CMDS
     AddList("kill / oof / die [plr,random,team,all]", "Kills selected player(s)", false) --V
