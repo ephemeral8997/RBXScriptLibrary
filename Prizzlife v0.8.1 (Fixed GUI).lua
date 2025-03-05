@@ -36,6 +36,7 @@ for key in pairs(PLadmin_Settings) do
     end
 end
 
+-- default to PLadmin_Defaults
 for key, value in pairs(PLadmin_Defaults) do
     if PLadmin_Settings[key] == nil then
         PLadmin_Settings[key] = value
