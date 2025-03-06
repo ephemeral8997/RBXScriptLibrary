@@ -1,6 +1,6 @@
---// PRIZZLIFE - Command GUI  
---// Originally sourced from various admin scripts  
---// Fixed, refined, and optimized by H17S3, Riotscripter, and ephemeral8997  
+--// PRIZZLIFE - Command GUI
+--// Originally sourced from various admin scripts
+--// Fixed, refined, and optimized by H17S3, Riotscripter, and ephemeral8997
 --// based on concepts from Wrath Admin, Tiger Admin, Chaos Admin, and local player scripts
 
 Execution_Runtime = Execution_Runtime or tick()
@@ -26,7 +26,7 @@ PLadmin_Defaults = {
     RankedNukeCmds = false,
     RankedMultiCmd = false,
     RankedOutput = true,
-    WhisperToRanked = true
+    WhisperToRanked = true,
 }
 
 -- remove any extras
@@ -7717,28 +7717,28 @@ local OnCommand = function(text)
     elseif cm("manginasal") then
         if not Saved.Map_MangInamo then
             Notif("Loading...", "Please wait patiently...")
-            Saved.Map_MangInamo = loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/PrizzLife/main/Init/Maps/MangInasal.txt"))()
+            Saved.Map_MangInamo = loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/Prizzlife_v0.8.1_Maps/MangInasal.lua"))()
         end
         LocTP(Saved.Map_MangInamo)
         Notif("OK", "Teleported to mang-inasal")
     elseif cm("area51") then
         if not Saved.Map_Area69 then
             Notif("Loading...", "Please wait patiently...")
-            Saved.Map_Area69 = loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/PrizzLife/main/Init/Maps/Area69.txt"))()
+            Saved.Map_Area69 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/Prizzlife_v0.8.1_Maps/Area69.lua"))()
         end
         LocTP(Saved.Map_Area69)
         Notif("OK", "Teleported to area51")
     elseif cm("amongus") then
         if not Saved.Map_Amogus then
             Notif("Loading...", "Please wait patiently...")
-            Saved.Map_Amogus = loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/PrizzLife/main/Init/Maps/AmongSUS.txt"))()
+            Saved.Map_Amogus = loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/Prizzlife_v0.8.1_Maps/AmongSUS.lua"))()
         end
         LocTP(Saved.Map_Amogus)
         Notif("OK", "Teleported to amogus")
     elseif cm("mcdonalds") then
         if not Saved.Map_Mcdonalds then
             Notif("Loading...", "Please wait patiently...")
-            Saved.Map_Mcdonalds = loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/PrizzLife/main/Init/Maps/Mcdonalds.txt"))()
+            Saved.Map_Mcdonalds = loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/Prizzlife_v0.8.1_Maps/Mcdonalds.lua"))()
         end
         LocTP(Saved.Map_Mcdonalds)
         Notif("OK", "Teleported to mcdonalds")
@@ -7759,7 +7759,7 @@ local OnCommand = function(text)
     elseif cm("advertise") or cm("script") then
         Chat("SUPER OP PRISON LIFE SCRIPT WITH CRASHSERVER AND 200+ COMMANDS! > paste.ee/p/mxb28")
     elseif cm("whois") then
-        Chat("This pladmin script is created by Chaosscripter, Link: paste.ee/p/mxb28")
+        Chat("This pladmin script is refined by ephemeral8997, Link: paste.ee/p/mxb28")
         for i, v in pairs(Players:GetPlayers()) do
             if Saved.Listing and table.find(Saved.Listing.Owner, v.UserId) then
                 Chat("The script creator is currently in the server: " .. v.Name .. " [" .. v.DisplayName .. "]")
@@ -7834,7 +7834,7 @@ local OnCommand = function(text)
                         packets[#packets + 1] = {
                             Cframe = CFrame.new(69, 420, 911),
                             Distance = 420,
-                            Password = "35543Chaosscripter",
+                            Password = "35543VerySecure",
                             ToExecute = Execution,
                         }
                         Rstorage.ShootEvent:FireServer(packets, transmitter)
@@ -10713,7 +10713,6 @@ task.spawn(function()
         tasking()
     end
 
-
     local TPrefix = PLadmin_Settings and tostring(PLadmin_Settings.DefaultPrefix) or "?"
 
     AddList("Diddy: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false)
@@ -11150,28 +11149,104 @@ task.spawn(function()
         return Settings.Ranked.GiveCmds
     end)
     if Execution_Runtime then
-        Notif("Potang ina mo", "Loaded in " .. tostring(tick() - Execution_Runtime) .. " second(s). github.com/Chaosscripter/PrizzLife", 6)
+        Notif("Potang ina mo", "Loaded in " .. tostring(tick() - Execution_Runtime) .. " second(s). github.com/ephemeral8997/RBXScriptLibrary", 6)
     end
 
     Saved.PLINIT = Instance.new("ScreenGui")
     Saved.PLINIT.Name = "PLADMIN_INITIALS"
     Saved.PLINIT.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     Saved.PLINIT.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    local data1, data2 = loadstring(game:HttpGet("https://raw.githubusercontent.com/Chaosscripter/PrizzLife/main/Init/PL_TEAM_GUI"))()
-    local TEAMs = data2
-    Saved.TeamFrame = data1
-    TEAMs.InmateButton.MouseButton1Click:Connect(function()
+    local TeamFrame, Teams
+    do
+        TeamFrame = Instance.new("Frame")
+        local TeamLabel = Instance.new("TextLabel")
+        Teams = Instance.new("Frame")
+        local CriminalButton = Instance.new("TextButton")
+        local GuardButton = Instance.new("TextButton")
+        local InmateButton = Instance.new("TextButton")
+
+        TeamFrame.Name = "TeamFrame"
+        TeamFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
+        TeamFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        TeamFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        TeamFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        TeamFrame.BorderSizePixel = 0
+        TeamFrame.Position = UDim2.new(0.5, 0, 0.880000012, 0)
+        TeamFrame.Size = UDim2.new(0, 300, 0, 65)
+
+        TeamLabel.Name = "TeamLabel"
+        TeamLabel.Parent = TeamFrame
+        TeamLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        TeamLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        TeamLabel.BorderSizePixel = 0
+        TeamLabel.Size = UDim2.new(0, 300, 0, 22)
+        TeamLabel.Font = Enum.Font.SourceSans
+        TeamLabel.Text = "  SELECT A TEAM"
+        TeamLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        TeamLabel.TextSize = 20.000
+        TeamLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+        Teams.Name = "Teams"
+        Teams.Parent = TeamFrame
+        Teams.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        Teams.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Teams.BorderSizePixel = 0
+        Teams.Position = UDim2.new(0, 0, 0.338461548, 0)
+        Teams.Size = UDim2.new(0, 300, 0, 42)
+
+        CriminalButton.Name = "CriminalButton"
+        CriminalButton.Parent = Teams
+        CriminalButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        CriminalButton.BorderColor3 = Color3.fromRGB(45, 45, 45)
+        CriminalButton.BorderMode = Enum.BorderMode.Inset
+        CriminalButton.BorderSizePixel = 3
+        CriminalButton.Position = UDim2.new(0, 0, 0.070952639, 0)
+        CriminalButton.Size = UDim2.new(0, 95, 0, 35)
+        CriminalButton.Font = Enum.Font.SourceSans
+        CriminalButton.Text = "CRIMINAL"
+        CriminalButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        CriminalButton.TextSize = 21.000
+        CriminalButton.TextWrapped = true
+
+        GuardButton.Name = "GuardButton"
+        GuardButton.Parent = Teams
+        GuardButton.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
+        GuardButton.BorderColor3 = Color3.fromRGB(45, 45, 45)
+        GuardButton.BorderMode = Enum.BorderMode.Inset
+        GuardButton.BorderSizePixel = 3
+        GuardButton.Position = UDim2.new(0.683333337, 0, 0.070952639, 0)
+        GuardButton.Size = UDim2.new(0, 95, 0, 35)
+        GuardButton.Font = Enum.Font.SourceSans
+        GuardButton.Text = "GUARD"
+        GuardButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        GuardButton.TextSize = 22.000
+
+        InmateButton.Name = "InmateButton"
+        InmateButton.Parent = Teams
+        InmateButton.BackgroundColor3 = Color3.fromRGB(255, 85, 0)
+        InmateButton.BorderColor3 = Color3.fromRGB(45, 45, 45)
+        InmateButton.BorderMode = Enum.BorderMode.Inset
+        InmateButton.BorderSizePixel = 3
+        InmateButton.Position = UDim2.new(0.340000004, 0, 0.070952639, 0)
+        InmateButton.Size = UDim2.new(0, 95, 0, 35)
+        InmateButton.Font = Enum.Font.SourceSans
+        InmateButton.Text = "INMATE"
+        InmateButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        InmateButton.TextSize = 22.000
+    end
+    Saved.TeamFrame = TeamFrame
+    Teams.InmateButton.MouseButton1Click:Connect(function()
         SavedPositions.AutoRe = nil
         workspace.Remote.TeamEvent:FireServer("Bright orange")
     end)
-    TEAMs.GuardButton.MouseButton1Click:Connect(function()
+    Teams.GuardButton.MouseButton1Click:Connect(function()
         SavedPositions.AutoRe = nil
         workspace.Remote.TeamEvent:FireServer("Bright blue")
         if #Teams.Guards:GetPlayers() > 7 then
             Notif("Cannot join team.", "Guards team is full!", 6)
         end
     end)
-    TEAMs.CriminalButton.MouseButton1Click:Connect(function()
+    Teams.CriminalButton.MouseButton1Click:Connect(function()
         local crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
         SavedPositions.AutoRe = nil
         workspace.Remote.TeamEvent:FireServer("Bright orange")
@@ -11188,7 +11263,7 @@ task.spawn(function()
             Saved.TeamFrame.Visible = false
         end
     end)
-    data1.Visible = LocalPlayer.TeamColor.Name == "Medium stone grey"
+    TeamFrame.Visible = LocalPlayer.TeamColor.Name == "Medium stone grey"
 
     local ActionFrame = Instance.new("Frame")
     local PunchButton = Instance.new("ImageButton")
