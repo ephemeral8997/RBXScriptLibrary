@@ -43,175 +43,16 @@ for key, value in pairs(PLadmin_Defaults) do
     end
 end
 
-Instance.new("Folder", game:GetService("Workspace")).Name = "PLADMIN LOADED SUCCESS"
-local PLAdmin = Instance.new("ScreenGui")
-local MainFrame = Instance.new("Frame")
-local ScriptName = Instance.new("TextLabel")
-local ExecBar = Instance.new("TextBox")
-local CloseButton = Instance.new("TextButton")
-local MinimizeButton = Instance.new("TextButton")
-local SettingButton = Instance.new("ImageButton")
-local Toggles_Frame = Instance.new("ScrollingFrame")
-local CMDS_Frame = Instance.new("ScrollingFrame")
-local UIListLayout = Instance.new("UIListLayout")
-local UIListLayout2 = Instance.new("UIListLayout")
-local UnloadScript = nil
-local Unloaded = false
-
-PLAdmin.Name = "PLAdmin"
-PLAdmin.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-PLAdmin.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-PLAdmin.ResetOnSpawn = false
-
-MainFrame.Name = "MainFrame"
-MainFrame.Parent = PLAdmin
-MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-MainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MainFrame.BorderSizePixel = 2
-MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-MainFrame.Size = UDim2.new(0, 250, 0, 155)
-MainFrame.Active = true
-MainFrame.Visible = false
-
-ScriptName.Name = "ScriptName"
-ScriptName.Parent = MainFrame
-ScriptName.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ScriptName.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ScriptName.BorderSizePixel = 0
-ScriptName.Size = UDim2.new(0, 250, 0, 17)
-ScriptName.Font = Enum.Font.SourceSans
-ScriptName.Text = "  PRIZZLIFE > CMDSLIST"
-ScriptName.TextColor3 = Color3.fromRGB(255, 255, 255)
-ScriptName.TextSize = 13.000
-ScriptName.TextXAlignment = Enum.TextXAlignment.Left
-
-ExecBar.Name = "ExecBar"
-ExecBar.Parent = MainFrame
-ExecBar.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-ExecBar.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ExecBar.BorderSizePixel = 2
-ExecBar.Position = UDim2.new(-1.22070318e-07, 0, 0.833333313, 0)
-ExecBar.Size = UDim2.new(0, 250, 0, 25)
-ExecBar.Font = Enum.Font.SourceSans
-ExecBar.TextColor3 = Color3.fromRGB(255, 255, 255)
-ExecBar.Text = ""
-ExecBar.PlaceholderText = "Command Bar"
-ExecBar.TextSize = 14.000
-ExecBar.ClearTextOnFocus = false
-
-CloseButton.Name = "CloseButton"
-CloseButton.Parent = MainFrame
-CloseButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CloseButton.BorderSizePixel = 0
-CloseButton.Position = UDim2.new(0.930000007, 0, -0.00100000005, 0)
-CloseButton.Size = UDim2.new(0, 19, 0, 17)
-CloseButton.Font = Enum.Font.SourceSans
-CloseButton.Text = "X"
-CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseButton.TextSize = 14.000
-
-MinimizeButton.Name = "MinimizeButton"
-MinimizeButton.Parent = MainFrame
-MinimizeButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-MinimizeButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-MinimizeButton.BorderSizePixel = 0
-MinimizeButton.Position = UDim2.new(0.850000024, 0, -0.00100000005, 0)
-MinimizeButton.Size = UDim2.new(0, 19, 0, 17)
-MinimizeButton.Font = Enum.Font.SourceSans
-MinimizeButton.Text = "-"
-MinimizeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-MinimizeButton.TextSize = 14.000
-
-SettingButton.Name = "SettingButton"
-SettingButton.Parent = MainFrame
-SettingButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-SettingButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-SettingButton.BorderSizePixel = 0
-SettingButton.Position = UDim2.new(0.769999981, 0, -0.00100000005, 0)
-SettingButton.Size = UDim2.new(0, 19, 0, 17)
-SettingButton.Image = "rbxassetid://11308562716"
-
-Toggles_Frame.Name = "Toggles_Frame"
-Toggles_Frame.Parent = MainFrame
-Toggles_Frame.Active = true
-Toggles_Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-Toggles_Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-Toggles_Frame.BorderSizePixel = 0
-Toggles_Frame.Position = UDim2.new(0, 0, 0.104999997, 0)
-Toggles_Frame.Size = UDim2.new(0, 250, 0, 111)
-Toggles_Frame.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
-Toggles_Frame.ScrollBarThickness = 4
-Toggles_Frame.ElasticBehavior = Enum.ElasticBehavior.Never
-Toggles_Frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-Toggles_Frame.ScrollingDirection = Enum.ScrollingDirection.Y
-Toggles_Frame.Visible = false
-
-UIListLayout2.Parent = Toggles_Frame
-UIListLayout2.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout2.Padding = UDim.new(0.0088999978, 0)
-UIListLayout2.VerticalAlignment = Enum.VerticalAlignment.Top
-
-CMDS_Frame.Name = "CMDS_Frame"
-CMDS_Frame.Parent = MainFrame
-CMDS_Frame.Active = true
-CMDS_Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-CMDS_Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-CMDS_Frame.BorderSizePixel = 0
-CMDS_Frame.Position = UDim2.new(0, 0, 0.104999997, 0)
-CMDS_Frame.Size = UDim2.new(0, 250, 0, 111)
-CMDS_Frame.ScrollBarImageColor3 = Color3.fromRGB(0, 0, 0)
-CMDS_Frame.ScrollBarThickness = 4
-CMDS_Frame.ElasticBehavior = Enum.ElasticBehavior.Never
-CMDS_Frame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-CMDS_Frame.ScrollingDirection = Enum.ScrollingDirection.Y
-
-UIListLayout.Parent = CMDS_Frame
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.Padding = UDim.new(0.0088999978, 0)
-UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-
---Gui functions
-
-local UIS = game:GetService("UserInputService")
-function DraggifyFrame(Frame)
-    local dragToggle = nil
-    local dragSpeed = 0.50
-    local dragInput = nil
-    local dragStart = nil
-    local dragPos = nil
-    local startPos = nil
-    local function updateInput(input)
-        local Delta = input.Position - dragStart
-        local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-        game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.30), { Position = Position }):Play()
-    end
-    Frame.InputBegan:Connect(function(input)
-        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and UIS:GetFocusedTextBox() == nil then
-            dragToggle = true
-            dragStart = input.Position
-            startPos = Frame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragToggle = false
-                end
-            end)
-        end
-    end)
-    Frame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
-    end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input == dragInput and dragToggle then
-            updateInput(input)
-        end
-    end)
+-- services
+ServicesManager = { _services = {} }
+function ServicesManager:GetService(name)
+    local out = self._services[name] or game:GetService(name)
+    self._services[name] = out
+    return out
 end
 
-Instance.new("Folder", game:GetService("Workspace")).Name = "PLADMIN LOADED SUCCESS"
+-- GUI Functions
+Instance.new("Folder", workspace).Name = "PLADMIN LOADED SUCCESS"
 local PLAdmin = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local ScriptName = Instance.new("TextLabel")
@@ -227,7 +68,7 @@ local UnloadScript = nil
 local Unloaded = false
 
 PLAdmin.Name = "PLAdmin"
-PLAdmin.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+PLAdmin.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
 PLAdmin.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 PLAdmin.ResetOnSpawn = false
 
@@ -358,7 +199,7 @@ local DraggifyFrame = function(frame)
             end)
         end
     end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    ServicesManager:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStartPos
             frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
@@ -580,13 +421,13 @@ ExecBar:GetPropertyChangedSignal("Text"):Connect(function()
 end)
 
 --Variables
-local Camera = game:GetService("Workspace").CurrentCamera
-local Rstorage = game:GetService("ReplicatedStorage")
-local Rservice = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local Rstorage = ServicesManager:GetService("ReplicatedStorage")
+local Rservice = ServicesManager:GetService("RunService")
 local Hbeat = Rservice.Heartbeat
 local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
-local Players = game:GetService("Players")
+local Players = ServicesManager:GetService("Players")
 local Teams = game:GetService("Teams")
 local LocalPlayer = Players.LocalPlayer
 local RegModule = nil
@@ -794,8 +635,8 @@ local LocPL = {
     UIN = LocalPlayer.Name,
     UID = LocalPlayer.UserId,
     ShittyExecutor = nil,
-    isTouch = game:GetService("UserInputService").TouchEnabled,
-    isMouse = game:GetService("UserInputService").MouseEnabled,
+    isTouch = ServicesManager:GetService("UserInputService").TouchEnabled,
+    isMouse = ServicesManager:GetService("UserInputService").MouseEnabled,
 }
 local Threads, Tasks = nil, nil
 
@@ -844,7 +685,7 @@ local Notif = function(Title, Text, Duration)
     if not Duration then
         Duration = 3
     end
-    game:GetService("StarterGui"):SetCore("SendNotification", {
+    ServicesManager:GetService("StarterGui"):SetCore("SendNotification", {
         Title = Title,
         Text = Text,
         Icon = "",
@@ -866,7 +707,7 @@ local PromptUser = function(Title, Text, Duration, Button1, Button2, DaCallback,
         end
         Responded = true
     end
-    game:GetService("StarterGui"):SetCore("SendNotification", {
+    ServicesManager:GetService("StarterGui"):SetCore("SendNotification", {
         Title = Title,
         Text = Text,
         Duration = Duration,
@@ -898,7 +739,7 @@ local PromptUser = function(Title, Text, Duration, Button1, Button2, DaCallback,
 end
 
 local SysMessage = function(datext, dacolor)
-    game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
+    ServicesManager:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
         ["Text"] = datext,
         ["Color"] = dacolor or Color3.fromRGB(255, 0, 0),
         ["Font"] = Enum.Font.SourceSansBold,
@@ -908,7 +749,7 @@ end
 
 local Chat = function(args, isWhisper, isSilent)
     if isSilent then
-        local serv = game:GetService("Players").Chat
+        local serv = ServicesManager:GetService("Players").Chat
         serv(Players, args)
         return
     end
@@ -921,17 +762,17 @@ end
 
 local VKeyPress = function(args, args2, waits)
     if args2 == "Press" then
-        game:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
         task.wait(0.1)
-        game:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
     elseif args2 == "Hold" then
-        game:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
     elseif args2 == "UnHold" then
-        game:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
     elseif args2 == "HoldWait" and waits then
-        game:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
         wait(waits)
-        game:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
     end
 end
 
@@ -1044,9 +885,9 @@ end
 
 local CPing = function(ConvertToHuman, OneWayTrip)
     if ConvertToHuman then
-        return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or ServicesManager:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
     else
-        return OneWayTrip and LocalPlayer:GetNetworkPing() or game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+        return OneWayTrip and LocalPlayer:GetNetworkPing() or ServicesManager:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
     end
 end
 
@@ -1099,7 +940,7 @@ local ItemGrab = function(source, args)
             LocTP(CFrame.new(IPickup))
         end)
         task.spawn(function()
-            game:GetService("Workspace").Remote.ItemHandler:InvokeServer(ItemPickup)
+            workspace.Remote.ItemHandler:InvokeServer(ItemPickup)
         end)
     until LocalPlayer.Backpack:FindFirstChild(args) or LocalPlayer.Character:FindFirstChild(args) or tick() - timeout >= 0
     pcall(function()
@@ -1110,7 +951,7 @@ end
 
 local ItemHand = function(source, args)
     if source and source == "old" then
-        game:GetService("Workspace").Remote.ItemHandler:InvokeServer(args)
+        workspace.Remote.ItemHandler:InvokeServer(args)
         return
     end
     if Settings.User.OldItemMethod then
@@ -1164,7 +1005,7 @@ local SpawnClientStuff = function(arg)
         animate.AnimationId = "rbxassetid://218504594"
         local animtrack = LocalPlayer.Character:FindFirstChild("Humanoid"):LoadAnimation(animate)
         local attacking = false
-        local inPutCon = game:GetService("UserInputService").InputBegan:Connect(function(input)
+        local inPutCon = ServicesManager:GetService("UserInputService").InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Crude Knife") then
                     if not attacking then
@@ -1369,7 +1210,7 @@ local VirtualPunch = function(args)
                         else
                             MeleEve(v)
                         end
-                        game:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
+                        ServicesManager:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
                         if not Toggles.PunchAura then
                             break
                         end
@@ -1391,7 +1232,7 @@ local VirtualPunch = function(args)
             else
                 MeleEve(args)
             end
-            game:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
+            ServicesManager:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
         end
     end
     if States.LoudPunch then
@@ -1421,7 +1262,7 @@ local OpenDoors = function(includeGate)
     end
     if includeGate then
         local laspos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
-        local gate = game:GetService("Workspace")["Prison_ITEMS"].buttons["Prison Gate"]["Prison Gate"]
+        local gate = workspace["Prison_ITEMS"].buttons["Prison Gate"]["Prison Gate"]
         for i = 1, 4 do
             LocTP(gate:GetPivot())
             workspace.Remote.ItemHandler:InvokeServer(gate)
@@ -1462,9 +1303,9 @@ local OpenDoors = function(includeGate)
 end
 --I'm so int-ellie-gent omfg no way my fly is compatible for both pc and mobile users
 local Flight = function(args)
-    local CModule = not LocPL.ShittyExecutor and require(LocalPlayer.PlayerScripts:FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")) or game:GetService("UserInputService")
+    local CModule = not LocPL.ShittyExecutor and require(LocalPlayer.PlayerScripts:FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")) or ServicesManager:GetService("UserInputService")
     local speed, Charadd, ExitButton = args or 5, nil, nil
-    local Camera, Char = game.Workspace.CurrentCamera, game.Players.LocalPlayer.Character
+    local Camera, Char = game.Workspace.CurrentCamera, ServicesManager:GetService("Players").LocalPlayer.Character
     local Human, Root = Char:WaitForChild("Humanoid"), Char:WaitForChild("HumanoidRootPart")
     local BodyG, BodyV = Instance.new("BodyGyro", Root), Instance.new("BodyVelocity", Root)
     BodyG.MaxTorque = Vector3.new()
@@ -1531,7 +1372,7 @@ local Flight = function(args)
     end)
     Charadd = LocalPlayer.CharacterAdded:Connect(function()
         Camera = game.Workspace.CurrentCamera
-        Char = game.Players.LocalPlayer.Character
+        Char = ServicesManager:GetService("Players").LocalPlayer.Character
         Human = Char:WaitForChild("Humanoid")
         Root = Char:WaitForChild("HumanoidRootPart")
         BodyG:Destroy()
@@ -1643,7 +1484,7 @@ local BringCar = function(args, usedcar, policecar)
         end
     else
         task.spawn(function()
-            Car = game:GetService("Workspace").CarContainer.ChildAdded:Wait()
+            Car = workspace.CarContainer.ChildAdded:Wait()
         end)
         repeat
             task.wait()
@@ -1996,7 +1837,7 @@ local FlingPL = function(args)
     timeout = nil
     Toggles.Noclip = val
     local tick1 = tick() + 2
-    local seat = game:GetService("Workspace"):FindFirstChildWhichIsA("Seat", true)
+    local seat = workspace:FindFirstChildWhichIsA("Seat", true)
     local LHuman = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
     if seat.Occupant and not LHuman.Sit then
         for i, v in next, workspace:GetDescendants() do
@@ -2175,7 +2016,7 @@ local CreateClientRay = function(RayS, CustomColor)
         else
             NewRay.BrickColor = BrickColor.Yellow()
         end
-        game:GetService("Debris"):AddItem(NewRay, 0.05)
+        ServicesManager:GetService("Debris"):AddItem(NewRay, 0.05)
     end
 end
 
@@ -3047,7 +2888,7 @@ local CrashMethod = function(typeofcrash, args)
                 rem:FireServer("Bright orange")
             end)()
         end
-        game:GetService("RunService").RenderStepped:Connect(function()
+        ServicesManager:GetService("RunService").RenderStepped:Connect(function()
             rem:FireServer("Bright orange")
         end)
     elseif typeofcrash == "soundlag" then
@@ -3381,7 +3222,7 @@ Threads = {
             pcall(function()
                 LocalPlayer.PlayerGui.Home.fadeFrame.Visible = false
             end)
-            local Lighting = game:GetService("Lighting")
+            local Lighting = ServicesManager:GetService("Lighting")
             local temp = {
                 Brightness = Lighting.Brightness,
                 FogEnd = Lighting.FogEnd,
@@ -3422,13 +3263,13 @@ Threads = {
                     root.CFrame = CFrame.new(9e9, 9e9, 9e9)
                     SavedPositions.AutoRe = lastpos
                     wait(0.4)
-                    game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Scriptable
+                    workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
                     Hbeat:Wait()
                     Rstep:Wait()
-                    game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Custom
+                    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
                     FakeCharacter = FakeCharacter
                     Character.Parent = game.Lighting
-                    FakeCharacter.Parent = game:GetService("Workspace")
+                    FakeCharacter.Parent = workspace
                     FakeCharacter:FindFirstChild("HumanoidRootPart").CFrame = lastpos
                     LocalPlayer.Character = FakeCharacter
                     Rstep:Wait()
@@ -3648,15 +3489,15 @@ Threads = {
     HideTeamGui = function()
         task.spawn(function()
             task.delay(0.05, function()
-                game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+                ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
             end)
             for i = 1, 10 do
                 pcall(function()
                     LocalPlayer.PlayerGui:FindFirstChild("Home"):FindFirstChild("intro").Visible = false
                     LocalPlayer.PlayerGui:FindFirstChild("Home"):FindFirstChild("hud").Visible = true
-                    game:GetService("Workspace").CurrentCamera.FieldOfView = 70
-                    game:GetService("Workspace").CurrentCamera.CameraType = Enum.CameraType.Custom
-                    game:GetService("Workspace").CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
+                    workspace.CurrentCamera.FieldOfView = 70
+                    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+                    workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
                 end)
                 task.wait()
             end
@@ -5635,7 +5476,7 @@ local OnCommand = function(text)
         end
         Notif("OK", "Toggled No-leaderboard to " .. tostring(States.RemoveLeaderboard) .. ".")
         wait(0.1)
-        game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, not States.RemoveLeaderboard)
+        ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, not States.RemoveLeaderboard)
     elseif cm("mobilegui") or cm("mgui") then
         local mbg = Saved.PLINIT:FindFirstChild("ActionFrame")
         mbg.Visible = not mbg.Visible
@@ -7112,13 +6953,13 @@ local OnCommand = function(text)
         Notif("OK", "Spawned client-sided bat.")
     elseif cm("rejoin") or cm("rj") then
         Notif("OK", "Rejoining...")
-        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+        ServicesManager:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
     elseif cm("serverhop") or cm("svhop") then
         local s, f = pcall(function()
             Notif("Please wait...", "Serverhopping...")
             local found, get = {}, Saved.HttpRequest
             local data = get({ Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", game.PlaceId) })
-            local decode = game:GetService("HttpService"):JSONDecode(data.Body)
+            local decode = ServicesManager:GetService("HttpService"):JSONDecode(data.Body)
             if decode and decode.data then
                 for i, v in pairs(decode.data) do
                     if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= game.JobId then
@@ -7127,7 +6968,7 @@ local OnCommand = function(text)
                 end
             end
             if next(found) then
-                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, found[math.random(1, #found)], LocalPlayer)
+                ServicesManager:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, found[math.random(1, #found)], LocalPlayer)
             else
                 Notif("Error", "Couldnt find a server")
             end
@@ -7755,7 +7596,7 @@ local OnCommand = function(text)
         Sky.SunAngularSize = 10
         Sky.SkyboxRt = "http://www.roblox.com/asset/?id=3822390968"
         Sky.MoonAngularSize = 9
-        Sky.Parent = game:GetService("Lighting")
+        Sky.Parent = ServicesManager:GetService("Lighting")
     elseif cm("advertise") or cm("script") then
         Chat("SUPER OP PRISON LIFE SCRIPT WITH CRASHSERVER AND 200+ COMMANDS! > paste.ee/p/mxb28")
     elseif cm("whois") then
@@ -7873,7 +7714,7 @@ local OnCommand = function(text)
                     if getpl then
                         local str = Args[2] and string.sub(text, #Args[1] + #Args[2] + 3, #text)
                         local sub = str or "Kicked"
-                        Saved.SendBeacon("if game.Players.LocalPlayer.Name == '" .. getpl.Name .. "' then task.delay(3, function() game.Players.LocalPlayer:Destroy() end) game.Players.LocalPlayer:Kick('" .. sub .. "') end")
+                        Saved.SendBeacon("if game.Players.LocalPlayer.Name == '" .. getpl.Name .. "' then task.delay(3, function() game.Players.LocalPlayer:Destroy() end) game:GetService('Players').LocalPlayer:Kick('" .. sub .. "') end")
                         Notif("Beacon", "Sent beaconframe to " .. getpl.Name)
                     else
                         Notif("Error", "Invalid player.")
@@ -9690,8 +9531,8 @@ diedevent = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 
 --Input
-Connections.InputBegan = game:GetService("UserInputService").InputBegan:Connect(function(input)
-    local textBoxHasFocus = game:GetService("UserInputService"):GetFocusedTextBox()
+Connections.InputBegan = ServicesManager:GetService("UserInputService").InputBegan:Connect(function(input)
+    local textBoxHasFocus = ServicesManager:GetService("UserInputService"):GetFocusedTextBox()
     if input.KeyCode == Enum.KeyCode.F and not textBoxHasFocus then
         States.IsHoldingF = true
         if States.PunchCD or Toggles.Onepunch or Toggles.PunchAura or States.LoudPunch then
@@ -9710,14 +9551,14 @@ Connections.InputBegan = game:GetService("UserInputService").InputBegan:Connect(
     end
     if input.KeyCode == Enum.KeyCode.Slash and not textBoxHasFocus then
         Hbeat:Wait()
-        game.Players.LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar:CaptureFocus()
+        ServicesManager:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar:CaptureFocus()
     end
     if input.KeyCode == Enum.KeyCode.LeftShift then
         States.Running = true
         LAction("speed", Saved.RunSpeed)
     end
 end)
-Connections.InputEnded = game:GetService("UserInputService").InputEnded:Connect(function(input)
+Connections.InputEnded = ServicesManager:GetService("UserInputService").InputEnded:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.LeftShift then
         States.Running = false
         LAction("speed", Saved.NormalSpeed)
@@ -10378,9 +10219,9 @@ task.spawn(function()
         end
     end
     while wait() do
-        game:GetService("StarterGui"):SetCoreGuiEnabled("Backpack", true)
+        ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled("Backpack", true)
         if States.RemoveLeaderboard then
-            game:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
+            ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
         end
         pcall(task0)
         if next(CmdQueue) then
@@ -10418,7 +10259,7 @@ Connections.Stepped = Stepped:Connect(function()
 end)
 
 --INIT
-if game:GetService("Workspace"):FindFirstChild("Criminals Spawn") then
+if workspace:FindFirstChild("Criminals Spawn") then
     SavedPositions.Crimpad = workspace["Criminals Spawn"].SpawnLocation.CFrame
     Saved.HostileAnimations = {
         "rbxassetid://484200742",
@@ -10549,7 +10390,7 @@ coroutine.wrap(function()
     end
     LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = true
     local VirtualRayDebounce = false
-    local SoundS = game:GetService("SoundService")
+    local SoundS = ServicesManager:GetService("SoundService")
     Connections.VirtualRayHandler = Rstorage:WaitForChild("ReplicateEvent", 8).OnClientEvent:Connect(function(Tables)
         if not Tables then
             return
@@ -11154,7 +10995,7 @@ task.spawn(function()
 
     Saved.PLINIT = Instance.new("ScreenGui")
     Saved.PLINIT.Name = "PLADMIN_INITIALS"
-    Saved.PLINIT.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    Saved.PLINIT.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
     Saved.PLINIT.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     local TeamFrame, Teams
     do
@@ -11166,7 +11007,7 @@ task.spawn(function()
         local InmateButton = Instance.new("TextButton")
 
         TeamFrame.Name = "TeamFrame"
-        TeamFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
+        TeamFrame.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
         TeamFrame.AnchorPoint = Vector2.new(0.5, 0.5)
         TeamFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         TeamFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -11275,7 +11116,7 @@ task.spawn(function()
     local UIAspectRatioConstraint_4 = Instance.new("UIAspectRatioConstraint")
 
     ActionFrame.Name = "ActionFrame"
-    ActionFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
+    ActionFrame.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
     ActionFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     ActionFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     ActionFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -11348,14 +11189,14 @@ task.spawn(function()
 end)
 
 --Anti afk/jump stamina
-Connections.AntiAFK = game:GetService("Players").LocalPlayer.Idled:connect(function()
-    game:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+Connections.AntiAFK = ServicesManager:GetService("Players").LocalPlayer.Idled:connect(function()
+    ServicesManager:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
     wait(1)
     deprint("Debug_IS AFK")
-    game:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    ServicesManager:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
 local JDebounce = false
-Connections.JumpStamina = game:GetService("UserInputService").JumpRequest:Connect(function()
+Connections.JumpStamina = ServicesManager:GetService("UserInputService").JumpRequest:Connect(function()
     if not JDebounce or States.InfiniteJump then
         JDebounce = true
         task.wait()
@@ -11400,8 +11241,8 @@ UnloadScript = function()
     Saved.PLINIT:Destroy()
     Saved = { Thread = {} }
     LocPL = {}
-    game.Players.LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false
+    ServicesManager:GetService("Players").LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false
     workspace:FindFirstChild("PLADMIN LOADED SUCCESS"):Destroy()
 end
 --Check gamepass
-LocPL.Gamepass = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 96651) or game:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 643697197)
+LocPL.Gamepass = ServicesManager:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 96651) or ServicesManager:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 643697197)
