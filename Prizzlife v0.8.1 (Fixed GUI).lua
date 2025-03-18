@@ -1,7 +1,7 @@
 --// PRIZZLIFE - Command GUI
 --// Originally sourced from various admin scripts
---// Fixed, refined, and optimized by H17S3, Riotscripter, and ephemeral8997
---// based on concepts from Wrath Admin, Tiger Admin, Chaos Admin, and local player scripts
+--// Fixed, refined, and optimized by ephemeral8997
+--// based on concepts from Wrath Admin, Tiger Admin, Jupiter, Chaos Admin, and local player scripts
 
 Execution_Runtime = Execution_Runtime or tick()
 PLadmin_Settings = PLadmin_Settings or {}
