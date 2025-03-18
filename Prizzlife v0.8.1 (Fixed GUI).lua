@@ -44,12 +44,16 @@ for key, value in pairs(PLadmin_Defaults) do
 end
 
 -- services
-ServicesManager = { _services = {} }
-function ServicesManager:GetService(name)
-    local out = self._services[name] or game:GetService(name)
-    self._services[name] = out
-    return out
-end
+Services = setmetatable({}, {
+    __index = function(self, key)
+        local service = game:GetService(key)
+        if service then
+            rawset(self, key, service)
+            return service
+        end
+        error("Service '" .. key .. "' not found", 2)
+    end,
+})
 
 -- GUI Functions
 Instance.new("Folder", workspace).Name = "PLADMIN LOADED SUCCESS"
@@ -68,7 +72,7 @@ local UnloadScript = nil
 local Unloaded = false
 
 PLAdmin.Name = "PLAdmin"
-PLAdmin.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+PLAdmin.Parent = Services.Players.LocalPlayer:WaitForChild("PlayerGui")
 PLAdmin.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 PLAdmin.ResetOnSpawn = false
 
@@ -199,7 +203,7 @@ local DraggifyFrame = function(frame)
             end)
         end
     end)
-    ServicesManager:GetService("UserInputService").InputChanged:Connect(function(input)
+    Services.UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local delta = input.Position - dragStartPos
             frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
@@ -422,12 +426,12 @@ end)
 
 --Variables
 local Camera = workspace.CurrentCamera
-local Rstorage = ServicesManager:GetService("ReplicatedStorage")
-local Rservice = ServicesManager:GetService("RunService")
+local Rstorage = Services.ReplicatedStorage
+local Rservice = Services.RunService
 local Hbeat = Rservice.Heartbeat
 local Rstep = Rservice.RenderStepped
 local Stepped = Rservice.Stepped
-local Players = ServicesManager:GetService("Players")
+local Players = Services.Players
 local Teams = game:GetService("Teams")
 local LocalPlayer = Players.LocalPlayer
 local RegModule = nil
@@ -635,8 +639,8 @@ local LocPL = {
     UIN = LocalPlayer.Name,
     UID = LocalPlayer.UserId,
     ShittyExecutor = nil,
-    isTouch = ServicesManager:GetService("UserInputService").TouchEnabled,
-    isMouse = ServicesManager:GetService("UserInputService").MouseEnabled,
+    isTouch = Services.UserInputService.TouchEnabled,
+    isMouse = Services.UserInputService.MouseEnabled,
 }
 local Threads, Tasks = nil, nil
 
@@ -685,7 +689,7 @@ local Notif = function(Title, Text, Duration)
     if not Duration then
         Duration = 3
     end
-    ServicesManager:GetService("StarterGui"):SetCore("SendNotification", {
+    Services.StarterGui:SetCore("SendNotification", {
         Title = Title,
         Text = Text,
         Icon = "",
@@ -707,7 +711,7 @@ local PromptUser = function(Title, Text, Duration, Button1, Button2, DaCallback,
         end
         Responded = true
     end
-    ServicesManager:GetService("StarterGui"):SetCore("SendNotification", {
+    Services.StarterGui:SetCore("SendNotification", {
         Title = Title,
         Text = Text,
         Duration = Duration,
@@ -739,7 +743,7 @@ local PromptUser = function(Title, Text, Duration, Button1, Button2, DaCallback,
 end
 
 local SysMessage = function(datext, dacolor)
-    ServicesManager:GetService("StarterGui"):SetCore("ChatMakeSystemMessage", {
+    Services.StarterGui:SetCore("ChatMakeSystemMessage", {
         ["Text"] = datext,
         ["Color"] = dacolor or Color3.fromRGB(255, 0, 0),
         ["Font"] = Enum.Font.SourceSansBold,
@@ -749,7 +753,7 @@ end
 
 local Chat = function(args, isWhisper, isSilent)
     if isSilent then
-        local serv = ServicesManager:GetService("Players").Chat
+        local serv = Services.Players.Chat
         serv(Players, args)
         return
     end
@@ -762,17 +766,17 @@ end
 
 local VKeyPress = function(args, args2, waits)
     if args2 == "Press" then
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(true, args, false, game)
         task.wait(0.1)
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(false, args, false, game)
     elseif args2 == "Hold" then
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(true, args, false, game)
     elseif args2 == "UnHold" then
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(false, args, false, game)
     elseif args2 == "HoldWait" and waits then
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(true, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(true, args, false, game)
         wait(waits)
-        ServicesManager:GetService("VirtualInputManager"):SendKeyEvent(false, args, false, game)
+        Services.VirtualInputManager:SendKeyEvent(false, args, false, game)
     end
 end
 
@@ -885,9 +889,9 @@ end
 
 local CPing = function(ConvertToHuman, OneWayTrip)
     if ConvertToHuman then
-        return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or ServicesManager:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue()
+        return OneWayTrip and LocalPlayer:GetNetworkPing() * 1000 or Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue()
     else
-        return OneWayTrip and LocalPlayer:GetNetworkPing() or ServicesManager:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
+        return OneWayTrip and LocalPlayer:GetNetworkPing() or Services.Stats.Network.ServerStatsItem["Data Ping"]:GetValue() / 1000
     end
 end
 
@@ -1005,7 +1009,7 @@ local SpawnClientStuff = function(arg)
         animate.AnimationId = "rbxassetid://218504594"
         local animtrack = LocalPlayer.Character:FindFirstChild("Humanoid"):LoadAnimation(animate)
         local attacking = false
-        local inPutCon = ServicesManager:GetService("UserInputService").InputBegan:Connect(function(input)
+        local inPutCon = Services.UserInputService.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Crude Knife") then
                     if not attacking then
@@ -1210,7 +1214,7 @@ local VirtualPunch = function(args)
                         else
                             MeleEve(v)
                         end
-                        ServicesManager:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
+                        Services.ReplicatedStorage.SoundEvent:FireServer(sound)
                         if not Toggles.PunchAura then
                             break
                         end
@@ -1232,7 +1236,7 @@ local VirtualPunch = function(args)
             else
                 MeleEve(args)
             end
-            ServicesManager:GetService("ReplicatedStorage").SoundEvent:FireServer(sound)
+            Services.ReplicatedStorage.SoundEvent:FireServer(sound)
         end
     end
     if States.LoudPunch then
@@ -1303,9 +1307,9 @@ local OpenDoors = function(includeGate)
 end
 --I'm so int-ellie-gent omfg no way my fly is compatible for both pc and mobile users
 local Flight = function(args)
-    local CModule = not LocPL.ShittyExecutor and require(LocalPlayer.PlayerScripts:FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")) or ServicesManager:GetService("UserInputService")
+    local CModule = not LocPL.ShittyExecutor and require(LocalPlayer.PlayerScripts:FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")) or Services.UserInputService
     local speed, Charadd, ExitButton = args or 5, nil, nil
-    local Camera, Char = game.Workspace.CurrentCamera, ServicesManager:GetService("Players").LocalPlayer.Character
+    local Camera, Char = game.Workspace.CurrentCamera, Services.Players.LocalPlayer.Character
     local Human, Root = Char:WaitForChild("Humanoid"), Char:WaitForChild("HumanoidRootPart")
     local BodyG, BodyV = Instance.new("BodyGyro", Root), Instance.new("BodyVelocity", Root)
     BodyG.MaxTorque = Vector3.new()
@@ -1372,7 +1376,7 @@ local Flight = function(args)
     end)
     Charadd = LocalPlayer.CharacterAdded:Connect(function()
         Camera = game.Workspace.CurrentCamera
-        Char = ServicesManager:GetService("Players").LocalPlayer.Character
+        Char = Services.Players.LocalPlayer.Character
         Human = Char:WaitForChild("Humanoid")
         Root = Char:WaitForChild("HumanoidRootPart")
         BodyG:Destroy()
@@ -2016,7 +2020,7 @@ local CreateClientRay = function(RayS, CustomColor)
         else
             NewRay.BrickColor = BrickColor.Yellow()
         end
-        ServicesManager:GetService("Debris"):AddItem(NewRay, 0.05)
+        Services.Debris:AddItem(NewRay, 0.05)
     end
 end
 
@@ -2888,7 +2892,7 @@ local CrashMethod = function(typeofcrash, args)
                 rem:FireServer("Bright orange")
             end)()
         end
-        ServicesManager:GetService("RunService").RenderStepped:Connect(function()
+        Services.RunService.RenderStepped:Connect(function()
             rem:FireServer("Bright orange")
         end)
     elseif typeofcrash == "soundlag" then
@@ -3222,7 +3226,7 @@ Threads = {
             pcall(function()
                 LocalPlayer.PlayerGui.Home.fadeFrame.Visible = false
             end)
-            local Lighting = ServicesManager:GetService("Lighting")
+            local Lighting = Services.Lighting
             local temp = {
                 Brightness = Lighting.Brightness,
                 FogEnd = Lighting.FogEnd,
@@ -3489,7 +3493,7 @@ Threads = {
     HideTeamGui = function()
         task.spawn(function()
             task.delay(0.05, function()
-                ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
+                Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.All, true)
             end)
             for i = 1, 10 do
                 pcall(function()
@@ -5476,7 +5480,7 @@ local OnCommand = function(text)
         end
         Notif("OK", "Toggled No-leaderboard to " .. tostring(States.RemoveLeaderboard) .. ".")
         wait(0.1)
-        ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, not States.RemoveLeaderboard)
+        Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, not States.RemoveLeaderboard)
     elseif cm("mobilegui") or cm("mgui") then
         local mbg = Saved.PLINIT:FindFirstChild("ActionFrame")
         mbg.Visible = not mbg.Visible
@@ -6953,13 +6957,13 @@ local OnCommand = function(text)
         Notif("OK", "Spawned client-sided bat.")
     elseif cm("rejoin") or cm("rj") then
         Notif("OK", "Rejoining...")
-        ServicesManager:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+        Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
     elseif cm("serverhop") or cm("svhop") then
         local s, f = pcall(function()
             Notif("Please wait...", "Serverhopping...")
             local found, get = {}, Saved.HttpRequest
             local data = get({ Url = string.format("https://games.roblox.com/v1/games/%d/servers/Public?sortOrder=Desc&limit=100&excludeFullGames=true", game.PlaceId) })
-            local decode = ServicesManager:GetService("HttpService"):JSONDecode(data.Body)
+            local decode = Services.HttpService:JSONDecode(data.Body)
             if decode and decode.data then
                 for i, v in pairs(decode.data) do
                     if type(v) == "table" and tonumber(v.playing) and tonumber(v.maxPlayers) and v.playing < v.maxPlayers and v.id ~= game.JobId then
@@ -6968,7 +6972,7 @@ local OnCommand = function(text)
                 end
             end
             if next(found) then
-                ServicesManager:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, found[math.random(1, #found)], LocalPlayer)
+                Services.TeleportService:TeleportToPlaceInstance(game.PlaceId, found[math.random(1, #found)], LocalPlayer)
             else
                 Notif("Error", "Couldnt find a server")
             end
@@ -7596,7 +7600,7 @@ local OnCommand = function(text)
         Sky.SunAngularSize = 10
         Sky.SkyboxRt = "http://www.roblox.com/asset/?id=3822390968"
         Sky.MoonAngularSize = 9
-        Sky.Parent = ServicesManager:GetService("Lighting")
+        Sky.Parent = Services.Lighting
     elseif cm("advertise") or cm("script") then
         Chat("SUPER OP PRISON LIFE SCRIPT WITH CRASHSERVER AND 200+ COMMANDS! > paste.ee/p/mxb28")
     elseif cm("whois") then
@@ -9531,8 +9535,8 @@ diedevent = lochar:WaitForChild("Humanoid").Died:Connect(ondiedevent)
 Connections.CharacterAdded = LocalPlayer.CharacterAdded:Connect(oncharadded)
 
 --Input
-Connections.InputBegan = ServicesManager:GetService("UserInputService").InputBegan:Connect(function(input)
-    local textBoxHasFocus = ServicesManager:GetService("UserInputService"):GetFocusedTextBox()
+Connections.InputBegan = Services.UserInputService.InputBegan:Connect(function(input)
+    local textBoxHasFocus = Services.UserInputService:GetFocusedTextBox()
     if input.KeyCode == Enum.KeyCode.F and not textBoxHasFocus then
         States.IsHoldingF = true
         if States.PunchCD or Toggles.Onepunch or Toggles.PunchAura or States.LoudPunch then
@@ -9551,14 +9555,14 @@ Connections.InputBegan = ServicesManager:GetService("UserInputService").InputBeg
     end
     if input.KeyCode == Enum.KeyCode.Slash and not textBoxHasFocus then
         Hbeat:Wait()
-        ServicesManager:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar:CaptureFocus()
+        Services.Players.LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar:CaptureFocus()
     end
     if input.KeyCode == Enum.KeyCode.LeftShift then
         States.Running = true
         LAction("speed", Saved.RunSpeed)
     end
 end)
-Connections.InputEnded = ServicesManager:GetService("UserInputService").InputEnded:Connect(function(input)
+Connections.InputEnded = Services.UserInputService.InputEnded:Connect(function(input)
     if input.KeyCode == Enum.KeyCode.LeftShift then
         States.Running = false
         LAction("speed", Saved.NormalSpeed)
@@ -10219,9 +10223,9 @@ task.spawn(function()
         end
     end
     while wait() do
-        ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled("Backpack", true)
+        Services.StarterGui:SetCoreGuiEnabled("Backpack", true)
         if States.RemoveLeaderboard then
-            ServicesManager:GetService("StarterGui"):SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
+            Services.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
         end
         pcall(task0)
         if next(CmdQueue) then
@@ -10390,7 +10394,6 @@ coroutine.wrap(function()
     end
     LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = true
     local VirtualRayDebounce = false
-    local SoundS = ServicesManager:GetService("SoundService")
     Connections.VirtualRayHandler = Rstorage:WaitForChild("ReplicateEvent", 8).OnClientEvent:Connect(function(Tables)
         if not Tables then
             return
@@ -10412,9 +10415,9 @@ coroutine.wrap(function()
     end)
     Connections.VirtualSoundHandler = Rstorage:WaitForChild("SoundEvent", 8).OnClientEvent:Connect(function(sound)
         if LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled and States.ReplicateEvent then
-            SoundS.RespectFilteringEnabled = true
+            Services.SoundService.RespectFilteringEnabled = true
             sound:Play()
-            SoundS.RespectFilteringEnabled = false
+            Services.SoundService.RespectFilteringEnabled = false
         end
     end)
     Connections.VirtualWarnHandler = Rstorage:WaitForChild("WarnEvent", 8).OnClientEvent:Connect(function(Times)
@@ -10995,7 +10998,7 @@ task.spawn(function()
 
     Saved.PLINIT = Instance.new("ScreenGui")
     Saved.PLINIT.Name = "PLADMIN_INITIALS"
-    Saved.PLINIT.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    Saved.PLINIT.Parent = Services.Players.LocalPlayer:WaitForChild("PlayerGui")
     Saved.PLINIT.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     local TeamFrame, Teams
     do
@@ -11007,7 +11010,7 @@ task.spawn(function()
         local InmateButton = Instance.new("TextButton")
 
         TeamFrame.Name = "TeamFrame"
-        TeamFrame.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
+        TeamFrame.Parent = Services.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
         TeamFrame.AnchorPoint = Vector2.new(0.5, 0.5)
         TeamFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
         TeamFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -11116,7 +11119,7 @@ task.spawn(function()
     local UIAspectRatioConstraint_4 = Instance.new("UIAspectRatioConstraint")
 
     ActionFrame.Name = "ActionFrame"
-    ActionFrame.Parent = ServicesManager:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
+    ActionFrame.Parent = Services.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("PLADMIN_INITIALS", 69)
     ActionFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     ActionFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
     ActionFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -11189,14 +11192,14 @@ task.spawn(function()
 end)
 
 --Anti afk/jump stamina
-Connections.AntiAFK = ServicesManager:GetService("Players").LocalPlayer.Idled:connect(function()
-    ServicesManager:GetService("VirtualUser"):Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+Connections.AntiAFK = Services.Players.LocalPlayer.Idled:connect(function()
+    Services.VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
     wait(1)
     deprint("Debug_IS AFK")
-    ServicesManager:GetService("VirtualUser"):Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+    Services.VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
 end)
 local JDebounce = false
-Connections.JumpStamina = ServicesManager:GetService("UserInputService").JumpRequest:Connect(function()
+Connections.JumpStamina = Services.UserInputService.JumpRequest:Connect(function()
     if not JDebounce or States.InfiniteJump then
         JDebounce = true
         task.wait()
@@ -11241,8 +11244,8 @@ UnloadScript = function()
     Saved.PLINIT:Destroy()
     Saved = { Thread = {} }
     LocPL = {}
-    ServicesManager:GetService("Players").LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false
+    Services.Players.LocalPlayer.PlayerScripts.ClientGunReplicator.Disabled = false
     workspace:FindFirstChild("PLADMIN LOADED SUCCESS"):Destroy()
 end
 --Check gamepass
-LocPL.Gamepass = ServicesManager:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 96651) or ServicesManager:GetService("MarketplaceService"):UserOwnsGamePassAsync(LocalPlayer.UserId, 643697197)
+LocPL.Gamepass = Services.MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, 96651) or Services.MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, 643697197)
