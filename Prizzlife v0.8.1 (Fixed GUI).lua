@@ -3,10 +3,10 @@
 --// Fixed, refined, and optimized by ephemeral8997
 --// based on concepts from Wrath Admin, Tiger Admin, Jupiter, Chaos Admin, and local player scripts
 
-Execution_Runtime = Execution_Runtime or tick()
-PLadmin_Settings = PLadmin_Settings or {}
+local Execution_Runtime = Execution_Runtime or tick()
+local PLadmin_Settings = PLadmin_Settings or {}
 
-PLadmin_Defaults = {
+local PLadmin_Defaults = {
     DefaultPrefix = "?",
     JoinNotify = false,
     AutoRespawn = false,
@@ -44,7 +44,7 @@ for key, value in pairs(PLadmin_Defaults) do
 end
 
 -- services
-Services = setmetatable({}, {
+local Services = setmetatable({}, {
     __index = function(self, key)
         local service = game:GetService(key)
         if service then
