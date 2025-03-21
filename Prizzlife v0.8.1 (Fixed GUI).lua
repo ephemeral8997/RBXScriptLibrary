@@ -68,7 +68,7 @@ local Toggles_Frame = Instance.new("ScrollingFrame")
 local CMDS_Frame = Instance.new("ScrollingFrame")
 local UIListLayout = Instance.new("UIListLayout")
 local UIListLayout2 = Instance.new("UIListLayout")
-local UnloadScript = nil
+local UnloadScript
 local Unloaded = false
 
 PLAdmin.Name = "PLAdmin"
@@ -9412,7 +9412,7 @@ local function ondiedevent()
         end
     end
 end
-getfenv()["\112\114\105\110\116"]("\104\49\55\115\51\32\119\97\115\32\104\101\114\101") --//funny
+
 local function charaddtask()
     diedevent:Disconnect()
     local LHuman = lochar:WaitForChild("Humanoid", 1)
