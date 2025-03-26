@@ -54,7 +54,13 @@ local PLadmin_Defaults = {
 local Execution_Runtime = Execution_Runtime or tick()
 local PLadmin_Settings = PLadmin_Settings or {}
 setmetatable(PLadmin_Settings, {
-    __index = PLadmin_Defaults,
+    __index = function(tbl, key)
+        if tbl[key] ~= nil then
+            return tbl[key]
+        else
+            return PLadmin_Defaults[key]
+        end
+    end,
 })
 
 -- services
@@ -858,7 +864,7 @@ local GetRandomPlr = function(args)
     end
     return ToReturn
 end
---i made it into a whole useless function just to save my hands
+
 local CheckWhitelist = function(args)
     return not (Whitelisted[args.UserId] or Settings.Ranked.AutoWhitelist and RankedPlrs[args.UserId])
 end
@@ -1177,7 +1183,7 @@ local GetIllegalReg = function(args)
         return true
     end
 end
---ClientInputHandler my ass
+
 local VirtualPunch = function(args)
     task.delay(0, function()
         if not (LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")) then
@@ -1266,7 +1272,7 @@ local VirtualPunch = function(args)
         end
     end
 end
---executor functions suck anyways, rely on physics engine instead
+
 local OpenDoors = function(includeGate)
     local oldteam = nil
     if #Teams.Guards:GetPlayers() >= 8 and not (LocalPlayer.TeamColor == BrickColor.new("Bright blue")) then
@@ -1319,7 +1325,7 @@ local OpenDoors = function(includeGate)
         end
     end
 end
---I'm so int-ellie-gent omfg no way my fly is compatible for both pc and mobile users
+
 local Flight = function(args)
     local CModule = not LocPL.ShittyExecutor and require(LocalPlayer.PlayerScripts:FindFirstChild("PlayerModule"):FindFirstChild("ControlModule")) or Services.UserInputService
     local speed, Charadd, ExitButton = args or 5, nil, nil
@@ -1539,7 +1545,7 @@ local BringCar = function(args, usedcar, policecar)
     Stopped = nil
     return Car
 end
---I know you skidded my bring, you think i wouldnt notice?
+
 local BringPL = function(BringFrom, Destination, isCFrame, donotusecar, dontbreakyet)
     if BringFrom.TeamColor == BrickColor.new("Medium stone grey") or not (BringFrom.Character and BringFrom.Character:FindFirstChildOfClass("Humanoid") and BringFrom.Character:FindFirstChildOfClass("Humanoid").Health ~= 0) then
         Notif("Error", "Cannot bring this player. Either dead or is in neutrals team.")
@@ -1714,6 +1720,7 @@ local BringPL = function(BringFrom, Destination, isCFrame, donotusecar, dontbrea
         end
     end
 end
+
 --Arrest/Tase
 local ArrestPL = function(args, savepos, isHidden)
     SavedPositions.ArrestPlr = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
@@ -1939,7 +1946,7 @@ local MakeCrim = function(args, savepos, tpback, ArrestLater)
         end
     end
 end
---yes, this function is very useless
+
 local SpamArrestPL = function(args)
     if States.AnnoyingPlayer then
         local plr = args
@@ -2110,7 +2117,7 @@ local MeleeKill = function(args, savepos, isHidden)
         LocTP(SavedPositions.MeleeKill)
     end
 end
---Wow what a totally useful function
+
 local PunchKill = function(args, speed)
     local Interval = speed or 0.3
     local lastpos = LocalPlayer.Character:FindFirstChild("HumanoidRootPart").CFrame
