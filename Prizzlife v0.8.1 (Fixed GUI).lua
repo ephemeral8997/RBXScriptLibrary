@@ -53,15 +53,7 @@ local PLadmin_Defaults = {
 
 local Execution_Runtime = Execution_Runtime or tick()
 local PLadmin_Settings = PLadmin_Settings or {}
-setmetatable(PLadmin_Settings, {
-    __index = function(tbl, key)
-        if tbl[key] ~= nil then
-            return tbl[key]
-        else
-            return PLadmin_Defaults[key]
-        end
-    end,
-})
+setmetatable(PLadmin_Settings, { __index = PLadmin_Defaults })
 
 -- services
 local Services = setmetatable({}, {
