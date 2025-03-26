@@ -3,9 +3,6 @@
 --// Fixed, refined, and optimized by ephemeral8997
 --// based on concepts from Wrath Admin, Tiger Admin, Jupiter, Chaos Admin, and local player scripts
 
-local Execution_Runtime = Execution_Runtime or tick()
-local PLadmin_Settings = PLadmin_Settings or {}
-
 local PLadmin_Defaults = {
     DefaultPrefix = "?",
     JoinNotify = false,
@@ -29,19 +26,13 @@ local PLadmin_Defaults = {
     WhisperToRanked = true,
 }
 
--- remove any extras
-for key in pairs(PLadmin_Settings) do
-    if PLadmin_Defaults[key] == nil then
-        PLadmin_Settings[key] = nil
-    end
-end
+local Execution_Runtime = Execution_Runtime or tick()
+local PLadmin_Settings = PLadmin_Settings or {}
 
--- default to PLadmin_Defaults
-for key, value in pairs(PLadmin_Defaults) do
-    if PLadmin_Settings[key] == nil then
-        PLadmin_Settings[key] = value
-    end
-end
+-- remove any extras
+setmetatable(PLadmin_Settings, {
+    __index = PLadmin_Defaults,
+})
 
 -- services
 local Services = setmetatable({}, {
