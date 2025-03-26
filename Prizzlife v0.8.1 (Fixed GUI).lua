@@ -28,8 +28,6 @@ local PLadmin_Defaults = {
 
 local Execution_Runtime = Execution_Runtime or tick()
 local PLadmin_Settings = PLadmin_Settings or {}
-
--- remove any extras
 setmetatable(PLadmin_Settings, {
     __index = PLadmin_Defaults,
 })
