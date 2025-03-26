@@ -4,26 +4,51 @@
 --// based on concepts from Wrath Admin, Tiger Admin, Jupiter, Chaos Admin, and local player scripts
 
 local PLadmin_Defaults = {
+    -- Prefix & Notifs
     DefaultPrefix = "?",
     JoinNotify = false,
-    AutoRespawn = false,
-    AntiVoid = false,
+
+    -- Respawn & Antis
+    AutoRespawn = true,
+    AntiVoid = true,
     AntiTase = false,
     AntiArrest = false,
     AntiShoot = false,
     AntiPunch = false,
     AntiFling = false,
+
+    -- Protection
     AntiShield = true,
     AntiBring = false,
+    AntiCheat = true,
+
+    -- Aim & View
     SilentAim = false,
     AutoGuns = false,
     OldItemMethod = false,
-    Fullbright = true,
+    Fullbright = false,
+
+    -- Ranking
+    WhisperToRanked = true,
     WhitelistRanked = false,
     RankedNukeCmds = false,
     RankedMultiCmd = false,
     RankedOutput = true,
-    WhisperToRanked = true,
+    RankedKillCmds = true,
+    RankedLoopCmds = true,
+    RankedTaseCmds = true,
+    RankedArrestCmds = true,
+    RankedNukeCmds = true,
+    RankedFlingCmds = true,
+    RankedAuraCmds = true,
+    RankedTPCmds = true,
+    RankedTrapCmds = true,
+    RankedCarSpawnCmds = true,
+    RankedOpendoorsCmds = true,
+    RankedAllowPowers = true,
+    RankedGivePowers = true,
+    RankedCrashCmds = false,
+    RankedGiveCmds = false,
 }
 
 local Execution_Runtime = Execution_Runtime or tick()
