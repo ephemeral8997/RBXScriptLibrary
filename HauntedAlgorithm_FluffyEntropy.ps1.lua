@@ -3,7 +3,7 @@
 --// Fixed, refined, and optimized by ephemeral8997
 --// based on concepts from Wrath Admin, Tiger Admin, Jupiter, Chaos Admin, and local player scripts
 
-local PLadmin_Defaults = {
+local Diddy_Defaults = {
     -- Prefix & Notifs
     DefaultPrefix = "?",
     JoinNotify = false,
@@ -52,8 +52,8 @@ local PLadmin_Defaults = {
 }
 
 local Execution_Runtime = Execution_Runtime or tick()
-local PLadmin_Settings = PLadmin_Settings or {}
-setmetatable(PLadmin_Settings, { __index = PLadmin_Defaults })
+local Diddy_Settings = Diddy_Settings or {}
+setmetatable(Diddy_Settings, { __index = Diddy_Defaults })
 
 -- services
 local Services = setmetatable({}, {
@@ -10538,7 +10538,7 @@ task.spawn(function()
     LocPL.UID = tonumber((LocalPlayer.CharacterAppearance):split("=")[#((LocalPlayer.CharacterAppearance):split("="))])
     LocPL.UIN = LocalPlayer.Character.Name
 
-    local set = PLadmin_Settings
+    local set = Diddy_Settings
     if set and next(set) then
         Settings.JoinNotify = set.JoinNotify
         Toggles.AutoRespawn = set.AutoRespawn
@@ -10570,7 +10570,7 @@ task.spawn(function()
         tasking()
     end
 
-    local TPrefix = PLadmin_Settings and tostring(PLadmin_Settings.DefaultPrefix) or "?"
+    local TPrefix = Diddy_Settings and tostring(Diddy_Settings.DefaultPrefix) or "?"
 
     AddList("Diddy: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false)
     AddList("prefix [Prefix]", "Changes prefix (Default set to " .. TPrefix .. ")", false) --V
