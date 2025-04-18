@@ -10530,16 +10530,24 @@ Connections.LocalPlayerMouse = LocalPlayer:GetMouse().Button1Down:Connect(functi
 end)
 
 task.spawn(function()
-    if LocalPlayer.Character:FindFirstChildOfClass("Humanoid") and LocalPlayer.Character.Humanoid.Health == 0 then
+    local char = LocalPlayer.Character
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and humanoid.Health == 0 then
         task.spawn(ondiedevent)
     else
         task.spawn(oncharadded)
     end
-    LocPL.UID = tonumber((LocalPlayer.CharacterAppearance):split("=")[#((LocalPlayer.CharacterAppearance):split("="))])
-    LocPL.UIN = LocalPlayer.Character.Name
+
+    local splitCharApp = LocalPlayer.CharacterAppearance:split("=")
+    LocPL.UID = tonumber(splitCharApp[#splitCharApp])
+    LocPL.UIN = char.Name
 
     local set = Diddy_Settings
     if set and next(set) then
+        local ranked = Settings.Ranked
+        local user = Settings.User
+
         Settings.JoinNotify = set.JoinNotify
         Toggles.AutoRespawn = set.AutoRespawn
         States.AntiVoid = set.AntiVoid
@@ -10551,328 +10559,335 @@ task.spawn(function()
         Toggles.AntiShield = set.AntiShield
         Toggles.Silentaim = set.SilentAim
         Toggles.AutoGuns = set.AutoGuns
-        Settings.User.OldItemMethod = set.OldItemMethod
-        Settings.Ranked.AutoWhitelist = set.WhitelistRanked
-        Settings.Ranked.Nuke = set.RankedNukeCmds
-        Settings.Ranked.MultiCmd = set.RankedMultiCmd
-        Settings.Ranked.Output = set.RankedOutput
-        Settings.Ranked.WhisperMode = set.WhisperToRanked
+        user.OldItemMethod = set.OldItemMethod
+        ranked.AutoWhitelist = set.WhitelistRanked
+        ranked.Nuke = set.RankedNukeCmds
+        ranked.MultiCmd = set.RankedMultiCmd
+        ranked.Output = set.RankedOutput
+        ranked.WhisperMode = set.WhisperToRanked
         SavedArgs.UseMobileGui = set.Force_isMobile
         States.Fullbright = set.Fullbright
         Toggles.AntiBring = set.AntiBring
-        Prefix = set.DefaultPrefix or Prefix
+        Prefix = set.DefaultPrefix
         Settings.PrintDebug = set.PrintDebug or Settings.PrintDebug
     else
         warn("Tamper/ShittyExecutor detected")
     end
-    set = nil
+
     for _, tasking in pairs(Threads) do
         tasking()
     end
 
-    local TPrefix = Diddy_Settings and tostring(Diddy_Settings.DefaultPrefix) or "?"
+    local TPrefix = set and tostring(set.DefaultPrefix)
 
-    AddList("Diddy: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false)
-    AddList("prefix [Prefix]", "Changes prefix (Default set to " .. TPrefix .. ")", false) --V
-    AddList("KILL CMDS", false, true) --KILL CMDS
-    AddList("kill / oof / die [plr,random,team,all]", "Kills selected player(s)", false) --V
-    AddList("meleekill / mkill [plr,random,team,all]", "Kills selected player(s) using meleeEvent(s)", false) --V
-    AddList("hkill / hmk [plr,random,team,all]", "meleekill but hidden underground so no one can see it", false) --V
-    AddList("punchkill / pkill [plr,random,team,all] [interval]", "Kills player(s) by punching them to death", false) --V, wow what a very useful command!
-    AddList("voidkill / vkill [plr,random]", "Kills player by teleporting them under the void", false) --V
-    AddList("damage / dmg [plr,random,all] [dmg=1-10]", "Self explanatory, going higher may crash server!", false) --V
-    AddList("shootkill / skill [plr,random,team,all]", "Shoots selected player(s) and kills them", false) --V
-    AddList("loopkill / lk [plr,team,all]", "Loops killing player(s)", false) --V
-    AddList("unloopkill / unlk [plr,team,all]", "Stops loop-killing player(s)", false) --V
-    AddList("meleelk / mlk [plr,random,hostiles,team,all]", "Melee-loopkills player(s)", false) --V
-    AddList("unmeleelk / unmlk [plr,hostiles,team,all]", "Stops melee-killing player(s)", false) --V
-    AddList("lpunchkill / lpkill [plr,random,team,all]", "Loops punch-kill a selected player(s)", false) --V
-    AddList("unlpunchkill / unlpkill [plr,all]", "Stops punch-killing player(s)", false) --V
-    AddList("lvoidkill / lvkill / lvk [plr,random]", "Loop void-kill player.", false) --V
-    AddList("unlvoidkill / unlvkill / unlvk [plr,all]", "Stop loop-void killing player(s)", false) --V
-    AddList("randomkill / rkill [plr,random,team,all]", "Randomly kill selected player(s)", false) --V
-    AddList("unrandomkill / unrkill [plr,all]", "Stop randomly killing player(s)", false) --V
-    AddList("shootlk / slk [plr,team,random,all]", "Repeatedly shoot-kill player(s)", false) --V
-    AddList("unshootlk / unslk [plr,all]", "Stop repeatedly shoot-killing player(s)", false) --V
-    AddList("killaura / kaura [plr,random]", "Other player(s) near the selected player dies", false) --V
-    AddList("virus / killtouch [plr,random,all]", "Other player(s) who touches the selected player dies", false) --V
-    AddList("unkillaura / unkaura [plr,all]", "Removes killaura(s) from player(s)", false) --V
-    AddList("unvirus / unkilltouch [plr,all]", "Removes antitouch from player(s)", false) --V
-    AddList("tkillaura / tka [team,enemies]", "Killaura but only for a selected team(s), uses meleeEvent(s)", false) --V
-    AddList("untkillaura / untka [team,enemies,all]", "Stops killaura to selected team(s)", false) --V
-    AddList("meleeaura / maura [boolean]", "Killaura but using meleeEvent(s)", false) --V
-    AddList("meleetouch / mtouch [boolean]", "Killtouch but using meleeEvent(s)", false) --V
-    AddList("launchnuke / lnuke [plr,random] [radius] [time]", "Launch a nuke near a player with radius", false) --V
-    AddList("deathnuke / dnuke [plr,random]", "If that selected player dies, everyone dies", false) --V
-    AddList("undeathnuke / undnuke [plr,all]", "Removes deathnuke", false) --V
-    AddList("detroit / ohio", "If a player dies, everyone dies.", false) --V
-    AddList("undetroit / unohio", "Stop ohio mode", false) --V
-    AddList("autokill / akill [hostile,shielduser,handcuffer,taser]", "Automatically kill SPECIFIC player(s)", false) --V
-    AddList("unautokill / unakill [hostile,shielduser,handcuffer,taser,all]", "Stops automatically killing players accordingly", false) --V
-    AddList("lpunch", "Teleport to players and punch them for no reason", false) --V
-    AddList("unlpunch", "Stop punching players for no reason", false) --V
+    local CommandList = {
+        { "Diddy: discord.gg/EjVQCdH6W6", "If you accidentally lose the gui, type /revert in chat", false },
+        { "prefix [Prefix]", "Changes prefix (Default set to " .. TPrefix .. ")", false }, --V
+        { "KILL CMDS", false, true }, --KILL CMDS
+        { "kill / oof / die [plr,random,team,all]", "Kills selected player(s)", false }, --V
+        { "meleekill / mkill [plr,random,team,all]", "Kills selected player(s) using meleeEvent(s)", false }, --V
+        { "hkill / hmk [plr,random,team,all]", "meleekill but hidden underground so no one can see it", false }, --V
+        { "punchkill / pkill [plr,random,team,all] [interval]", "Kills player(s) by punching them to death", false }, --V, wow what a very useful command!
+        { "voidkill / vkill [plr,random]", "Kills player by teleporting them under the void", false }, --V
+        { "damage / dmg [plr,random,all] [dmg=1-10]", "Self explanatory, going higher may crash server!", false }, --V
+        { "shootkill / skill [plr,random,team,all]", "Shoots selected player(s) and kills them", false }, --V
+        { "loopkill / lk [plr,team,all]", "Loops killing player(s)", false }, --V
+        { "unloopkill / unlk [plr,team,all]", "Stops loop-killing player(s)", false }, --V
+        { "meleelk / mlk [plr,random,hostiles,team,all]", "Melee-loopkills player(s)", false }, --V
+        { "unmeleelk / unmlk [plr,hostiles,team,all]", "Stops melee-killing player(s)", false }, --V
+        { "lpunchkill / lpkill [plr,random,team,all]", "Loops punch-kill a selected player(s)", false }, --V
+        { "unlpunchkill / unlpkill [plr,all]", "Stops punch-killing player(s)", false }, --V
+        { "lvoidkill / lvkill / lvk [plr,random]", "Loop void-kill player.", false }, --V
+        { "unlvoidkill / unlvkill / unlvk [plr,all]", "Stop loop-void killing player(s)", false }, --V
+        { "randomkill / rkill [plr,random,team,all]", "Randomly kill selected player(s)", false }, --V
+        { "unrandomkill / unrkill [plr,all]", "Stop randomly killing player(s)", false }, --V
+        { "shootlk / slk [plr,team,random,all]", "Repeatedly shoot-kill player(s)", false }, --V
+        { "unshootlk / unslk [plr,all]", "Stop repeatedly shoot-killing player(s)", false }, --V
+        { "killaura / kaura [plr,random]", "Other player(s) near the selected player dies", false }, --V
+        { "virus / killtouch [plr,random,all]", "Other player(s) who touches the selected player dies", false }, --V
+        { "unkillaura / unkaura [plr,all]", "Removes killaura(s) from player(s)", false }, --V
+        { "unvirus / unkilltouch [plr,all]", "Removes antitouch from player(s)", false }, --V
+        { "tkillaura / tka [team,enemies]", "Killaura but only for a selected team(s), uses meleeEvent(s)", false }, --V
+        { "untkillaura / untka [team,enemies,all]", "Stops killaura to selected team(s)", false }, --V
+        { "meleeaura / maura [boolean]", "Killaura but using meleeEvent(s)", false }, --V
+        { "meleetouch / mtouch [boolean]", "Killtouch but using meleeEvent(s)", false }, --V
+        { "launchnuke / lnuke [plr,random] [radius] [time]", "Launch a nuke near a player with radius", false }, --V
+        { "deathnuke / dnuke [plr,random]", "If that selected player dies, everyone dies", false }, --V
+        { "undeathnuke / undnuke [plr,all]", "Removes deathnuke", false }, --V
+        { "detroit / ohio", "If a player dies, everyone dies.", false }, --V
+        { "undetroit / unohio", "Stop ohio mode", false }, --V
+        { "autokill / akill [hostile,shielduser,handcuffer,taser]", "Automatically kill SPECIFIC player(s)", false }, --V
+        { "unautokill / unakill [hostile,shielduser,handcuffer,taser,all]", "Stops automatically killing players accordingly", false }, --V
+        { "lpunch", "Teleport to players and punch them for no reason", false }, --V
+        { "unlpunch", "Stop punching players for no reason", false }, --V
 
-    AddList("ARREST/TAZE CMDS", false, true) -- ARREST AND TAZE COMMANDS
-    AddList("arrest / ar [plr,random,team,all]", "Arrests selected player(s)", false) --V
-    AddList("harrest / har [plr,random,team,all]", "Arrest player but hidden underground", false) --V
-    AddList("spamarrest / annoy / sa [plr,random]", "Spams arrest player to the point they get annoyed", false) --V
-    AddList("unspamarrest / unannoy / unsa", "Stop spam-arresting player.", false) --V
-    AddList("tase / ta [plr,random,team,all]", "Taze selected player(s)", false) --V
-    AddList("arrestaura / aaura [boolean]", "Automatically arrest players near you", false) --V
-    AddList("taseaura / taura [plr,random]", "Other player(s) near the selected player gets tased", false) --V
-    AddList("untaseaura / untaura [plr,all]", "Remove tase-aura from player(s)", false) --V
-    AddList("makecrim / crim [plr,random,team,all]", "Turn selected player(s) to criminal", false) --V
-    AddList("crimpad / cpad [plr,random]", "Teleport selected player to crimpad", false) --V
-    AddList("loopcrim / lcrim [plr,random,all]", "Automatically turn player(s) into criminal", false) --V
-    AddList("unloopcrim / unlcrim [plr,all]", "Stop making player(s) into criminal", false) --V
-    AddList("looptase / lta [plr,random,team,all]", "Loops tase selected player(s)", false) --V
-    AddList("unlooptase / unlta [plr,team,all]", "Stops loop-tasing selected player(s)", false) --V
-    AddList("looparrest / lar [plr,random,team,all]", "Loops arresting selected player(s)", false) --V
-    AddList("autoarrest / autoar [plr,all]", "Automatically arrest player(s) in illegal region", false) --V
-    AddList("unlooparrest / unlar [plr,team,all]", "Stops loop arresting selected player(s)", false) --V
-    AddList("unautoarrest / unaar [plr,all]", "Stops auto-arresting selected player(s)", false) --V
+        { "ARREST/TAZE CMDS", false, true }, -- ARREST AND TAZE COMMANDS
+        { "arrest / ar [plr,random,team,all]", "Arrests selected player(s)", false }, --V
+        { "harrest / har [plr,random,team,all]", "Arrest player but hidden underground", false }, --V
+        { "spamarrest / annoy / sa [plr,random]", "Spams arrest player to the point they get annoyed", false }, --V
+        { "unspamarrest / unannoy / unsa", "Stop spam-arresting player.", false }, --V
+        { "tase / ta [plr,random,team,all]", "Taze selected player(s)", false }, --V
+        { "arrestaura / aaura [boolean]", "Automatically arrest players near you", false }, --V
+        { "taseaura / taura [plr,random]", "Other player(s) near the selected player gets tased", false }, --V
+        { "untaseaura / untaura [plr,all]", "Remove tase-aura from player(s)", false }, --V
+        { "makecrim / crim [plr,random,team,all]", "Turn selected player(s) to criminal", false }, --V
+        { "crimpad / cpad [plr,random]", "Teleport selected player to crimpad", false }, --V
+        { "loopcrim / lcrim [plr,random,all]", "Automatically turn player(s) into criminal", false }, --V
+        { "unloopcrim / unlcrim [plr,all]", "Stop making player(s) into criminal", false }, --V
+        { "looptase / lta [plr,random,team,all]", "Loops tase selected player(s)", false }, --V
+        { "unlooptase / unlta [plr,team,all]", "Stops loop-tasing selected player(s)", false }, --V
+        { "looparrest / lar [plr,random,team,all]", "Loops arresting selected player(s)", false }, --V
+        { "autoarrest / autoar [plr,all]", "Automatically arrest player(s) in illegal region", false }, --V
+        { "unlooparrest / unlar [plr,team,all]", "Stops loop arresting selected player(s)", false }, --V
+        { "unautoarrest / unaar [plr,all]", "Stops auto-arresting selected player(s)", false }, --V
 
-    AddList("ITEMS/GUNS/MOD CMDS", false, true) -- ITEMS AND GUNS COMMANDS
-    AddList("ak / ak47", "Obtain the gun AK-47", false) --V
-    AddList("remington / shotgun / rem", "Obtain the gun Remington 870", false) --V
-    AddList("m9 / pistol", "Obtain the gun M9", false) --V
-    AddList("m4 / m4a1", "Obtain the gun M4A1 (REQUIRES GAMEPASS)", false) --V
-    AddList("hammer / ham", "Obtain hammer in the yard", false) --V
-    AddList("knife / knive", "Obtain knife in the yard", false) --V
-    AddList("givekey / gkey [plr]", "Gives player or you keycard", false) --V
-    AddList("autokey / autokeycard [boolean]", "Automatically gives you keycard", false) --V
-    AddList("superknife / sknife", "Obtain and make knife one-shot", false) --V
-    AddList("riotshield / shield", "Obtain RiotShield (REQUIRES GAMEPASS AND GUARDS TEAM)", false) --V
-    AddList("skimask / mask", "Puts on ski-mask (REQUIRES GAMEPASS)", false) --V
-    AddList("riothelmet / helmet", "Puts on riot helmet (REQUIRES GAMEPASS)", false) --V
-    AddList("riotarmor / armor", "Puts on riot armor (REQUIRES GAMEPASS)", false) --V
-    AddList("food / dinner", "Obtains food tray from cafeteria", false) --V
-    AddList("bat / baseballbat", "Client sided baseball bat", false) --V
-    AddList("guns / allguns", "Obtain all guns in the game", false) --V
-    AddList("items / allitems", "Obtain all items (including clothes)", false) --V
-    AddList("autoguns / aguns [boolean]", "Automatically gives you guns", false) --V
-    AddList("autoitems / aitems [boolean]", "Automatically get all items/guns", false) --V
-    AddList("autofire [boolean]", "Make guns like remington or m9 automatically fire (Mouse ONLY)", false) --V
-    AddList("firerate / fastfire", "Makes guns shoot faster", false) --V
-    AddList("autofirerate / affr [boolean]", "Automatically apply faster fire rate to gun(s)", false) --V
-    AddList("infammo / infa", "Applies infinite ammo to gun (Must be equipped)", false) --V
-    AddList("gunmods / opgun", "Applies all gun mods to the selected gun (Gun must be equipped)", false) --V
-    AddList("autogunmod / agm [boolean]", "Automatically apply all gun mods", false) --V
-    AddList("autoinfammo / ainfa [boolean]", "Automatically apply infinite ammo to all gun(s)", false) --V
-    AddList("headshot / hshot [boolean]", "Always headshot players even through walls", false) --V
-    AddList("silentaim / saim [boolean]", "Headshot but more legit and not go through walls", false) --V
-    AddList("loot / pinata", "Makes you poop out free loot (Guns/Key)", false) --V
-    AddList("unloot / unpinata", "Stops pooping out free loot", false) --V
+        { "ITEMS/GUNS/MOD CMDS", false, true }, -- ITEMS AND GUNS COMMANDS
+        { "ak / ak47", "Obtain the gun AK-47", false }, --V
+        { "remington / shotgun / rem", "Obtain the gun Remington 870", false }, --V
+        { "m9 / pistol", "Obtain the gun M9", false }, --V
+        { "m4 / m4a1", "Obtain the gun M4A1 (REQUIRES GAMEPASS)", false }, --V
+        { "hammer / ham", "Obtain hammer in the yard", false }, --V
+        { "knife / knive", "Obtain knife in the yard", false }, --V
+        { "givekey / gkey [plr]", "Gives player or you keycard", false }, --V
+        { "autokey / autokeycard [boolean]", "Automatically gives you keycard", false }, --V
+        { "superknife / sknife", "Obtain and make knife one-shot", false }, --V
+        { "riotshield / shield", "Obtain RiotShield (REQUIRES GAMEPASS AND GUARDS TEAM)", false }, --V
+        { "skimask / mask", "Puts on ski-mask (REQUIRES GAMEPASS)", false }, --V
+        { "riothelmet / helmet", "Puts on riot helmet (REQUIRES GAMEPASS)", false }, --V
+        { "riotarmor / armor", "Puts on riot armor (REQUIRES GAMEPASS)", false }, --V
+        { "food / dinner", "Obtains food tray from cafeteria", false }, --V
+        { "bat / baseballbat", "Client sided baseball bat", false }, --V
+        { "guns / allguns", "Obtain all guns in the game", false }, --V
+        { "items / allitems", "Obtain all items (including clothes)", false }, --V
+        { "autoguns / aguns [boolean]", "Automatically gives you guns", false }, --V
+        { "autoitems / aitems [boolean]", "Automatically get all items/guns", false }, --V
+        { "autofire [boolean]", "Make guns like remington or m9 automatically fire (Mouse ONLY)", false }, --V
+        { "firerate / fastfire", "Makes guns shoot faster", false }, --V
+        { "autofirerate / affr [boolean]", "Automatically apply faster fire rate to gun(s)", false }, --V
+        { "infammo / infa", "Applies infinite ammo to gun (Must be equipped)", false }, --V
+        { "gunmods / opgun", "Applies all gun mods to the selected gun (Gun must be equipped)", false }, --V
+        { "autogunmod / agm [boolean]", "Automatically apply all gun mods", false }, --V
+        { "autoinfammo / ainfa [boolean]", "Automatically apply infinite ammo to all gun(s)", false }, --V
+        { "headshot / hshot [boolean]", "Always headshot players even through walls", false }, --V
+        { "silentaim / saim [boolean]", "Headshot but more legit and not go through walls", false }, --V
+        { "loot / pinata", "Makes you poop out free loot (Guns/Key)", false }, --V
+        { "unloot / unpinata", "Stops pooping out free loot", false }, --V
 
-    AddList("FLING CMDS", false, true) -- Flinger commands
-    AddList("antifling / afling [boolean]", "Prevents other exploiter(s) from flinging you", false) --V
-    AddList("fling / flung [plr,random,all]", "Flings selected player(s) using velocity", false) --V
-    AddList("loopfling / lfling [plr,random,all]", "Loop-flinging selected player(s)", false) --V
-    AddList("unloopfling / unfling [plr,all]", "Stops loop-flinging selected player(s)", false) --V
-    AddList("sfling / carfling [plr,random,all]", "Fling player while using a car to do it", false) --V
-    AddList("loopcarfling / lsfling [plr,random]", "Loops carfling on selected player(s)", false) --V
-    AddList("unloopcarfling / unlsfling [plr,all]", "Stops loop-carflinging player(s)", false) --V
-    AddList("touchfling / tfling", "Fling people you touch, must touch with humanoidrootpart", false) --V
-    AddList("untouchfling / untfling", "Stops touch-flinging people", false) --V
-    AddList("antivelocity / avelo", "Prevent velocity from physics step (VERY LAGGY, Use at ur own risk!)", false) --B
+        { "FLING CMDS", false, true }, -- Flinger commands
+        { "antifling / afling [boolean]", "Prevents other exploiter(s) from flinging you", false }, --V
+        { "fling / flung [plr,random,all]", "Flings selected player(s) using velocity", false }, --V
+        { "loopfling / lfling [plr,random,all]", "Loop-flinging selected player(s)", false }, --V
+        { "unloopfling / unfling [plr,all]", "Stops loop-flinging selected player(s)", false }, --V
+        { "sfling / carfling [plr,random,all]", "Fling player while using a car to do it", false }, --V
+        { "loopcarfling / lsfling [plr,random]", "Loops carfling on selected player(s)", false }, --V
+        { "unloopcarfling / unlsfling [plr,all]", "Stops loop-carflinging player(s)", false }, --V
+        { "touchfling / tfling", "Fling people you touch, must touch with humanoidrootpart", false }, --V
+        { "untouchfling / untfling", "Stops touch-flinging people", false }, --V
+        { "antivelocity / avelo", "Prevent velocity from physics step (VERY LAGGY, Use at ur own risk!)", false }, --B
 
-    AddList("LOCAL CMDS", false, true) -- Local-only commands
-    AddList("rejoin / rj", "Rejoin the server (Unloads script)", false) --V
-    AddList("serverhop / svhop", "Find and join another server", false) --V
-    AddList("antibring / antisit [boolean]", "Prevent exploiter(s) car bring", false) --V
-    AddList("antishield / antipay2win [boolean]", "Prevent shields from pay2win players", false) --V
-    AddList("nodoors / rdoors", "Removes all doors in client side", false) --V
-    AddList("nowalls / rwalls", "Removes all walls in client side", false) --V
-    AddList("rewalls / walls", "Adds walls back in client side", false) --
-    AddList("redoors / doors", "Adds all doors back to client side", false) --V
-    AddList("autorespawn / autore [boolean]", "Toggles autorespawn to true or false", false) --V
-    AddList("refresh / ref", "Refresh character", false) --V
-    AddList("respawn / resp", "Respawn character (Does not save position)", false) --V
-    AddList("reset / res", "Reset character (Human.Died)", false) --V
-    AddList("runspeed [number]", "Changes the speed when running", false) --V
-    AddList("fly / flight [speed]", "Makes you or a car fly (works in mobile)", false) --V
-    AddList("unfly / noflight", "Stops flying or stops car fly", false) --V
-    AddList("speed [number]", "Changes your walkspeed", false) --V
-    AddList("loopspeed / lspeed [number]", "Always changes your walkspeed to (Number)", false) --V
-    AddList("noclip / noclip", "Ability to walk through walls like its nothing", false) --V
-    AddList("jumppower / jump [number]", "Changes how high you jump", false) --V
-    AddList("ljumppower / ljump [number]", "Always changes your jump-power to (Number)", false) --V
-    AddList("unloopspeed / unlspeed", "Stops changing speed", false) --V
-    AddList("unljumppower / unljump", "Stops changing jump-power", false) --V
-    AddList("unnoclip / clip", "Disables the ability to walk through walls", false) --V
-    AddList("infinitejump / infjump [boolean]", "Toggles infinite jumps", false) --V
-    AddList("spin [speed]", "Makes you spin (Looped)", false) --V
-    AddList("unspin", "Stops making you spin", false) --V
-    AddList("orbit [plr,random] [speed] [radius]", "Become a planet and orbit a player.", false) --V
-    AddList("unorbit", "Stop orbiting a player", false) --V
-    AddList("btools / btool", "Obtain client-sided btools", false) --V
-    AddList("esp / wallvision [boolean]", "Extra Sensory Perception, see players root through walls", false) --V
-    AddList("invisible / ghost", "Become invisible to other player(s)", false) --B
-    AddList("visible / unghost", "Become visible again to other players", false) --B
-    AddList("antivoid / avoid [boolean]", "Prevent falling in the void (Enabled by default)", false) --V
-    AddList("fullbright / fb [boolean]", "Toggle full brightness / always day", false) --V
-    AddList("noboard / nbr [boolean]", "Disables the leaderboard for tablet users to use punch button", false) --V
-    AddList("mobilegui / mgui [boolean]", "Toggle mobile action gui (Punch/Crawl buttons)", false) --V
+        { "LOCAL CMDS", false, true }, -- Local-only commands
+        { "rejoin / rj", "Rejoin the server (Unloads script)", false }, --V
+        { "serverhop / svhop", "Find and join another server", false }, --V
+        { "antibring / antisit [boolean]", "Prevent exploiter(s) car bring", false }, --V
+        { "antishield / antipay2win [boolean]", "Prevent shields from pay2win players", false }, --V
+        { "nodoors / rdoors", "Removes all doors in client side", false }, --V
+        { "nowalls / rwalls", "Removes all walls in client side", false }, --V
+        { "rewalls / walls", "Adds walls back in client side", false }, --
+        { "redoors / doors", "Adds all doors back to client side", false }, --V
+        { "autorespawn / autore [boolean]", "Toggles autorespawn to true or false", false }, --V
+        { "refresh / ref", "Refresh character", false }, --V
+        { "respawn / resp", "Respawn character (Does not save position)", false }, --V
+        { "reset / res", "Reset character (Human.Died)", false }, --V
+        { "runspeed [number]", "Changes the speed when running", false }, --V
+        { "fly / flight [speed]", "Makes you or a car fly (works in mobile},", false }, --V
+        { "unfly / noflight", "Stops flying or stops car fly", false }, --V
+        { "speed [number]", "Changes your walkspeed", false }, --V
+        { "loopspeed / lspeed [number]", "Always changes your walkspeed to (Number)", false }, --V
+        { "noclip / noclip", "Ability to walk through walls like its nothing", false }, --V
+        { "jumppower / jump [number]", "Changes how high you jump", false }, --V
+        { "ljumppower / ljump [number]", "Always changes your jump-power to (Number)", false }, --V
+        { "unloopspeed / unlspeed", "Stops changing speed", false }, --V
+        { "unljumppower / unljump", "Stops changing jump-power", false }, --V
+        { "unnoclip / clip", "Disables the ability to walk through walls", false }, --V
+        { "infinitejump / infjump [boolean]", "Toggles infinite jumps", false }, --V
+        { "spin [speed]", "Makes you spin (Looped)", false }, --V
+        { "unspin", "Stops making you spin", false }, --V
+        { "orbit [plr,random] [speed] [radius]", "Become a planet and orbit a player.", false }, --V
+        { "unorbit", "Stop orbiting a player", false }, --V
+        { "btools / btool", "Obtain client-sided btools", false }, --V
+        { "esp / wallvision [boolean]", "Extra Sensory Perception, see players root through walls", false }, --V
+        { "invisible / ghost", "Become invisible to other player(s)", false }, --B
+        { "visible / unghost", "Become visible again to other players", false }, --B
+        { "antivoid / avoid [boolean]", "Prevent falling in the void (Enabled by default)", false }, --V
+        { "fullbright / fb [boolean]", "Toggle full brightness / always day", false }, --V
+        { "noboard / nbr [boolean]", "Disables the leaderboard for tablet users to use punch button", false }, --V
+        { "mobilegui / mgui [boolean]", "Toggle mobile action gui (Punch/Crawl buttons)", false }, --V
 
-    AddList("POWERS/DEFENSE", false, true) --POWERS AND DEFENSE
-    AddList("onepunch / opunch [boolean]", "One-punch any player.", false) --V
-    AddList("oneshot / oshot [boolean]", "One-shot players instantly", false) --V
-    AddList("punchaura / paura [boolean]", "Increases punch range to 15 studs", false) --V
-    AddList("spampunch / spunch [boolean]", "Spam punch when holding the punch button", false) --V
-    AddList("friendlyfire / ffire [boolean]", "Automatically changes to a different team when shooting a teammate", false) --V
-    AddList("antishoot / ashoot [boolean]", "Shoots back player(s) who try to shoot you.", false) --V
-    AddList("antipunch / apunch [boolean]", "Any players who try to punch you dies", false) --V
-    AddList("antiarrest / aar [boolean]", "Prevents you from being arrested", false) --V
-    AddList("antitase / atase [boolean]", "Prevents you from being tased", false) --V
-    AddList("arrestback / arb [boolean]", "If a guard tries to arrest you, they get arrested back", false) --V
-    --AddList("refresharrest / rantiar", "Anti-arrest but refreshes your character instead", false) --Useless command?
+        { "POWERS/DEFENSE", false, true }, --POWERS AND DEFENSE
+        { "onepunch / opunch [boolean]", "One-punch any player.", false }, --V
+        { "oneshot / oshot [boolean]", "One-shot players instantly", false }, --V
+        { "punchaura / paura [boolean]", "Increases punch range to 15 studs", false }, --V
+        { "spampunch / spunch [boolean]", "Spam punch when holding the punch button", false }, --V
+        { "friendlyfire / ffire [boolean]", "Automatically changes to a different team when shooting a teammate", false }, --V
+        { "antishoot / ashoot [boolean]", "Shoots back player(s) who try to shoot you.", false }, --V
+        { "antipunch / apunch [boolean]", "Any players who try to punch you dies", false }, --V
+        { "antiarrest / aar [boolean]", "Prevents you from being arrested", false }, --V
+        { "antitase / atase [boolean]", "Prevents you from being tased", false }, --V
+        { "arrestback / arb [boolean]", "If a guard tries to arrest you, they get arrested back", false }, --V
+        --{"refresharrest / rantiar", "Anti-arrest but refreshes your character instead", false}, --Useless command?
 
-    AddList("CLICK CMDS", false, true) -- Click commands
-    AddList("clickkill / ckill [boolean]", "Click to kill player(s)", false) --V
-    AddList("clickarrest / carrest [boolean]", "Click to arrest player(s)", false) --V
-    AddList("clicktase / ctase [boolean]", "Click to tase player(s)", false) --V
-    AddList("clickfling / ckfling [boolean]", "Click to fling player(s)", false) --B
-    AddList("clickgoto / cgoto [boolean]", "Click to teleport to player(s)", false) --V, Very useless
-    AddList("clickbring / ckbring [boolean]", "Click to bring player(s)", false) --V
-    AddList("clickteleport / ctp [boolean]", "Use tool to teleport (Cause mobile)", false) --V
-    AddList("clickteam / ctm [boolean]", "Click to copy a player's team", false) --V
+        { "CLICK CMDS", false, true }, -- Click commands
+        { "clickkill / ckill [boolean]", "Click to kill player(s)", false }, --V
+        { "clickarrest / carrest [boolean]", "Click to arrest player(s)", false }, --V
+        { "clicktase / ctase [boolean]", "Click to tase player(s)", false }, --V
+        { "clickfling / ckfling [boolean]", "Click to fling player(s)", false }, --B
+        { "clickgoto / cgoto [boolean]", "Click to teleport to player(s)", false }, --V, Very useless
+        { "clickbring / ckbring [boolean]", "Click to bring player(s)", false }, --V
+        { "clickteleport / ctp [boolean]", "Use tool to teleport (Cause mobile},", false }, --V
+        { "clickteam / ctm [boolean]", "Click to copy a player's team", false }, --V
 
-    AddList("GIVE/WHITELIST CMDS", false, true) --GIVE COMMANDS
-    AddList("givecmds / gcmds / admin [plr,random,all]", "Gives player(s) 'admin' commands", false) --V
-    AddList("revokecmds / rcmds / unadmin [plr,all]", "Removes/Revokes commands from player(s)", false) --V
-    AddList("whitelist / wl [plr]", "Excludes player from kill commands", false) --V
-    AddList("unwhitelist / unwl [plr,all]", "Removes exclusion from player", false) --V
-    AddList("givepower / gpw [plr] [Power]", "Gives player(s) powers/defense", false) --V
-    AddList("removepower / rpw [plr,all] [Power,all]", "Removes power/defense from player.", false) --V
-    AddList("GPW LIST:", "onepunch, oneshot, punchaura, antipunch, antiarrest, antishoot, friendlyfire", false) --
-    AddList("EXAMPLE USAGE FOR GPW:", "?givepower username onepunch, ?removepower username onepunch", false) --
+        { "GIVE/WHITELIST CMDS", false, true }, --GIVE COMMANDS
+        { "givecmds / gcmds / admin [plr,random,all]", "Gives player(s) 'admin' commands", false }, --V
+        { "revokecmds / rcmds / unadmin [plr,all]", "Removes/Revokes commands from player(s)", false }, --V
+        { "whitelist / wl [plr]", "Excludes player from kill commands", false }, --V
+        { "unwhitelist / unwl [plr,all]", "Removes exclusion from player", false }, --V
+        { "givepower / gpw [plr] [Power]", "Gives player(s) powers/defense", false }, --V
+        { "removepower / rpw [plr,all] [Power,all]", "Removes power/defense from player.", false }, --V
+        { "GPW LIST:", "onepunch, oneshot, punchaura, antipunch, antiarrest, antishoot, friendlyfire", false }, --
+        { "EXAMPLE USAGE FOR GPW:", "?givepower username onepunch, ?removepower username onepunch", false }, --
 
-    AddList("BRING / GOTO / VIEW / TEAM", false, true) --BRING / GOTO CMDS
-    AddList("goto / to [plr,random]", "Teleports you to a selected player.", false) --V
-    AddList("bring / get [plr,random,all]", "Brings player(s) to your location", false) --V
-    AddList("teleport / tp [plr1] [plr2]", "Teleports selected player1 to player2", false) --V
-    AddList("view / spectate [plr,random]", "View a player's POV", false) --V
-    AddList("unview / unspectate [plr]", "Stop viewing player", false) --V
-    AddList("copyteam / antilk / ct [plr]", "Copy a player's team (and prevent them from killing you)", false) --V
-    AddList("uncopyteam / unantilk / unct", "Stop copying the player's team", false) --V
-    AddList("team / t [inmate,guard,criminal,neutral,random]", "Changes your team to the selected team", false) --V
-    AddList("guard / guards / gu", "Alias to team guards", false) --V
-    AddList("inmate / inmates / in", "Alias to team inmates", false) --V
-    AddList("criminal / criminals / cr", "Alias to team criminals", false) --V
-    AddList("neutral / neutrals / ne", "Alias to team neutrals", false) --V
+        { "BRING / GOTO / VIEW / TEAM", false, true }, --BRING / GOTO CMDS
+        { "goto / to [plr,random]", "Teleports you to a selected player.", false }, --V
+        { "bring / get [plr,random,all]", "Brings player(s) to your location", false }, --V
+        { "teleport / tp [plr1] [plr2]", "Teleports selected player1 to player2", false }, --V
+        { "view / spectate [plr,random]", "View a player's POV", false }, --V
+        { "unview / unspectate [plr]", "Stop viewing player", false }, --V
+        { "copyteam / antilk / ct [plr]", "Copy a player's team (and prevent them from killing you)", false }, --V
+        { "uncopyteam / unantilk / unct", "Stop copying the player's team", false }, --V
+        { "team / t [inmate,guard,criminal,neutral,random]", "Changes your team to the selected team", false }, --V
+        { "guard / guards / gu", "Alias to team guards", false }, --V
+        { "inmate / inmates / in", "Alias to team inmates", false }, --V
+        { "criminal / criminals / cr", "Alias to team criminals", false }, --V
+        { "neutral / neutrals / ne", "Alias to team neutrals", false }, --V
 
-    AddList("CRASH/LAG CMDS", false, true) -- CRASH COMMANDS
-    AddList("anticrash / antispike [boolean]", "Disable clientreplicator (Already ON by default)", false) --V
-    AddList("antievent / aevents [boolean]", "Disable onclientevent (Mutes sound and replicateEvent, may crash on shitty executors)", false) --V
-    AddList("crashkill / kcl [plr]", "Kills player and crashes the server", false) --V
-    AddList("servercrash / svcrash", "Crashes the server (Basic M9 Crash)", false) --V
-    AddList("lastresort / lresort", "Crash and kill server with remington (Maybe better than m9)", false) --V
-    AddList("timeout / lagout", "Loops sending shootevents until server timedout", false) --V
-    AddList("tasercrash / tsrcrash", "Crash server using taser (lol)", false) --V
-    AddList("time / tick [stop/resume]", "Slow down time, may crash depending on server load", false) --B
-    AddList("serverlag / svlag [strength]", "Lags the server with strength", false) --V
-    AddList("unsvlag / unserverlag", "Stop lagging the server", false) --V
-    AddList("serverspike / svspike [strength]", "Make server ping spike with strength", false) --V
-    AddList("eventcrash / ecrash", "Powerful Player-Crash for ALL Devices (You need atleast 2GB of RAM, prone to memory-leak)", false) --V
-    AddList("espamlag / elag [amount]", "Loadchar-Lag everyone with amount (Higher number is better)", false) --V
-    AddList("forcecrash / fcrash", "Force all players to freeze (Varies on devices and internet)", false) --B
-    AddList("formidicrash / fmcrash", "Forcecrash but more powerful (Varies on device, and prone to ratelimit)", false) --B
-    AddList("loopfcrash / lfcrash", "Loop-forcing players to crash (Only lastresort if forcecrash doesnt work)", false) --B
-    AddList("unloopfcrash / unlfcrash", "Stops forcing players to crash", false) --B
-    AddList("itemlag / ilag [interval]", "Lag everyone using items (May not work and prone to ratelimit)", false) --G
-    AddList("crashnuke / cnuke [plr,random]", "deathnuke but the server crashes instead (CANNOT UNDO)", false) --V
-    AddList("laggygun / laggun", "Gives you remington 870 that lags the server when fired", false) --G
-    AddList("spike / freeze", "Lag spike everyone (Depends on their device)", false) --V
-    --AddList("placeholdercrash / crash4", "Crashes the server using every single gun", false) --too useless
+        { "CRASH/LAG CMDS", false, true }, -- CRASH COMMANDS
+        { "anticrash / antispike [boolean]", "Disable clientreplicator (Already ON by default)", false }, --V
+        { "antievent / aevents [boolean]", "Disable onclientevent (Mutes sound and replicateEvent, may crash on shitty executors)", false }, --V
+        { "crashkill / kcl [plr]", "Kills player and crashes the server", false }, --V
+        { "servercrash / svcrash", "Crashes the server (Basic M9 Crash)", false }, --V
+        { "lastresort / lresort", "Crash and kill server with remington (Maybe better than m9)", false }, --V
+        { "timeout / lagout", "Loops sending shootevents until server timedout", false }, --V
+        { "tasercrash / tsrcrash", "Crash server using taser (lol)", false }, --V
+        { "time / tick [stop/resume]", "Slow down time, may crash depending on server load", false }, --B
+        { "serverlag / svlag [strength]", "Lags the server with strength", false }, --V
+        { "unsvlag / unserverlag", "Stop lagging the server", false }, --V
+        { "serverspike / svspike [strength]", "Make server ping spike with strength", false }, --V
+        { "eventcrash / ecrash", "Powerful Player-Crash for ALL Devices (You need atleast 2GB of RAM, prone to memory-leak)", false }, --V
+        { "espamlag / elag [amount]", "Loadchar-Lag everyone with amount (Higher number is better)", false }, --V
+        { "forcecrash / fcrash", "Force all players to freeze (Varies on devices and internet)", false }, --B
+        { "formidicrash / fmcrash", "Forcecrash but more powerful (Varies on device, and prone to ratelimit)", false }, --B
+        { "loopfcrash / lfcrash", "Loop-forcing players to crash (Only lastresort if forcecrash doesnt work)", false }, --B
+        { "unloopfcrash / unlfcrash", "Stops forcing players to crash", false }, --B
+        { "itemlag / ilag [interval]", "Lag everyone using items (May not work and prone to ratelimit)", false }, --G
+        { "crashnuke / cnuke [plr,random]", "deathnuke but the server crashes instead (CANNOT UNDO)", false }, --V
+        { "laggygun / laggun", "Gives you remington 870 that lags the server when fired", false }, --G
+        { "spike / freeze", "Lag spike everyone (Depends on their device},", false }, --V
+        --{"placeholdercrash / crash4", "Crashes the server using every single gun", false}, --too useless
 
-    AddList("MISC CMDS", false, true) -- MISCELLANEOUS
-    AddList("forcefield / ff", "Enables forcefield (Basically just refresh guards)", false) --V
-    AddList("unforcefield / unff", "Disable forcefield", false) --V
-    AddList("autoguard / aguard [boolean]", "When killing innocents, automatically switch to guards team.", false) --V
-    AddList("spinnytools / spintool [boolean] [speed] [math.rad]", "Automatically make items you equip spin", false) --V
-    AddList("itemsequip / equip [interval]", "Equip all items in the backpack (Useful for spinnytools)", false) --V
-    AddList("opendoors / odoors / open [gate/bool]", "Opens every door or gate", false) --V
-    AddList("loopopendoors / loopdoors", "Loops-opening every door", false) --V
-    AddList("unloopopendoors / unloopdoors", "Stops loop-opening every door", false) --V
-    AddList("cars / scar", "Spawns a car to your location", false) --V
-    AddList("policecar / pcar", "Spawns a police car to your location", false) --V
-    AddList("carsto / scarto [plr,random]", "Spawns a car to a specific player.", false) --V
-    AddList("void / abyss [plr,random]", "Teleport a player into the abyss (9e9)", false) --V
-    AddList("loopvoid / lvoid [plr,random]", "Loop teleport a player into the abyss", false) --V
-    AddList("unloopvoid / unlvoid [plr,all]", "Stops loop teleporting player(s) into void", false) --V
-    AddList("trap / punish [plr,random]", "Traps player inside a building", false) --V
-    AddList("untrap / unpunish [plr,all]", "Stops trapping player(s)", false) --V
-    AddList("anticheat / detection [boolean]", "Detect exploiter(s), (Warning: NOT ACCURATE!)", false) --V
-    AddList("soundspam / ssp", "Spam every sounds possible (Your client might get ratelimited!)", false) --V
-    AddList("unsoundspam / unssp", "Stop spamming every sounds", false) --V
-    AddList("loopsounds / lss", "Soundspam but less intensive and not get ratelimited", false) --V
-    AddList("unloopsounds / unlss", "Stops looping sounds", false) --V
-    AddList("loopcars / lcars", "Spam spawning cars in your location", false) --V
-    AddList("unloopcars / unspamcars", "Stop spamming cars", false) --V
-    AddList("partyrave / rave", "Shoots rays of bullets, kinda like a party-rave", false) --V
-    AddList("unpartyrave / unrave", "Stops making rays of bullets", false) --V
-    AddList("magicdoor / opensesame [boolean]", "When players near a door, it automatically opens", false) --V
-    AddList("bcar / bringcar", "Carspawn but brings used car or new one", false) --V
-    AddList("loudpunch / lph", "When pressed, Automatically send soundevents to all players", false) --V
-    AddList("spamlog / slog", "Spams chatlogs (Spams exploiter(s) chatlogger)", false) --V
-    AddList("dumpcars / nocars [method=delete,temp,client]", "Removes all cars from client/server or temporarily re-move cars.", false) --V
-    AddList("fard / fart [plr]", "Silent but deadly fart", false) --V, Haha funny fart joke please laugh sussy amogus skibidi toilet
-    AddList("carwalk / weldcar", "Makes you walk while a car is welded to your character", false) --V
-    AddList("troll / tro [plr,random]", "Troll a player by fake punchsounds", false) --V
+        { "MISC CMDS", false, true }, -- MISCELLANEOUS
+        { "forcefield / ff", "Enables forcefield (Basically just refresh guards)", false }, --V
+        { "unforcefield / unff", "Disable forcefield", false }, --V
+        { "autoguard / aguard [boolean]", "When killing innocents, automatically switch to guards team.", false }, --V
+        { "spinnytools / spintool [boolean] [speed] [math.rad]", "Automatically make items you equip spin", false }, --V
+        { "itemsequip / equip [interval]", "Equip all items in the backpack (Useful for spinnytools)", false }, --V
+        { "opendoors / odoors / open [gate/bool]", "Opens every door or gate", false }, --V
+        { "loopopendoors / loopdoors", "Loops-opening every door", false }, --V
+        { "unloopopendoors / unloopdoors", "Stops loop-opening every door", false }, --V
+        { "cars / scar", "Spawns a car to your location", false }, --V
+        { "policecar / pcar", "Spawns a police car to your location", false }, --V
+        { "carsto / scarto [plr,random]", "Spawns a car to a specific player.", false }, --V
+        { "void / abyss [plr,random]", "Teleport a player into the abyss (9e9)", false }, --V
+        { "loopvoid / lvoid [plr,random]", "Loop teleport a player into the abyss", false }, --V
+        { "unloopvoid / unlvoid [plr,all]", "Stops loop teleporting player(s) into void", false }, --V
+        { "trap / punish [plr,random]", "Traps player inside a building", false }, --V
+        { "untrap / unpunish [plr,all]", "Stops trapping player(s)", false }, --V
+        { "anticheat / detection [boolean]", "Detect exploiter(s), (Warning: NOT ACCURATE!)", false }, --V
+        { "soundspam / ssp", "Spam every sounds possible (Your client might get ratelimited!)", false }, --V
+        { "unsoundspam / unssp", "Stop spamming every sounds", false }, --V
+        { "loopsounds / lss", "Soundspam but less intensive and not get ratelimited", false }, --V
+        { "unloopsounds / unlss", "Stops looping sounds", false }, --V
+        { "loopcars / lcars", "Spam spawning cars in your location", false }, --V
+        { "unloopcars / unspamcars", "Stop spamming cars", false }, --V
+        { "partyrave / rave", "Shoots rays of bullets, kinda like a party-rave", false }, --V
+        { "unpartyrave / unrave", "Stops making rays of bullets", false }, --V
+        { "magicdoor / opensesame [boolean]", "When players near a door, it automatically opens", false }, --V
+        { "bcar / bringcar", "Carspawn but brings used car or new one", false }, --V
+        { "loudpunch / lph", "When pressed, Automatically send soundevents to all players", false }, --V
+        { "spamlog / slog", "Spams chatlogs (Spams exploiter(s) chatlogger)", false }, --V
+        { "dumpcars / nocars [method=delete,temp,client]", "Removes all cars from client/server or temporarily re-move cars.", false }, --V
+        { "fard / fart [plr]", "Silent but deadly fart", false }, --V, Haha funny fart joke please laugh sussy amogus skibidi toilet
+        { "carwalk / weldcar", "Makes you walk while a car is welded to your character", false }, --V
+        { "troll / tro [plr,random]", "Troll a player by fake punchsounds", false }, --V
 
-    AddList("TELEPORTS", false, true) --TELEPORT PLACE(S)
-    AddList("nexus / nex [plr or me]", "Teleports to the location: Nexus", false) --
-    AddList("prison / cells [plr or me]", "Teleports to the location: Prison Cells", false) --
-    AddList("crimbase / cbase [plr or me]", "Teleports to the location: Criminal Base", false) --
-    AddList("armory / arm [plr or me]", "Teleports to the location: Armory", false) --
-    AddList("yard / yar [plr or me]", "Teleports to the location: Yard", false) --
-    AddList("roof / roo [plr or me]", "Teleports to the location: Roof", false) --
-    AddList("vents / vent [plr or me]", "Teleports to the location: Vents", false) --
-    AddList("ytower / ytow [plr or me]", "Teleports to the location: Yard-Tower", false) --
-    AddList("gtower / gtow [plr or me]", "Teleports to the location: Gate-Tower", false) --
-    AddList("office / off [plr or me]", "Teleports to the location: Hidden Office", false) --
-    AddList("nspawn / neutralspawn [plr or me]", "Teleports to the location: Neutral-spawn", false) --
-    AddList("garage / gar [plr or me]", "Teleports to the location: Garage", false) --
-    AddList("cafeteria / cafe [plr or me]", "Teleports to the location: Cafeteria", false) --
-    AddList("kitchen / kit [plr or me]", "Teleports to the location: Kitchen", false) --
-    AddList("gastation / gas [plr or me]", "Teleport to the gas station", false) --
-    AddList("sewer / sew [plr or me]", "Teleport to the sewers", false) --
-    AddList("neighborhood / nhood [plr or me]", "Teleport to the neighborhood", false) --
-    AddList("store / stor [plr or me]", "Teleport to the store", false) --
-    AddList("roadend / rend [plr or me]", "Teleport to the end of the road", false) --
-    AddList("deadend / dend [plr or me]", "Teleport to dead-end", false) --
-    AddList("mansion / lux [plr or me]", "Teleport inside the mansion", false) --
+        { "TELEPORTS", false, true }, --TELEPORT PLACE(S)
+        { "nexus / nex [plr or me]", "Teleports to the location: Nexus", false }, --
+        { "prison / cells [plr or me]", "Teleports to the location: Prison Cells", false }, --
+        { "crimbase / cbase [plr or me]", "Teleports to the location: Criminal Base", false }, --
+        { "armory / arm [plr or me]", "Teleports to the location: Armory", false }, --
+        { "yard / yar [plr or me]", "Teleports to the location: Yard", false }, --
+        { "roof / roo [plr or me]", "Teleports to the location: Roof", false }, --
+        { "vents / vent [plr or me]", "Teleports to the location: Vents", false }, --
+        { "ytower / ytow [plr or me]", "Teleports to the location: Yard-Tower", false }, --
+        { "gtower / gtow [plr or me]", "Teleports to the location: Gate-Tower", false }, --
+        { "office / off [plr or me]", "Teleports to the location: Hidden Office", false }, --
+        { "nspawn / neutralspawn [plr or me]", "Teleports to the location: Neutral-spawn", false }, --
+        { "garage / gar [plr or me]", "Teleports to the location: Garage", false }, --
+        { "cafeteria / cafe [plr or me]", "Teleports to the location: Cafeteria", false }, --
+        { "kitchen / kit [plr or me]", "Teleports to the location: Kitchen", false }, --
+        { "gastation / gas [plr or me]", "Teleport to the gas station", false }, --
+        { "sewer / sew [plr or me]", "Teleport to the sewers", false }, --
+        { "neighborhood / nhood [plr or me]", "Teleport to the neighborhood", false }, --
+        { "store / stor [plr or me]", "Teleport to the store", false }, --
+        { "roadend / rend [plr or me]", "Teleport to the end of the road", false }, --
+        { "deadend / dend [plr or me]", "Teleport to dead-end", false }, --
+        { "mansion / lux [plr or me]", "Teleport inside the mansion", false }, --
 
-    AddList("OTHER CMDS", false, true) --Useless commands idk anyways
-    AddList("unload / exit", "Unload script and disconnect everything", false) --V
-    AddList("copychat / copycat", "Copies every player(s) chat", false) --V
-    AddList("uncopychat / uncopycat", "Stop copying everyone", false) --V
-    AddList("roast / argue [plr,random]", "Roast a player (Might be garbage)", false) --V
-    AddList("ipgrab / getip [plr]", "Get someones ip address (699% REAL OMG!!1)", false) --V
-    AddList("num [range]", "Generate a random number (idk)", false) --V
-    AddList("advertise / script", "Advertise the script", false) --V
-    AddList("rtping", "Notify real-time round-trip ping", false) --V
-    AddList("cping [1 or 0]", "Notify performance stats ping", false) --V
+        { "OTHER CMDS", false, true }, --Useless commands idk anyways
+        { "unload / exit", "Unload script and disconnect everything", false }, --V
+        { "copychat / copycat", "Copies every player(s) chat", false }, --V
+        { "uncopychat / uncopycat", "Stop copying everyone", false }, --V
+        { "roast / argue [plr,random]", "Roast a player (Might be garbage},", false }, --V
+        { "ipgrab / getip [plr]", "Get someones ip address (699% REAL OMG!!1)", false }, --V
+        { "num [range]", "Generate a random number (idk)", false }, --V
+        { "advertise / script", "Advertise the script", false }, --V
+        { "rtping", "Notify real-time round-trip ping", false }, --V
+        { "cping [1 or 0]", "Notify performance stats ping", false }, --V
 
-    AddList("CLIENT-SIDE ONLY (Very Useless)", false, true) --
-    AddList("manginasal", "Teleport you to mang-inasal (ONLY YOU CAN SEE IT)", false) --
-    AddList("area51", "Teleport you to area51 (ONLY YOU CAN SEE IT)", false) --
-    AddList("amongus", "Teleport you to amogus map (ONLY YOU CAN SEE IT)", false) --
-    AddList("mcdonalds", "Teleport you to mcdonalds (ONLY YOU CAN SEE IT)", false) --
-    AddList("minecraft", "Replace default skybox with a minecraft one", false) --
+        { "CLIENT-SIDE ONLY (Very Useless)", false, true }, --
+        { "manginasal", "Teleport you to mang-inasal (ONLY YOU CAN SEE IT)", false }, --
+        { "area51", "Teleport you to area51 (ONLY YOU CAN SEE IT)", false }, --
+        { "amongus", "Teleport you to amogus map (ONLY YOU CAN SEE IT)", false }, --
+        { "mcdonalds", "Teleport you to mcdonalds (ONLY YOU CAN SEE IT)", false }, --
+        { "minecraft", "Replace default skybox with a minecraft one", false }, --
 
-    --[[ SUPER TOP SECRET, NOTHING TO SEE HERE!!!
-	AddList("DEBUG (DO NOT TOUCH)", false, true)
-	AddList("printdebug [boolean]", "Prints all Debug_ in console", false) --
-	AddList("loadcrash", "load formidicrash events into memory", false) --
-	AddList("debugstop", "Stops all debug", false)
-	AddList("chatdebug / cdeb", "chat echo debug", false) --
-	AddList("deletecmdslist", "delete all frames in CMDS_List", false) --
-	AddList("deletetogglelist", "delete all frames in Toggles_List", false) --
-	AddList("newlist [title] [desc] [iscategory]", "add list to CMDS_List", false) --
-	AddList("newtoggle [textbox=boolean] [title] [description]", "add new toggle to Toggles_List", false) --
-	]]
-    --
+        -- SUPER TOP SECRET, NOTHING TO SEE HERE!!!
+        { "DEBUG (DO NOT TOUCH)", false, true },
+        { "printdebug [boolean]", "Prints all Debug_ in console", false }, --
+        { "loadcrash", "load formidicrash events into memory", false }, --
+        { "debugstop", "Stops all debug", false },
+        { "chatdebug / cdeb", "chat echo debug", false }, --
+        { "deletecmdslist", "delete all frames in CMDS_List", false }, --
+        { "deletetogglelist", "delete all frames in Toggles_List", false }, --
+        { "newlist [title] [desc] [iscategory]", "add list to CMDS_List", false }, --
+        { "newtoggle [textbox=boolean] [title] [description]", "add new toggle to Toggles_List", false },
+    }
+
+    task.spawn(function()
+        for _, item in ipairs(CommandList) do
+            AddList(unpack(item))
+        end
+    end)
+
     --Toggles
     NewToggleList("LocalPlayer_RunSpeed", "Default value is: 24", "click", function(arg)
         local str = tonumber(arg)
