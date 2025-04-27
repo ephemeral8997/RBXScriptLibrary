@@ -10035,6 +10035,11 @@ addcmd("gametp", { "gameteleport" }, function(args, speaker)
 end)
 
 addcmd("rejoin", { "rj" }, function(args, speaker)
+    if args[1] == "on" then
+        TeleportCheck = false
+    else
+        TeleportCheck = true
+    end
     if #Players:GetPlayers() <= 1 then
         Players.LocalPlayer:Kick("\nRejoining...")
         wait()
