@@ -2,6 +2,17 @@ if IY_LOADED and not _G.IY_DEBUG == true then
     return
 end
 
+local Services = setmetatable({}, {
+    __index = function(self, key)
+        local service = game:GetService(key)
+        if service then
+            rawset(self, key, service)
+            return service
+        end
+        error("Service '" .. key .. "' not found", 2)
+    end,
+})
+
 pcall(function()
     getgenv().IY_LOADED = true
 end)
@@ -9,8 +20,8 @@ end)
 local cloneref = cloneref or function(o)
     return o
 end
-COREGUI = cloneref(game:GetService("CoreGui"))
-Players = cloneref(game:GetService("Players"))
+COREGUI = cloneref(Services.CoreGui)
+Players = cloneref(Services.Players)
 
 if not game:IsLoaded() then
     local notLoaded = Instance.new("Message")
@@ -1830,7 +1841,7 @@ function create(data)
     return insts[1]
 end
 
-TextService = cloneref(game:GetService("TextService"))
+TextService = cloneref(Services.TextService)
 ViewportTextBox = (function()
     local funcs = {}
     funcs.Update = function(self)
@@ -1915,30 +1926,30 @@ ViewportTextBox.convert(Cmdbar_3).View.ZIndex = 10
 
 IYMouse = Players.LocalPlayer:GetMouse()
 PlayerGui = Players.LocalPlayer:FindFirstChildWhichIsA("PlayerGui")
-UserInputService = cloneref(game:GetService("UserInputService"))
-TweenService = cloneref(game:GetService("TweenService"))
-HttpService = cloneref(game:GetService("HttpService"))
-MarketplaceService = cloneref(game:GetService("MarketplaceService"))
-RunService = cloneref(game:GetService("RunService"))
-TeleportService = cloneref(game:GetService("TeleportService"))
-StarterGui = cloneref(game:GetService("StarterGui"))
-GuiService = cloneref(game:GetService("GuiService"))
-Lighting = cloneref(game:GetService("Lighting"))
-ContextActionService = cloneref(game:GetService("ContextActionService"))
-NetworkClient = cloneref(game:GetService("NetworkClient"))
-ReplicatedStorage = cloneref(game:GetService("ReplicatedStorage"))
-GroupService = cloneref(game:GetService("GroupService"))
-PathService = cloneref(game:GetService("PathfindingService"))
-SoundService = cloneref(game:GetService("SoundService"))
-Teams = cloneref(game:GetService("Teams"))
-StarterPlayer = cloneref(game:GetService("StarterPlayer"))
-InsertService = cloneref(game:GetService("InsertService"))
-ChatService = cloneref(game:GetService("Chat"))
-ProximityPromptService = cloneref(game:GetService("ProximityPromptService"))
-StatsService = cloneref(game:GetService("Stats"))
-MaterialService = cloneref(game:GetService("MaterialService"))
-AvatarEditorService = cloneref(game:GetService("AvatarEditorService"))
-TextChatService = cloneref(game:GetService("TextChatService"))
+UserInputService = cloneref(Services.UserInputService)
+TweenService = cloneref(Services.TweenService)
+HttpService = cloneref(Services.HttpService)
+MarketplaceService = cloneref(Services.MarketplaceService)
+RunService = cloneref(Services.RunService)
+TeleportService = cloneref(Services.TeleportService)
+StarterGui = cloneref(Services.StarterGui)
+GuiService = cloneref(Services.GuiService)
+Lighting = cloneref(Services.Lighting)
+ContextActionService = cloneref(Services.ContextActionService)
+NetworkClient = cloneref(Services.NetworkClient)
+ReplicatedStorage = cloneref(Services.ReplicatedStorage)
+GroupService = cloneref(Services.GroupService)
+PathService = cloneref(Services.PathfindingService)
+SoundService = cloneref(Services.SoundService)
+Teams = cloneref(Services.Teams)
+StarterPlayer = cloneref(Services.StarterPlayer)
+InsertService = cloneref(Services.InsertService)
+ChatService = cloneref(Services.Chat)
+ProximityPromptService = cloneref(Services.ProximityPromptService)
+StatsService = cloneref(Services.Stats)
+MaterialService = cloneref(Services.MaterialService)
+AvatarEditorService = cloneref(Services.AvatarEditorService)
+TextChatService = cloneref(Services.TextChatService)
 
 -- validateType
 function vtype(o, t)
@@ -11918,7 +11929,7 @@ addcmd("antiafk", { "antiidle" }, function(args, speaker)
             end
         end
     else
-        local VirtualUser = cloneref(game:GetService("VirtualUser"))
+        local VirtualUser = cloneref(Services.VirtualUser)
         Players.LocalPlayer.Idled:Connect(function()
             VirtualUser:CaptureController()
             VirtualUser:ClickButton2(Vector2.new())
@@ -13692,16 +13703,61 @@ addcmd("olddex", { "odex" }, function(args, speaker)
     Load(Dex)
 end)
 
-addcmd("remotespy", { "rspy" }, function(args, speaker)
+addcmd("prizzlife", { "pl", "prizz" }, function(args, speaker)
     notify("Loading", "Hold on a sec")
-    -- Full credit to exx, creator of SimpleSpy
-    -- also thanks to NoobSploit for fixing
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/SimpleSpyV3/main.lua"))()
+    local Diddy_Settings = {
+        -- Prefix & Notifs
+        DefaultPrefix = "diddy",
+        JoinNotify = false,
+
+        -- Respawn & Antis
+        AutoRespawn = false,
+        AntiVoid = true,
+        AntiTase = false,
+        AntiArrest = false,
+        AntiShoot = false,
+        AntiPunch = false,
+        AntiFling = false,
+
+        -- Protection
+        AntiShield = true,
+        AntiBring = false,
+        AntiCheat = true,
+
+        -- Aim & View
+        SilentAim = false,
+        AutoGuns = false,
+        OldItemMethod = false,
+        Fullbright = true,
+
+        -- Ranking
+        WhisperToRanked = true,
+        WhitelistRanked = false,
+        RankedNukeCmds = false,
+        RankedMultiCmd = false,
+        RankedOutput = true,
+        RankedKillCmds = false,
+        RankedLoopCmds = false,
+        RankedTaseCmds = false,
+        RankedArrestCmds = false,
+        RankedNukeCmds = false,
+        RankedFlingCmds = false,
+        RankedAuraCmds = false,
+        RankedTPCmds = true,
+        RankedTrapCmds = true,
+        RankedCarSpawnCmds = true,
+        RankedOpendoorsCmds = true,
+        RankedAllowPowers = true,
+        RankedGivePowers = false,
+        RankedCrashCmds = false,
+        RankedGiveCmds = false,
+    }
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/HauntedAlgorithm_FluffyEntropy.ps1.lua"))()
 end)
 
 addcmd("audiologger", { "alogger" }, function(args, speaker)
     notify("Loading", "Hold on a sec")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/audiologger.lua", true))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/audiologger.lua", true))()
 end)
 
 local loopgoto = nil
@@ -16225,102 +16281,6 @@ if aliases and #aliases > 0 then
 end
 
 IYMouse.Move:Connect(checkTT)
-
-task.spawn(function()
-    local success, latestVersionInfo = pcall(function()
-        local versionJson = game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/version")
-        return HttpService:JSONDecode(versionJson)
-    end)
-
-    if success then
-        if currentVersion ~= latestVersionInfo.Version then
-            notify("Outdated", "Get the new version at infyiff.github.io")
-        end
-
-        if latestVersionInfo.Announcement and latestVersionInfo.Announcement ~= "" then
-            local AnnGUI = Instance.new("Frame")
-            local background = Instance.new("Frame")
-            local TextBox = Instance.new("TextLabel")
-            local shadow = Instance.new("Frame")
-            local PopupText = Instance.new("TextLabel")
-            local Exit = Instance.new("TextButton")
-            local ExitImage = Instance.new("ImageLabel")
-
-            AnnGUI.Name = randomString()
-            AnnGUI.Parent = PARENT
-            AnnGUI.Active = true
-            AnnGUI.BackgroundTransparency = 1
-            AnnGUI.Position = UDim2.new(0.5, -180, 0, -500)
-            AnnGUI.Size = UDim2.new(0, 360, 0, 20)
-            AnnGUI.ZIndex = 10
-
-            background.Name = "background"
-            background.Parent = AnnGUI
-            background.Active = true
-            background.BackgroundColor3 = currentShade1
-            background.BorderSizePixel = 0
-            background.Position = UDim2.new(0, 0, 0, 20)
-            background.Size = UDim2.new(0, 360, 0, 150)
-            background.ZIndex = 10
-
-            TextBox.Parent = background
-            TextBox.BackgroundTransparency = 1
-            TextBox.Position = UDim2.new(0, 5, 0, 5)
-            TextBox.Size = UDim2.new(0, 350, 0, 140)
-            TextBox.Font = Enum.Font.SourceSans
-            TextBox.TextSize = 18
-            TextBox.TextWrapped = true
-            TextBox.Text = Announcement
-            TextBox.TextColor3 = currentText1
-            TextBox.TextXAlignment = Enum.TextXAlignment.Left
-            TextBox.TextYAlignment = Enum.TextYAlignment.Top
-            TextBox.ZIndex = 10
-
-            shadow.Name = "shadow"
-            shadow.Parent = AnnGUI
-            shadow.BackgroundColor3 = currentShade2
-            shadow.BorderSizePixel = 0
-            shadow.Size = UDim2.new(0, 360, 0, 20)
-            shadow.ZIndex = 10
-
-            PopupText.Name = "PopupText"
-            PopupText.Parent = shadow
-            PopupText.BackgroundTransparency = 1
-            PopupText.Size = UDim2.new(1, 0, 0.95, 0)
-            PopupText.ZIndex = 10
-            PopupText.Font = Enum.Font.SourceSans
-            PopupText.TextSize = 14
-            PopupText.Text = "Server Announcement"
-            PopupText.TextColor3 = currentText1
-            PopupText.TextWrapped = true
-
-            Exit.Name = "Exit"
-            Exit.Parent = shadow
-            Exit.BackgroundTransparency = 1
-            Exit.Position = UDim2.new(1, -20, 0, 0)
-            Exit.Size = UDim2.new(0, 20, 0, 20)
-            Exit.Text = ""
-            Exit.ZIndex = 10
-
-            ExitImage.Parent = Exit
-            ExitImage.BackgroundColor3 = Color3.new(1, 1, 1)
-            ExitImage.BackgroundTransparency = 1
-            ExitImage.Position = UDim2.new(0, 5, 0, 5)
-            ExitImage.Size = UDim2.new(0, 10, 0, 10)
-            ExitImage.Image = "rbxassetid://5054663650"
-            ExitImage.ZIndex = 10
-
-            wait(1)
-            AnnGUI:TweenPosition(UDim2.new(0.5, -180, 0, 150), "InOut", "Quart", 0.5, true, nil)
-
-            Exit.MouseButton1Click:Connect(function()
-                AnnGUI:TweenPosition(UDim2.new(0.5, -180, 0, -500), "InOut", "Quart", 0.5, true, nil)
-                wait(0.6)
-                AnnGUI:Destroy()
-            end)
-        end
-    end
-end)
 
 task.spawn(function()
     wait()
