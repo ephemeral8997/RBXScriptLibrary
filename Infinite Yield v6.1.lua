@@ -9585,7 +9585,7 @@ local TeleportCheck = false
 Players.LocalPlayer.OnTeleport:Connect(function(State)
     if KeepInfYield and not TeleportCheck and queueteleport then
         TeleportCheck = true
-        queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()")
+        queueteleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/Infinite%20Yield%20v6.1.lua'))()")
     end
 end)
 
@@ -11969,7 +11969,7 @@ addcmd("promptr15", {}, function(args, speaker)
 end)
 
 addcmd("wallwalk", { "walkonwalls" }, function(args, speaker)
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/wallwalker.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/wallwalk.lua"))()
 end)
 
 addcmd("age", {}, function(args, speaker)
@@ -13609,7 +13609,7 @@ end)
 
 addcmd("explorer", { "dex" }, function(args, speaker)
     notify("Loading", "Hold on a sec")
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/ephemeral8997's%20Dex.lua"))()
 end)
 
 addcmd("olddex", { "odex" }, function(args, speaker)
@@ -16336,7 +16336,4 @@ task.spawn(function()
     Credits:Destroy()
     IntroBackground:Destroy()
     minimizeHolder()
-    if IsOnMobile then
-        notify("Unstable Device", "On mobile, Infinite Yield may have issues or features that are not functioning correctly.")
-    end
 end)
