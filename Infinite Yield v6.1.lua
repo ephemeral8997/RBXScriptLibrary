@@ -15567,7 +15567,6 @@ task.spawn(function()
         newcmd.Text = cmds[i].NAME
         for _, alias in ipairs(cmds[i].ALIAS) do
             newcmd.Text = newcmd.Text .. " / " .. alias
-            print(newcmd.Text)
         end
         newcmd.Name = "CMD"
         table.insert(text1, newcmd)
