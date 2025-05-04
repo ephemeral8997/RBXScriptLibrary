@@ -26,7 +26,7 @@ Players = cloneref(Services.Players)
 if not game:IsLoaded() then
     local notLoaded = Instance.new("Message")
     notLoaded.Parent = COREGUI
-    notLoaded.Text = "Infinite Yield is task.waiting for the game to load"
+    notLoaded.Text = "Infinite Yield is waiting for the game to load"
     game.Loaded:Wait()
     notLoaded:Destroy()
 end
@@ -15560,6 +15560,8 @@ end)
 
 -- Load commands into the GUI
 local pool = {}
+local connections = {}
+
 local function getPooledCmd()
     if #pool > 0 then
         return table.remove(pool)
@@ -15572,6 +15574,12 @@ for _, child in pairs(CMDsF:GetChildren()) do
     if child.Name == "CMD" then
         child.Visible = false
         child.Parent = nil
+
+        if connections[child] then
+            connections[child]:Disconnect()
+            connections[child] = nil
+        end
+
         table.insert(pool, child)
     end
 end
@@ -15593,10 +15601,11 @@ task.spawn(function()
             newcmd:SetAttribute("Desc", cmdData.DESC)
         end
 
-        if newcmd.__connection then
-            newcmd.__connection:Disconnect()
+        if connections[newcmd] then
+            connections[newcmd]:Disconnect()
         end
-        newcmd.__connection = newcmd.MouseButton1Down:Connect(function()
+
+        connections[newcmd] = newcmd.MouseButton1Down:Connect(function()
             if not IsOnMobile and newcmd.Visible and newcmd.TextTransparency == 0 then
                 local currentText = Cmdbar.Text
                 Cmdbar:CaptureFocus()
