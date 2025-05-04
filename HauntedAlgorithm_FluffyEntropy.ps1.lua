@@ -3521,6 +3521,7 @@ Threads = {
         end)
     end,
 }
+
 Tasks = {
     AutoKill = function(args)
         if args == "hostile" then
@@ -3634,166 +3635,168 @@ Tasks = {
             end
         end
     end,
+
     AntiCheat = function()
-        if States.AntiCheat then
-            task.spawn(function()
-                local laspos, lasteam = {}, {}
-                local CheaterDetected, died = {}, {}
-                local SavedChar, wasneutral = {}, {}
-                local dcolor = Color3.fromRGB(255, 255, 255)
-                coroutine.wrap(function()
-                    while States.AntiCheat do
-                        task.wait()
-                        pcall(function()
-                            for _, v in next, Players:GetPlayers() do
-                                if v and v.Character and v ~= LocalPlayer then
-                                    local char = v.Character
-                                    local head = char and char:FindFirstChild("Head")
-                                    local human = char and char:FindFirstChildOfClass("Humanoid")
-                                    if head and human and not human.Sit then
-                                        local haynako = head.Position
-                                        local gago = Vector3.new(0, -0.04, 0)
-                                        local hayop = RaycastParams.new()
-                                        hayop.FilterType = Enum.RaycastFilterType.Exclude
-                                        hayop.FilterDescendantsInstances = { char, workspace.CarContainer }
-                                        local tangina = workspace:Raycast(haynako, gago, hayop)
-                                        if tangina then
-                                            local part = tangina.Instance
-                                            if part and part.CanCollide and not part:IsDescendantOf(workspace.Terrain) and not (part:IsDescendantOf(workspace.CarContainer) or Players:FindFirstChild(part.Name) or Players:FindFirstChild(part.Parent.Name)) then
-                                                if human.Health ~= 0 and human:GetState() ~= Enum.HumanoidStateType.Jumping and not human.Sit and not CheaterDetected[v.Name] then
-                                                    CheaterDetected[v.Name] = v
-                                                    SysMessage("[Cheat Detection]: Noclip detected (69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                                end
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                        end)
-                        Hbeat:Wait()
+        local function detectNoclip(v, CheaterDetected, dcolor)
+            local char = v.Character
+            local head = char and char:FindFirstChild("Head")
+            local human = char and char:FindFirstChildOfClass("Humanoid")
+            if head and human and not human.Sit then
+                local pos = head.Position
+                local rayParams = RaycastParams.new()
+                rayParams.FilterType = Enum.RaycastFilterType.Exclude
+                rayParams.FilterDescendantsInstances = { char, workspace.CarContainer }
+                local result = workspace:Raycast(pos, Vector3.new(0, -0.04, 0), rayParams)
+                if result then
+                    local part = result.Instance
+                    if part and part.CanCollide and not part:IsDescendantOf(workspace.Terrain) and not (part:IsDescendantOf(workspace.CarContainer) or Players:FindFirstChild(part.Name) or Players:FindFirstChild(part.Parent.Name)) then
+                        if human.Health ~= 0 and human:GetState() ~= Enum.HumanoidStateType.Jumping and not CheaterDetected[v.Name] then
+                            CheaterDetected[v.Name] = v
+                            SysMessage("[Cheat Detection]: Noclip detected (69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                        end
                     end
-                end)()
+                end
+            end
+        end
+
+        local function checkVelocity(root)
+            return root.AssemblyLinearVelocity.X, root.AssemblyLinearVelocity.Y, root.AssemblyLinearVelocity.Z, root.AssemblyAngularVelocity.X, root.AssemblyAngularVelocity.Y, root.AssemblyAngularVelocity.Z
+        end
+
+        local function detectCheats(v, laspos, lasteam, SavedChar, died, wasneutral, CheaterDetected, dcolor)
+            if v and v.Character and v ~= LocalPlayer and v.TeamColor ~= BrickColor.new("Medium stone grey") and not wasneutral[v.Name] then
+                local head = v.Character:FindFirstChild("Head")
+                local root = v.Character:FindFirstChild("HumanoidRootPart")
+                local human = v.Character:FindFirstChildOfClass("Humanoid")
+
+                if lasteam[v.Name] and lasteam[v.Name] ~= v.TeamColor and v.TeamColor == BrickColor.new("Really red") and not GetIllegalReg(v) and not CheaterDetected[v.Name] then
+                    CheaterDetected[v.Name] = v
+                    SysMessage("[Cheat Detection]: Criminal team change (Kill all) Detected! (99.69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                end
+                lasteam[v.Name] = v.TeamColor
+
+                if human then
+                    local state = human:GetState()
+                    if state == Enum.HumanoidStateType.PlatformStanding and not CheaterDetected[v.Name] then
+                        CheaterDetected[v.Name] = v
+                        SysMessage("[Cheat Detection]: Fly detected! (PlatformStanding) (100% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                    elseif state == Enum.HumanoidStateType.Swimming and not CheaterDetected[v.Name] then
+                        CheaterDetected[v.Name] = v
+                        SysMessage("[Cheat Detection]: Fly detected! (FakeSwim) (100% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                    elseif human.Health == 0 then
+                        died[v.Name] = true
+                        laspos[v.Name] = root.CFrame
+                    end
+                end
+
+                if root and laspos[v.Name] and SavedChar[v.Name] == v.Character and not died[v.Name] then
+                    if (root.Position - laspos[v.Name].Position).Magnitude > 30 and not (root.AssemblyLinearVelocity.X > 15 or root.AssemblyLinearVelocity.Z > 15) and not human.Sit and not v.Character:FindFirstChildWhichIsA("ForceField") then
+                        local ray = Ray.new(root.Position, Vector3.new(0, -5, 0))
+                        local part = workspace:FindPartOnRayWithIgnoreList(ray, { v.Character, workspace.Terrain })
+                        if human:GetState() ~= Enum.HumanoidStateType.Jumping and part and not part:IsDescendantOf(workspace.CarContainer) and not CheaterDetected[v.Name] then
+                            CheaterDetected[v.Name] = v
+                            SysMessage("[Cheat Detection]: Teleport detected! (42.69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                        end
+                    end
+                end
+
+                if root and laspos[v.Name] and not died[v.Name] then
+                    local vx, vy, vz = checkVelocity(root)
+                    if (vx > 50 or vz > 50) and vy > -16 and not (vx > 1e7 or vz > 1e7 or vy > 1) and not human.Sit then
+                        local ray = Ray.new(root.Position, Vector3.new(0, -5, 0))
+                        local part = workspace:FindPartOnRayWithIgnoreList(ray, { v.Character, workspace.Terrain })
+                        if human:GetState() ~= Enum.HumanoidStateType.Jumping and part and not part:IsDescendantOf(workspace.CarContainer) and not CheaterDetected[v.Name] then
+                            CheaterDetected[v.Name] = v
+                            SysMessage("[Cheat Detection]: Speed detected! (50% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                        end
+                    end
+                end
+
+                if root then
+                    local vx, vy, vz, ax, ay, az = checkVelocity(root)
+                    if vx > 1e7 or vz > 1e7 or vy > 1e7 or ax > 699 or ay > 699 or az > 699 then
+                        if not CheaterDetected[v.Name] then
+                            CheaterDetected[v.Name] = v
+                            SysMessage("[Cheat Detection]: Fling detected! (Cannot determine culprit and victim) (69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                        end
+                    end
+                end
+
+                if head and root and (head.Position.Y > 1000 or math.abs(head.Position.X) > 49999) then
+                    local vx, vy, vz = checkVelocity(root)
+                    local movedFar = (laspos and (root.Position - laspos).Magnitude > 1000)
+
+                    if vx < 50 and vy < 50 and vz < 50 and not CheaterDetected[v.Name] then
+                        local tag
+
+                        if v.Character.Parent == Services.Lighting then
+                            tag = "Inf Yield"
+                        elseif head.Position.Y > 1e8 or root.Position.Y > 1e8 then
+                            tag = "Prizzlife"
+                        elseif movedFar then
+                            tag = "Void Victim"
+                        else
+                            tag = "Suspicious Movement"
+                        end
+
+                        CheaterDetected[v.Name] = v
+                        SysMessage("[Cheat Detection]: " .. tag .. " detected! Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
+                    end
+                end
+
+                if SavedChar[v.Name] and SavedChar[v.Name] ~= v.Character then
+                    SavedChar[v.Name] = v.Character
+                end
+                if died[v.Name] and human and human.Health ~= 0 and v.Character:FindFirstChildWhichIsA("ForceField") then
+                    died[v.Name] = nil
+                    laspos[v.Name] = root.CFrame
+                end
+
+                laspos[v.Name] = root.CFrame
+                SavedChar[v.Name] = SavedChar[v.Name] or v.Character
+                lasteam[v.Name] = lasteam[v.Name] or v.TeamColor
+            end
+
+            if v.TeamColor == BrickColor.new("Medium stone grey") then
+                laspos[v.Name], lasteam[v.Name], SavedChar[v.Name] = nil, nil, nil
+                wasneutral[v.Name] = true
+            elseif wasneutral[v.Name] and v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") then
+                wasneutral[v.Name] = nil
+            end
+        end
+
+        if not States.AntiCheat then
+            return
+        end
+        task.spawn(function()
+            local laspos, lasteam, CheaterDetected, died, SavedChar, wasneutral = {}, {}, {}, {}, {}, {}
+            local dcolor = Color3.fromRGB(255, 255, 255)
+
+            coroutine.wrap(function()
                 while States.AntiCheat do
                     task.wait()
                     pcall(function()
-                        for i, v in next, Players:GetPlayers() do
-                            if v and v.Character and v ~= LocalPlayer and v.TeamColor ~= BrickColor.new("Medium stone grey") and not wasneutral[v.Name] then
-                                local vhead = v.Character:FindFirstChild("Head")
-                                local root = v.Character:FindFirstChild("HumanoidRootPart")
-                                local human = v.Character:FindFirstChildOfClass("Humanoid")
-                                if lasteam[v.Name] then
-                                    if lasteam[v.Name] ~= v.TeamColor then
-                                        if v.TeamColor == BrickColor.new("Really red") and not GetIllegalReg(v) then
-                                            if not CheaterDetected[v.Name] then
-                                                CheaterDetected[v.Name] = v
-                                                SysMessage("[Cheat Detection]: Criminal team change (Kill all) Detected! (99.69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                            end
-                                        end
-                                        lasteam[v.Name] = v.TeamColor
-                                    end
-                                end
-                                if human and human:GetState() == Enum.HumanoidStateType.PlatformStanding then
-                                    if not CheaterDetected[v.Name] then
-                                        CheaterDetected[v.Name] = v
-                                        SysMessage("[Cheat Detection]: Fly detected! (PlatformStanding) (100% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                    end
-                                end
-                                if human and human:GetState() == Enum.HumanoidStateType.Swimming then
-                                    if not CheaterDetected[v.Name] then
-                                        CheaterDetected[v.Name] = v
-                                        SysMessage("[Cheat Detection]: Fly detected! (FakeSwim) (100% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                    end
-                                end
-                                if human then
-                                    if human.Health == 0 then
-                                        died[v.Name] = true
-                                        laspos[v.Name] = root.CFrame
-                                    end
-                                end
-                                if root and laspos[v.Name] and SavedChar[v.Name] == v.Character and not died[v.Name] then
-                                    if (root.Position - laspos[v.Name].Position).Magnitude > 30 and not (root.AssemblyLinearVelocity.X > 15 or root.AssemblyLinearVelocity.Z > 15) and not human.Sit and not v.Character:FindFirstChildWhichIsA("ForceField") then
-                                        local ray = Ray.new(root.Position, (root.Position + Vector3.new(0, -5, 0) - root.Position).Unit * 5)
-                                        local part = workspace:FindPartOnRayWithIgnoreList(ray, { v.Character, workspace.Terrain })
-                                        if human:GetState() ~= Enum.HumanoidStateType.Jumping and part and not part:IsDescendantOf(workspace.CarContainer) then
-                                            if not human.Sit and not v.Character:FindFirstChildWhichIsA("ForceField") and not CheaterDetected[v.Name] then
-                                                CheaterDetected[v.Name] = v
-                                                SysMessage("[Cheat Detection]: Teleport detected! (42.69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                            end
-                                        end
-                                    end
-                                end
-                                if root and laspos[v.Name] and not died[v.Name] then
-                                    if root.AssemblyLinearVelocity.X > 50 or root.AssemblyLinearVelocity.Z > 50 and root.AssemblyLinearVelocity.Y > -16 and not (root.AssemblyLinearVelocity.X > 1e7 or root.AssemblyLinearVelocity.Z > 1e7 or root.AssemblyLinearVelocity.Y > 1) and not human.Sit then
-                                        local ray = Ray.new(root.Position, (root.Position + Vector3.new(0, -5, 0) - root.Position).Unit * 5)
-                                        local part = workspace:FindPartOnRayWithIgnoreList(ray, { v.Character, workspace.Terrain })
-                                        if human:GetState() ~= Enum.HumanoidStateType.Jumping and part and not part:IsDescendantOf(workspace.CarContainer) then
-                                            if not human.Sit and not CheaterDetected[v.Name] then
-                                                CheaterDetected[v.Name] = v
-                                                SysMessage("[Cheat Detection]: Speed detected! (50% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                            end
-                                        end
-                                    end
-                                end
-                                if root then
-                                    if root.AssemblyLinearVelocity.X > 1e7 or root.AssemblyLinearVelocity.Z > 1e7 or root.AssemblyLinearVelocity.Y > 1e7 or root.AssemblyAngularVelocity.X > 699 or root.AssemblyAngularVelocity.Y > 699 or root.AssemblyAngularVelocity.Z > 699 then
-                                        if not CheaterDetected[v.Name] then
-                                            CheaterDetected[v.Name] = v
-                                            SysMessage("[Cheat Detection]: Fling detected! (Cannot determine culprit and victim) (69% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                        end
-                                    end
-                                end
-                                if vhead then
-                                    if vhead.Position.Y > 1000 or vhead.Position.X > 49999 then
-                                        if not (root.AssemblyLinearVelocity.X > 50 or root.AssemblyLinearVelocity.Y > 50 or root.AssemblyLinearVelocity.Z > 50) and not CheaterDetected[v.Name] then
-                                            CheaterDetected[v.Name] = v
-                                            SysMessage("[Cheat Detection]: Invisible detected! (99.99% accurate) Player: " .. v.Name .. " [" .. v.DisplayName .. "]", dcolor)
-                                        end
-                                    end
-                                end
-                                if laspos[v.Name] and SavedChar[v.Name] and SavedChar[v.Name] ~= v.Character then
-                                    SavedChar[v.Name] = nil
-                                    SavedChar[v.Name] = v.Character
-                                end
-                                if died[v.Name] and laspos[v.Name] then
-                                    if human.Health ~= 0 and v.Character:FindFirstChildWhichIsA("ForceField") then
-                                        died[v.Name] = nil
-                                        laspos[v.Name] = root.CFrame
-                                    end
-                                end
-                                if root then
-                                    laspos[v.Name] = v.Character:FindFirstChild("HumanoidRootPart").CFrame
-                                end
-                                if not lasteam[v.Name] then
-                                    lasteam[v.Name] = v.TeamColor
-                                end
-                                if not SavedChar[v.Name] then
-                                    SavedChar[v.Name] = v.Character
-                                end
-                            end
-                            if v.TeamColor == BrickColor.new("Medium stone grey") then
-                                laspos[v.Name] = nil
-                                lasteam[v.Name] = nil
-                                SavedChar[v.Name] = nil
-                                wasneutral[v.Name] = true
-                            elseif wasneutral[v.Name] then
-                                if v.Character and not v.Character:FindFirstChildWhichIsA("ForceField") then
-                                    wasneutral[v.Name] = nil
-                                end
+                        for _, v in next, Players:GetPlayers() do
+                            if v and v.Character and v ~= LocalPlayer then
+                                detectNoclip(v, CheaterDetected, dcolor)
                             end
                         end
                     end)
                     Hbeat:Wait()
-                    task.wait(0.08)
                 end
-                laspos = nil
-                lasteam = nil
-                died = nil
-                wasneutral = nil
-                SavedChar = nil
-                CheaterDetected = nil
-                dcolor = nil
-            end)
-        end
+            end)()
+
+            while States.AntiCheat do
+                task.wait()
+                pcall(function()
+                    for _, v in next, Players:GetPlayers() do
+                        detectCheats(v, laspos, lasteam, SavedChar, died, wasneutral, CheaterDetected, dcolor)
+                    end
+                end)
+                Hbeat:Wait()
+                task.wait(0.08)
+            end
+        end)
     end,
     LaunchNuke = function(target, radius, countdown)
         if SavedArgs.NukeCooldown then
