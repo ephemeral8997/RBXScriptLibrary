@@ -15559,29 +15559,59 @@ addcmd("removecmd", { "deletecmd" }, function(args, speaker)
 end)
 
 -- Load commands into the GUI
+local pool = {}
+local function getPooledCmd()
+    if #pool > 0 then
+        return table.remove(pool)
+    else
+        return Example:Clone()
+    end
+end
+
+for _, child in pairs(CMDsF:GetChildren()) do
+    if child.Name == "CMD" then
+        child.Visible = false
+        child.Parent = nil
+        table.insert(pool, child)
+    end
+end
+
 task.spawn(function()
+    local newCommands = {}
     for i = 1, #cmds do
-        local newcmd = Example:Clone()
-        newcmd.Parent = CMDsF
-        newcmd.Visible = false
-        newcmd.Text = cmds[i].NAME
-        for _, alias in ipairs(cmds[i].ALIAS) do
+        local cmdData = cmds[i]
+        local newcmd = getPooledCmd()
+
+        newcmd.Text = cmdData.NAME
+        for _, alias in ipairs(cmdData.ALIAS) do
             newcmd.Text = newcmd.Text .. " / " .. alias
         end
+
         newcmd.Name = "CMD"
-        table.insert(text1, newcmd)
-        if cmds[i].DESC ~= "" then
-            newcmd:SetAttribute("Title", cmds[i].NAME)
-            newcmd:SetAttribute("Desc", cmds[i].DESC)
-            newcmd.MouseButton1Down:Connect(function()
-                if not IsOnMobile and newcmd.Visible and newcmd.TextTransparency == 0 then
-                    local currentText = Cmdbar.Text
-                    Cmdbar:CaptureFocus()
-                    autoComplete(newcmd.Text, currentText)
-                    maximizeHolder()
-                end
-            end)
+        if cmdData.DESC ~= "" then
+            newcmd:SetAttribute("Title", cmdData.NAME)
+            newcmd:SetAttribute("Desc", cmdData.DESC)
         end
+
+        if newcmd.__connection then
+            newcmd.__connection:Disconnect()
+        end
+        newcmd.__connection = newcmd.MouseButton1Down:Connect(function()
+            if not IsOnMobile and newcmd.Visible and newcmd.TextTransparency == 0 then
+                local currentText = Cmdbar.Text
+                Cmdbar:CaptureFocus()
+                autoComplete(newcmd.Text, currentText)
+                maximizeHolder()
+            end
+        end)
+
+        table.insert(text1, newcmd)
+        table.insert(newCommands, newcmd)
+    end
+
+    for _, cmd in ipairs(newCommands) do
+        cmd.Parent = CMDsF
+        cmd.Visible = true
     end
 end)
 
