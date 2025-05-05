@@ -24,8 +24,7 @@ COREGUI = cloneref(Services.CoreGui)
 Players = cloneref(Services.Players)
 
 if not game:IsLoaded() then
-    local notLoaded = Instance.new("Message")
-    notLoaded.Parent = COREGUI
+    local notLoaded = Instance.new("Message", COREGUI)
     notLoaded.Text = "Infinite Yield is waiting for the game to load"
     game.Loaded:Wait()
     notLoaded:Destroy()
@@ -186,27 +185,20 @@ function randomString()
     return table.concat(array)
 end
 
-PARENT = nil
+Main = Instance.new("ScreenGui")
+Main.Name = randomString()
+
 if get_hidden_gui or gethui then
-    local hiddenUI = get_hidden_gui or gethui
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
-    Main.Parent = hiddenUI()
-    PARENT = Main
-elseif (not is_sirhurt_closure) and (syn and syn.protect_gui) then
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
+    Main.Parent = (get_hidden_gui or gethui)()
+elseif not is_sirhurt_closure and syn and syn.protect_gui then
     syn.protect_gui(Main)
     Main.Parent = COREGUI
-    PARENT = Main
 elseif COREGUI:FindFirstChild("RobloxGui") then
-    PARENT = COREGUI.RobloxGui
+    Main.Parent = COREGUI.RobloxGui
 else
-    local Main = Instance.new("ScreenGui")
-    Main.Name = randomString()
     Main.Parent = COREGUI
-    PARENT = Main
 end
+PARENT = Main
 
 shade1 = {}
 shade2 = {}
@@ -11697,7 +11689,7 @@ addcmd("clientbring", { "cbring" }, function(args, speaker)
 end)
 
 local bringT = {}
-addcmd("loopbring", {}, function(args, speaker)
+addcmd("loopbring", { "lbring" }, function(args, speaker)
     local players = getPlayer(args[1], speaker)
     for i, v in pairs(players) do
         task.spawn(function()
@@ -11735,7 +11727,7 @@ addcmd("loopbring", {}, function(args, speaker)
     end
 end)
 
-addcmd("unloopbring", { "noloopbring" }, function(args, speaker)
+addcmd("unloopbring", { "noloopbring", "unlbring", "nolbring" }, function(args, speaker)
     local players = getPlayer(args[1], speaker)
     for i, v in pairs(players) do
         task.spawn(function()
@@ -11957,7 +11949,7 @@ addcmd("thaw", { "unfreeze", "unfr" }, function(args, speaker)
 end)
 
 oofing = false
-addcmd("loopoof", {}, function(args, speaker)
+addcmd("loopoof", { "loof" }, function(args, speaker)
     oofing = true
     repeat
         task.wait(0.1)
@@ -11973,7 +11965,7 @@ addcmd("loopoof", {}, function(args, speaker)
     until oofing == false
 end)
 
-addcmd("unloopoof", {}, function(args, speaker)
+addcmd("unloopoof", { "unloof" }, function(args, speaker)
     oofing = false
 end)
 
@@ -12579,7 +12571,7 @@ addcmd("nobgui", { "unbgui", "nobillboardgui", "unbillboardgui", "noname", "rohg
     end
 end)
 
-addcmd("loopnobgui", { "loopunbgui", "loopnobillboardgui", "loopunbillboardgui", "loopnoname", "looprohg" }, function(args, speaker)
+addcmd("loopnobgui", { "loopunbgui", "loopnobillboardgui", "loopunbillboardgui", "loopnoname", "looprohg", "lnobgui", "lnoname", "lnobillboardgui", "lunbillboardgui", "lunbgui" }, function(args, speaker)
     for i, v in pairs(speaker.Character:GetDescendants()) do
         if v:IsA("BillboardGui") or v:IsA("SurfaceGui") then
             v:Destroy()
@@ -12594,7 +12586,7 @@ addcmd("loopnobgui", { "loopunbgui", "loopnobillboardgui", "loopunbillboardgui",
     charPartTrigger = speaker.Character.DescendantAdded:Connect(charPartAdded)
 end)
 
-addcmd("unloopnobgui", { "unloopunbgui", "unloopnobillboardgui", "unloopunbillboardgui", "unloopnoname", "unlooprohg" }, function(args, speaker)
+addcmd("unloopnobgui", { "unloopunbgui", "unloopnobillboardgui", "unloopunbillboardgui", "unloopnoname", "unlooprohg", "unlnobgui", "unlnoname", "unlnobillboardgui", "unlunbillboardgui", "unlunbgui" }, function(args, speaker)
     if charPartTrigger then
         charPartTrigger:Disconnect()
     end
@@ -12755,7 +12747,7 @@ addcmd("unallowcustomanim", { "unallowcustomanimations" }, function(args, speake
     execCmd("refreshanimations")
 end)
 
-addcmd("loopanimation", { "loopanim" }, function(args, speaker)
+addcmd("loopanimation", { "loopanim", "lanimation", "lanim" }, function(args, speaker)
     local Char = speaker.Character
     local Human = Char and Char.FindFirstChildWhichIsA(Char, "Humanoid")
     for _, v in ipairs(Human.GetPlayingAnimationTracks(Human)) do
@@ -12918,7 +12910,7 @@ addcmd("spoofspeed", { "spoofws", "spoofwalkspeed" }, function(args, speaker)
     end
 end)
 
-addcmd("loopspeed", { "loopws" }, function(args, speaker)
+addcmd("loopspeed", { "loopws", "lspeed", "lws" }, function(args, speaker)
     local speed = args[1] or 16
     if args[2] then
         speed = args[2] or 16
@@ -12941,7 +12933,7 @@ addcmd("loopspeed", { "loopws" }, function(args, speaker)
     end
 end)
 
-addcmd("unloopspeed", { "unloopws" }, function(args, speaker)
+addcmd("unloopspeed", { "unloopws", "unlspeed", "unlws" }, function(args, speaker)
     HumanModCons.wsLoop = (HumanModCons.wsLoop and HumanModCons.wsLoop:Disconnect() and false) or nil
     HumanModCons.wsCA = (HumanModCons.wsCA and HumanModCons.wsCA:Disconnect() and false) or nil
 end)
@@ -12974,7 +12966,7 @@ addcmd("spoofjumppower", { "spoofjp" }, function(args, speaker)
     end
 end)
 
-addcmd("loopjumppower", { "loopjp", "loopjpower" }, function(args, speaker)
+addcmd("loopjumppower", { "loopjp", "loopjump", "loopjpower", "ljumppower", "ljump", "ljpower", "ljp" }, function(args, speaker)
     local jpower = args[1] or 50
     if isNumber(jpower) then
         local Char = speaker.Character or workspace:FindFirstChild(speaker.Name)
@@ -13256,7 +13248,7 @@ addcmd("loopgoto", { "lgoto" }, function(args, speaker)
     end
 end)
 
-addcmd("unloopgoto", { "noloopgoto", "unlgoto" }, function(args, speaker)
+addcmd("unloopgoto", { "noloopgoto", "unlgoto", "nolgoto" }, function(args, speaker)
     loopgoto = nil
 end)
 
@@ -14138,7 +14130,7 @@ addcmd("loopfullbright", { "loopfb", "lfullbright", "lfb" }, function(args, spea
     brightLoop = RunService.RenderStepped:Connect(brightFunc)
 end)
 
-addcmd("unloopfullbright", { "unloopfb" }, function(args, speaker)
+addcmd("unloopfullbright", { "unloopfb", "unlfullbright", "unlfb" }, function(args, speaker)
     if brightLoop then
         brightLoop:Disconnect()
     end
@@ -14916,7 +14908,7 @@ addcmd("loopxray", { "lxray" }, function(args, speaker)
     end)
 end)
 
-addcmd("unloopxray", {}, function(args, speaker)
+addcmd("unloopxray", { "unlxray", "nolxray" }, function(args, speaker)
     if xrayLoop then
         xrayLoop:Disconnect()
     end
