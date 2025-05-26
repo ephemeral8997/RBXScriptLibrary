@@ -11137,6 +11137,47 @@ addcmd("freecamgoto", { "fcgoto", "freecamtp", "fctp" }, function(args, speaker)
     end
 end)
 
+addcmd("snaptocframe", { "forcetp", "godmove" }, function(args, speaker)
+    if not args[1] then
+        return
+    end
+    local components = string.split(args[1])
+
+    for i = 1, #components do
+        components[i] = tonumber(components[i]:match("^%s*(.-)%s*$"))
+    end
+
+    local cf = CFrame.new(table.unpack(components))
+    local root = speaker.Character:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.CFrame = cf + Vector3.new(3, 1, 0)
+    end
+end)
+
+addcmd("warptoobject", { "tracetp" }, function(args, speaker)
+    if not args[1] then
+        return
+    end
+    local components = string.split(args[1])
+    local current = game
+    for part in string.gmatch(pathStr, "[^%.]+") do
+        current = current:FindFirstChild(part)
+        if not current then
+            notify("Object not Found", "Object " .. part .. "  cannot be found in this game.")
+            return
+        end
+    end
+    local cf = current:FindFirstChild("CFrame")
+    if not cf then
+        notify("Object cannot be Teleported to", "Object does not have a .CFrame")
+        return
+    end
+    root = speaker.Character:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.CFrame = cf
+    end
+end)
+
 addcmd("unfreecam", { "nofreecam", "unfc", "nofc" }, function(args, speaker)
     StopFreecam()
 end)
