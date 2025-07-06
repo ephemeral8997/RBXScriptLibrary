@@ -270,10 +270,6 @@ UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Padding = UDim.new(0.0088999978, 0)
 UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 
-
-
-
-
 --Gui functions
 local DraggifyFrame = function(frame)
     -- takes ≈ 2 ms (profile)
@@ -429,8 +425,6 @@ local NewToggleList = function(title, description, defaultvalue, toggle, istextb
         end)
     end
 end
-
-
 
 -- ///// GUI Connections /////
 MinimizeButton.MouseButton1Click:Connect(function()
@@ -4440,25 +4434,30 @@ end
 
 --Use commands (COMMAND MANAGER)
 local chatdebounce = false
-local OnCommand = function(text)
-    local Args = text:split(" ")
+local ExecuteSegment = function(segment)
+    -- trim leading/trailing spaces
+    segment = segment:match("^%s*(.-)%s*$")
+    if segment == "" then
+        return
+    end
+
+    -- split the segment into arguments
+    local Args = string.split(segment, " ")
+
     if not Args[1] then
         chatdebounce = nil
         return
     end
     if Args[1] == "/e" or Args[1] == "/c" or Args[1] == "/t" or Args[1] == "/" then
-        -- "/t Criminals ?kill all" -> "?kill all"
         table.remove(Args, 1)
     end
     if Args[1] == "/w" then
-        -- "/w bitch ?kill all"
         table.remove(Args, 1)
         if Args[2] then
             table.remove(Args, 1)
         end
     end
     if Args[1] == "/revert" or Args[1] == Prefix .. "/revert" then
-        -- "/revert"
         Prefix = "?"
         MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
         if not MainFrame.Visible then
@@ -4466,13 +4465,15 @@ local OnCommand = function(text)
             PLAdmin:FindFirstChild("TextButton"):Destroy()
         end
     end
-    if not (Args[1]:sub(1, #Prefix) == Prefix) then
-        chatdebounce = nil
-        return
+    --if not (Args[1]:sub(1, #Prefix) == Prefix) then
+    --chatdebounce = nil
+    --return
+    --end
+
+    local function cm(cmd)
+        return cmd:lower() == Args[1]:lower()
     end
-    local function cm(args)
-        return args == Args[1]:sub(#Prefix + 1):lower()
-    end
+
     if cm("bring") or cm("get") then
         local DaPlayer = PlrFromArgs(Args[2], false)
         if DaPlayer then
@@ -8039,13 +8040,21 @@ local OnCommand = function(text)
         Notif("Error", tostring(Args[1]) .. " is not a valid command.")
     end
 end
+local OnCommand = function(text)
+    for _, seg in ipairs(string.split(text, "\\")) do
+        ExecuteSegment(seg)
+    end
+end
 
 Connections.ChattedLocal = LocalPlayer.Chatted:Connect(function(t)
     return profile("OnCommand", function()
         if not chatdebounce then
             chatdebounce = true
             local success, errors = pcall(function()
-                OnCommand(t)
+                if string.sub(t, 1, #Prefix) == Prefix then
+                    t = string.sub(t, #Prefix + 1)
+                    OnCommand(t)
+                end
             end)
             if not success then
                 dewarn("PrizzLife_Error: " .. tostring(errors))
@@ -8069,9 +8078,9 @@ ExecBar.FocusLost:Connect(function(enterPressed)
     task.defer(function()
         ExecBar.Text = ""
 
-        if text:sub(1, 1) ~= Prefix then
-            text = Prefix .. text
-        end
+        --if text:sub(1, 1) ~= Prefix then
+        --text = Prefix .. text
+        --end
 
         local ok, err = pcall(OnCommand, text)
         if not ok then
