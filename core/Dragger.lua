@@ -58,3 +58,5 @@ local Dragger = {
         end)
     end,
 }
+
+return Dragger
