@@ -1,6 +1,4 @@
-<roblox
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+<roblox xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
   <Item class="ReflectionMetadataClasses">
     <Properties></Properties>
     <Item class="ReflectionMetadataClass">
@@ -1156,10 +1154,10 @@
       </Properties>
       <Item class="ReflectionMetadataProperties">
         <Item class="ReflectionMetadataMember">
-            <Properties>
-                <string name="Name">ForceLimitMode</string>
-                <string name="summary">Selects the mode for force limit. Options Uniform or Per-component</string>
-            </Properties>
+          <Properties>
+            <string name="Name">ForceLimitMode</string>
+            <string name="summary">Selects the mode for force limit. Options Uniform or Per-component</string>
+          </Properties>
         </Item>
       </Item>
     </Item>
@@ -8850,7 +8848,7 @@
             <string name="PropertyOrder">1001</string>
             <bool name="FFlag">AnimatorIsThrottledPropertyEnabled</bool>
           </Properties>
-	    </Item>
+        </Item>
         <Item class="ReflectionMetadataMember">
           <Properties>
             <string name="Name">RootMotion</string>
