@@ -1,13 +1,10 @@
 -- https://github.com/ephemeral8997/RBXScriptLibrary
-
 --[[
 	Dex
 
 	Dex is a powerful debugging suite designed to assist users in analyzing games, identifying issues, and detecting potential vulnerabilities.  
 	It also helps in exploring server sided methods etc and monitoring remote events.
-]]
-
-local nodes = {}
+]] local nodes = {}
 local selection
 local cloneref = cloneref or function(...)
     return ...
@@ -17,7 +14,7 @@ local service = setmetatable({}, {
     __index = function(self, name)
         self[name] = cloneref(game:GetService(name))
         return self[name]
-    end,
+    end
 })
 
 -- prevent environment implosion from references
@@ -70,7 +67,9 @@ local EmbeddedModules = {
             local getDescendants = game.GetDescendants
             local getTextSize = service.TextService.GetTextSize
             local updateDebounce, refreshDebounce = false, false
-            local nilNode = { Obj = Instance.new("Folder") }
+            local nilNode = {
+                Obj = Instance.new("Folder")
+            }
             local idCounter = 0
             local scrollV, scrollH, clipboard
             local renameBox, renamingNode, searchFunc
@@ -92,10 +91,9 @@ local EmbeddedModules = {
                 -- Nil Handling
                 if not par then
                     if nilMap[root] then
-                        nilCons[root] = nilCons[root] or {
-                            connectSignal(root.ChildAdded, addObject),
-                            connectSignal(root.AncestryChanged, moveObject),
-                        }
+                        nilCons[root] = nilCons[root] or
+                                            {connectSignal(root.ChildAdded, addObject),
+                                             connectSignal(root.AncestryChanged, moveObject)}
                         par = nilNode
                         isNil = true
                     else
@@ -103,14 +101,16 @@ local EmbeddedModules = {
                     end
                 elseif nilMap[rootParObj] or par == nilNode then
                     nilMap[root] = true
-                    nilCons[root] = nilCons[root] or {
-                        connectSignal(root.ChildAdded, addObject),
-                        connectSignal(root.AncestryChanged, moveObject),
-                    }
+                    nilCons[root] = nilCons[root] or
+                                        {connectSignal(root.ChildAdded, addObject),
+                                         connectSignal(root.AncestryChanged, moveObject)}
                     isNil = true
                 end
 
-                local newNode = { Obj = root, Parent = par }
+                local newNode = {
+                    Obj = root,
+                    Parent = par
+                }
                 nodes[root] = newNode
 
                 -- Automatic sorting if expanded
@@ -149,30 +149,29 @@ local EmbeddedModules = {
                 local insts = getDescendants(root)
                 for i = 1, #insts do
                     local obj = insts[i]
-                    if nodes[obj] then
-                        continue
-                    end -- Deferred
+                    if not nodes[obj] then
+                        local par = nodes[ffa(obj, "Instance")]
+                        if par then
+                            local newNode = {
+                                Obj = obj,
+                                Parent = par
+                            }
+                            nodes[obj] = newNode
+                            par[#par + 1] = newNode
 
-                    local par = nodes[ffa(obj, "Instance")]
-                    if not par then
-                        continue
-                    end
-                    local newNode = { Obj = obj, Parent = par }
-                    nodes[obj] = newNode
-                    par[#par + 1] = newNode
-
-                    -- Nil Handling
-                    if isNil then
-                        nilMap[obj] = true
-                        nilCons[obj] = nilCons[obj] or {
-                            connectSignal(obj.ChildAdded, addObject),
-                            connectSignal(obj.AncestryChanged, moveObject),
-                        }
+                            -- Nil Handling
+                            if isNil then
+                                nilMap[obj] = true
+                                nilCons[obj] = nilCons[obj] or
+                                                   {connectSignal(obj.ChildAdded, addObject),
+                                                    connectSignal(obj.AncestryChanged, moveObject)}
+                            end
+                        end
                     end
                 end
 
                 if searchFunc and autoUpdateSearch then
-                    searchFunc({ newNode })
+                    searchFunc({newNode})
                 end
 
                 if not updateDebounce and Explorer.IsNodeVisible(par) then
@@ -246,10 +245,9 @@ local EmbeddedModules = {
                     end
                 elseif nilMap[newPar.Obj] or newPar == nilNode then
                     nilMap[obj] = true
-                    nilCons[obj] = nilCons[obj] or {
-                        connectSignal(obj.ChildAdded, addObject),
-                        connectSignal(obj.AncestryChanged, moveObject),
-                    }
+                    nilCons[obj] = nilCons[obj] or
+                                       {connectSignal(obj.ChildAdded, addObject),
+                                        connectSignal(obj.AncestryChanged, moveObject)}
                 end
 
                 if oldPar then
@@ -319,7 +317,23 @@ local EmbeddedModules = {
             Explorer.GuiElems = {}
 
             Explorer.InitRenameBox = function()
-                renameBox = create({ { 1, "TextBox", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderColor3 = Color3.new(0.062745101749897, 0.51764708757401, 1), BorderMode = 2, ClearTextOnFocus = false, Font = 3, Name = "RenameBox", PlaceholderColor3 = Color3.new(0.69803923368454, 0.69803923368454, 0.69803923368454), Position = UDim2.new(0, 26, 0, 2), Size = UDim2.new(0, 200, 0, 16), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0, Visible = false, ZIndex = 2 } } })
+                renameBox = create({{1, "TextBox", {
+                    BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                    BorderColor3 = Color3.new(0.062745101749897, 0.51764708757401, 1),
+                    BorderMode = 2,
+                    ClearTextOnFocus = false,
+                    Font = 3,
+                    Name = "RenameBox",
+                    PlaceholderColor3 = Color3.new(0.69803923368454, 0.69803923368454, 0.69803923368454),
+                    Position = UDim2.new(0, 26, 0, 2),
+                    Size = UDim2.new(0, 200, 0, 16),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextXAlignment = 0,
+                    Visible = false,
+                    ZIndex = 2
+                }}})
 
                 renameBox.Parent = Explorer.Window.GuiElems.Content.List
 
@@ -367,7 +381,8 @@ local EmbeddedModules = {
                 scrollH.Gui.Visible = totalWidth > maxX
 
                 local oldSize = treeFrame.Size
-                treeFrame.Size = UDim2.new(1, (scrollV.Gui.Visible and -16 or 0), 1, (scrollH.Gui.Visible and -39 or -23))
+                treeFrame.Size = UDim2.new(1, (scrollV.Gui.Visible and -16 or 0), 1,
+                    (scrollH.Gui.Visible and -39 or -23))
                 if oldSize ~= treeFrame.Size then
                     Explorer.UpdateView()
                 else
@@ -467,30 +482,29 @@ local EmbeddedModules = {
                     for i = 1, #root do
                         local n = root[i]
 
-                        if (isSearching and not searchResults[n]) or n.Del then
-                            continue
-                        end
+                        if not (isSearching and not searchResults[n]) or not n.Del then
 
-                        if useNameWidth then
-                            local nameWidth = n.NameWidth
-                            if not nameWidth then
-                                local objName = tostring(n.Obj)
-                                nameWidth = nameCache[objName]
+                            if useNameWidth then
+                                local nameWidth = n.NameWidth
                                 if not nameWidth then
-                                    nameWidth = getTextSize(textServ, objName, 14, font, size).X
-                                    nameCache[objName] = nameWidth
+                                    local objName = tostring(n.Obj)
+                                    nameWidth = nameCache[objName]
+                                    if not nameWidth then
+                                        nameWidth = getTextSize(textServ, objName, 14, font, size).X
+                                        nameCache[objName] = nameWidth
+                                    end
+                                    n.NameWidth = nameWidth
                                 end
-                                n.NameWidth = nameWidth
+                                if nameWidth > maxNameWidth then
+                                    maxNameWidth = nameWidth
+                                end
                             end
-                            if nameWidth > maxNameWidth then
-                                maxNameWidth = nameWidth
-                            end
-                        end
 
-                        tree[count] = n
-                        count = count + 1
-                        if expanded[n] and #n > 0 then
-                            recur(n, depth)
+                            tree[count] = n
+                            count = count + 1
+                            if expanded[n] and #n > 0 then
+                                recur(n, depth)
+                            end
                         end
                     end
                 end
@@ -510,7 +524,8 @@ local EmbeddedModules = {
 
                 Explorer.MaxNameWidth = maxNameWidth
                 Explorer.MaxDepth = maxDepth
-                Explorer.ViewWidth = useNameWidth and Explorer.EntryIndent * maxDepth + maxNameWidth + 26 or Explorer.EntryIndent * maxDepth + 226
+                Explorer.ViewWidth = useNameWidth and Explorer.EntryIndent * maxDepth + maxNameWidth + 26 or
+                                         Explorer.EntryIndent * maxDepth + 226
                 Explorer.UpdateView()
             end
 
@@ -544,13 +559,42 @@ local EmbeddedModules = {
                 dragTree.Parent = newGui
                 Lib.ShowGui(newGui)
 
-                local dragOutline = create({
-                    { 1, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "DragSelect", Size = UDim2.new(1, 0, 1, 0) } },
-                    { 2, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, Name = "Line", Parent = { 1 }, Size = UDim2.new(1, 0, 0, 1), ZIndex = 2 } },
-                    { 3, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, Name = "Line", Parent = { 1 }, Position = UDim2.new(0, 0, 1, -1), Size = UDim2.new(1, 0, 0, 1), ZIndex = 2 } },
-                    { 4, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, Name = "Line", Parent = { 1 }, Size = UDim2.new(0, 1, 1, 0), ZIndex = 2 } },
-                    { 5, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, Name = "Line", Parent = { 1 }, Position = UDim2.new(1, -1, 0, 0), Size = UDim2.new(0, 1, 1, 0), ZIndex = 2 } },
-                })
+                local dragOutline = create({{1, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Name = "DragSelect",
+                    Size = UDim2.new(1, 0, 1, 0)
+                }}, {2, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
+                    Name = "Line",
+                    Parent = {1},
+                    Size = UDim2.new(1, 0, 0, 1),
+                    ZIndex = 2
+                }}, {3, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
+                    Name = "Line",
+                    Parent = {1},
+                    Position = UDim2.new(0, 0, 1, -1),
+                    Size = UDim2.new(1, 0, 0, 1),
+                    ZIndex = 2
+                }}, {4, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
+                    Name = "Line",
+                    Parent = {1},
+                    Size = UDim2.new(0, 1, 1, 0),
+                    ZIndex = 2
+                }}, {5, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderSizePixel = 0,
+                    Name = "Line",
+                    Parent = {1},
+                    Position = UDim2.new(1, -1, 0, 0),
+                    Size = UDim2.new(0, 1, 1, 0),
+                    ZIndex = 2
+                }}})
                 dragOutline.Parent = treeFrame
 
                 local mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse()
@@ -562,7 +606,8 @@ local EmbeddedModules = {
                     for i = 1, #listEntries do
                         local entry = listEntries[i]
                         if Lib.CheckMouseInGui(entry) then
-                            dragOutline.Position = UDim2.new(0, entry.Indent.Position.X.Offset - scrollH.Index, 0, entry.Position.Y.Offset)
+                            dragOutline.Position = UDim2.new(0, entry.Indent.Position.X.Offset - scrollH.Index, 0,
+                                entry.Position.Y.Offset)
                             dragOutline.Size = UDim2.new(0, entry.Size.X.Offset - entry.Indent.Position.X.Offset, 0, 20)
                             dragOutline.Visible = true
                             return
@@ -576,13 +621,15 @@ local EmbeddedModules = {
                 local mouseEvent, releaseEvent
 
                 mouseEvent = input.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         move()
                     end
                 end)
 
                 releaseEvent = input.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         releaseEvent:Disconnect()
                         mouseEvent:Disconnect()
                         newGui:Destroy()
@@ -621,7 +668,9 @@ local EmbeddedModules = {
 
                 newEntry.InputBegan:Connect(function(input)
                     local node = tree[index + Explorer.Index]
-                    if not node or selection.Map[node] or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not node or selection.Map[node] or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
@@ -632,19 +681,24 @@ local EmbeddedModules = {
 
                 newEntry.InputEnded:Connect(function(input)
                     local node = tree[index + Explorer.Index]
-                    if not node or selection.Map[node] or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not node or selection.Map[node] or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
                     newEntry.Indent.BackgroundTransparency = 1
                 end)
 
-                newEntry.MouseButton1Down:Connect(function() end)
+                newEntry.MouseButton1Down:Connect(function()
+                end)
 
-                newEntry.MouseButton1Up:Connect(function() end)
+                newEntry.MouseButton1Up:Connect(function()
+                end)
 
                 newEntry.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         local releaseEvent, mouseEvent
 
                         local mouse = Main.Mouse or plr:GetMouse()
@@ -662,14 +716,16 @@ local EmbeddedModules = {
                         local listOffsetY = startY - treeFrame.AbsolutePosition.Y
 
                         releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 releaseEvent:Disconnect()
                                 mouseEvent:Disconnect()
                             end
                         end)
 
                         mouseEvent = service.UserInputService.InputChanged:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local currentX, currentY
 
                                 if input.UserInputType == Enum.UserInputType.Touch then
@@ -695,31 +751,40 @@ local EmbeddedModules = {
                     end
                 end)
 
-                newEntry.MouseButton2Down:Connect(function() end)
+                newEntry.MouseButton2Down:Connect(function()
+                end)
 
                 newEntry.Indent.Expand.InputBegan:Connect(function(input)
                     local node = tree[index + Explorer.Index]
-                    if not node or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not node or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
                     if input.UserInputType == Enum.UserInputType.Touch then
-                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon, expanded[node] and "Collapse_Over" or "Expand_Over")
+                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon,
+                            expanded[node] and "Collapse_Over" or "Expand_Over")
                     elseif input.UserInputType == Enum.UserInputType.MouseMovement then
-                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon, expanded[node] and "Collapse_Over" or "Expand_Over")
+                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon,
+                            expanded[node] and "Collapse_Over" or "Expand_Over")
                     end
                 end)
 
                 newEntry.Indent.Expand.InputEnded:Connect(function(input)
                     local node = tree[index + Explorer.Index]
-                    if not node or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not node or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
                     if input.UserInputType == Enum.UserInputType.Touch then
-                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon, expanded[node] and "Collapse" or "Expand")
+                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon,
+                            expanded[node] and "Collapse" or "Expand")
                     elseif input.UserInputType == Enum.UserInputType.MouseMovement then
-                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon, expanded[node] and "Collapse" or "Expand")
+                        Explorer.MiscIcons:DisplayByKey(newEntry.Indent.Expand.Icon,
+                            expanded[node] and "Collapse" or "Expand")
                     end
                 end)
 
@@ -763,7 +828,8 @@ local EmbeddedModules = {
                         entry.Indent.Position = UDim2.new(0, depth, 0, 0)
                         entry.Indent.Size = UDim2.new(1, -depth, 1, 0)
 
-                        entry.Indent.EntryName.TextTruncate = (Settings.Explorer.UseNameWidth and Enum.TextTruncate.None or Enum.TextTruncate.AtEnd)
+                        entry.Indent.EntryName.TextTruncate =
+                            (Settings.Explorer.UseNameWidth and Enum.TextTruncate.None or Enum.TextTruncate.AtEnd)
 
                         Explorer.MiscIcons:DisplayExplorerIcons(entry.Indent.Icon, obj.ClassName)
 
@@ -781,15 +847,18 @@ local EmbeddedModules = {
 
                         if node == renamingNode then
                             renameNodeVisible = true
-                            renameBox.Position = UDim2.new(0, depth + 25 - scrollH.Index, 0, entry.Position.Y.Offset + 2)
+                            renameBox.Position =
+                                UDim2.new(0, depth + 25 - scrollH.Index, 0, entry.Position.Y.Offset + 2)
                             renameBox.Visible = true
                         end
 
                         if #node > 0 and expanded[node] ~= 0 then
                             if Lib.CheckMouseInGui(entry.Indent.Expand) then
-                                Explorer.MiscIcons:DisplayByKey(entry.Indent.Expand.Icon, expanded[node] and "Collapse_Over" or "Expand_Over")
+                                Explorer.MiscIcons:DisplayByKey(entry.Indent.Expand.Icon,
+                                    expanded[node] and "Collapse_Over" or "Expand_Over")
                             else
-                                Explorer.MiscIcons:DisplayByKey(entry.Indent.Expand.Icon, expanded[node] and "Collapse" or "Expand")
+                                Explorer.MiscIcons:DisplayByKey(entry.Indent.Expand.Icon,
+                                    expanded[node] and "Collapse" or "Expand")
                             end
                             entry.Indent.Expand.Visible = true
                         else
@@ -1094,7 +1163,7 @@ local EmbeddedModules = {
                         end
                         clipboard = newClipboard
                         selection:Clear()
-                    end,
+                    end
                 })
 
                 context:Register("COPY", {
@@ -1116,7 +1185,7 @@ local EmbeddedModules = {
                             end
                         end
                         clipboard = newClipboard
-                    end,
+                    end
                 })
 
                 context:Register("PASTE", {
@@ -1150,7 +1219,7 @@ local EmbeddedModules = {
                         if #newSelection > 0 then
                             Explorer.ViewNode(newSelection[1])
                         end
-                    end,
+                    end
                 })
 
                 context:Register("DUPLICATE", {
@@ -1184,7 +1253,7 @@ local EmbeddedModules = {
                         if #newSelection > 0 then
                             Explorer.ViewNode(newSelection[1])
                         end
-                    end,
+                    end
                 })
 
                 context:Register("DELETE", {
@@ -1200,7 +1269,7 @@ local EmbeddedModules = {
                             pcall(destroy, sList[i].Obj)
                         end
                         selection:Clear()
-                    end,
+                    end
                 })
 
                 context:Register("RENAME", {
@@ -1214,7 +1283,7 @@ local EmbeddedModules = {
                         if sList[1] then
                             Explorer.SetRenamingNode(sList[1])
                         end
-                    end,
+                    end
                 })
 
                 context:Register("GROUP", {
@@ -1240,7 +1309,7 @@ local EmbeddedModules = {
                             selection:Set(nodes[model])
                             Explorer.ViewNode(nodes[model])
                         end
-                    end,
+                    end
                 })
 
                 context:Register("UNGROUP", {
@@ -1286,7 +1355,7 @@ local EmbeddedModules = {
                         if #newSelection > 0 then
                             Explorer.ViewNode(newSelection[1])
                         end
-                    end,
+                    end
                 })
 
                 context:Register("SELECT_CHILDREN", {
@@ -1318,7 +1387,7 @@ local EmbeddedModules = {
                         else
                             Explorer.Refresh()
                         end
-                    end,
+                    end
                 })
 
                 context:Register("JUMP_TO_PARENT", {
@@ -1344,7 +1413,7 @@ local EmbeddedModules = {
                         else
                             Explorer.Refresh()
                         end
-                    end,
+                    end
                 })
 
                 context:Register("TELEPORT_TO", {
@@ -1374,7 +1443,8 @@ local EmbeddedModules = {
                                     if Obj.PrimaryPart.CanCollide then
                                         plr.Character:MoveTo(Obj.PrimaryPart.Position)
                                     else
-                                        plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position + Settings.Explorer.TeleportToOffset)
+                                        plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position +
+                                                                      Settings.Explorer.TeleportToOffset)
                                     end
                                     break
                                 else
@@ -1383,7 +1453,8 @@ local EmbeddedModules = {
                                         if part.CanCollide then
                                             plr.Character:MoveTo(part.Position)
                                         else
-                                            plrRP.CFrame = CFrame.new(part.Position + Settings.Explorer.TeleportToOffset)
+                                            plrRP.CFrame =
+                                                CFrame.new(part.Position + Settings.Explorer.TeleportToOffset)
                                         end
                                         break
                                     elseif Obj.WorldPivot then
@@ -1392,7 +1463,7 @@ local EmbeddedModules = {
                                 end
                             end
                         end
-                    end,
+                    end
                 })
 
                 local OldAnimation
@@ -1411,7 +1482,7 @@ local EmbeddedModules = {
                                 Obj:Play()
                             end
                         end
-                    end,
+                    end
                 })
 
                 local OldAnimation
@@ -1440,7 +1511,7 @@ local EmbeddedModules = {
                                 break
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("STOP_ANIMATION", {
@@ -1467,7 +1538,7 @@ local EmbeddedModules = {
                                 break
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("EXPAND_ALL", {
@@ -1489,7 +1560,7 @@ local EmbeddedModules = {
                         end
 
                         Explorer.ForceUpdate()
-                    end,
+                    end
                 })
 
                 context:Register("COLLAPSE_ALL", {
@@ -1511,7 +1582,7 @@ local EmbeddedModules = {
                         end
 
                         Explorer.ForceUpdate()
-                    end,
+                    end
                 })
 
                 context:Register("CLEAR_SEARCH_AND_JUMP_TO", {
@@ -1531,7 +1602,7 @@ local EmbeddedModules = {
                         if #newSelection > 0 then
                             Explorer.ViewNode(newSelection[1])
                         end
-                    end,
+                    end
                 })
 
                 -- this code is very bad but im lazy and it works so cope
@@ -1540,7 +1611,8 @@ local EmbeddedModules = {
                         str = str:gsub('game:GetService%("Workspace"%)', "workspace", 1)
                     end
                     if str:sub(1, 27 + #plr.Name) == 'game:GetService("Players").' .. plr.Name then
-                        str = str:gsub('game:GetService%("Players"%).' .. plr.Name, 'game:GetService("Players").LocalPlayer', 1)
+                        str = str:gsub('game:GetService%("Players"%).' .. plr.Name,
+                            'game:GetService("Players").LocalPlayer', 1)
                     end
                     return str
                 end
@@ -1554,7 +1626,7 @@ local EmbeddedModules = {
                         if #sList == 1 then
                             env.setclipboard(clth(Explorer.GetInstancePath(sList[1].Obj)))
                         elseif #sList > 1 then
-                            local resList = { "{" }
+                            local resList = {"{"}
                             local count = 2
                             for i = 1, #sList do
                                 local path = "\t" .. clth(Explorer.GetInstancePath(sList[i].Obj)) .. ","
@@ -1566,7 +1638,7 @@ local EmbeddedModules = {
                             resList[count] = "}"
                             env.setclipboard(table.concat(resList, "\n"))
                         end
-                    end,
+                    end
                 })
 
                 context:Register("INSERT_OBJECT", {
@@ -1577,7 +1649,7 @@ local EmbeddedModules = {
                         local mouse = Main.Mouse
                         local x, y = Explorer.LastRightClickX or mouse.X, Explorer.LastRightClickY or mouse.Y
                         Explorer.InsertObjectContext:Show(x, y)
-                    end,
+                    end
                 })
 
                 --[[context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
@@ -1619,7 +1691,7 @@ local EmbeddedModules = {
                     end,
                     OnRightClick = function()
                         workspace.CurrentCamera.CameraSubject = plr.Character
-                    end,
+                    end
                 })
 
                 context:Register("FIRE_TOUCHTRANSMITTER", {
@@ -1636,7 +1708,7 @@ local EmbeddedModules = {
                                 firetouchinterest(hrp, v.Obj.Parent, 0)
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("FIRE_CLICKDETECTOR", {
@@ -1653,7 +1725,7 @@ local EmbeddedModules = {
                                 fireclickdetector(v.Obj)
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("FIRE_PROXIMITYPROMPT", {
@@ -1670,7 +1742,7 @@ local EmbeddedModules = {
                                 fireproximityprompt(v.Obj)
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("VIEW_SCRIPT", {
@@ -1682,7 +1754,7 @@ local EmbeddedModules = {
                         if scr then
                             ScriptViewer.ViewScript(scr)
                         end
-                    end,
+                    end
                 })
 
                 context:Register("SAVE_BYTECODE", {
@@ -1700,7 +1772,7 @@ local EmbeddedModules = {
                                 end
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("SELECT_CHARACTER", {
@@ -1727,7 +1799,7 @@ local EmbeddedModules = {
                         else
                             Explorer.Refresh()
                         end
-                    end,
+                    end
                 })
 
                 context:Register("VIEW_PLAYER", {
@@ -1748,7 +1820,7 @@ local EmbeddedModules = {
                                 break
                             end
                         end
-                    end,
+                    end
                 })
 
                 context:Register("SELECT_LOCAL_PLAYER", {
@@ -1762,7 +1834,7 @@ local EmbeddedModules = {
                                 Explorer.ViewNode(nodes[plr])
                             end
                         end)
-                    end,
+                    end
                 })
 
                 context:Register("SELECT_ALL_CHARACTERS", {
@@ -1788,21 +1860,21 @@ local EmbeddedModules = {
                         else
                             Explorer.Refresh()
                         end
-                    end,
+                    end
                 })
 
                 context:Register("REFRESH_NIL", {
                     Name = "Refresh Nil Instances",
                     OnClick = function()
                         Explorer.RefreshNilInstances()
-                    end,
+                    end
                 })
 
                 context:Register("HIDE_NIL", {
                     Name = "Hide Nil Instances",
                     OnClick = function()
                         Explorer.HideNilInstances()
-                    end,
+                    end
                 })
 
                 Explorer.RightClickContext = context
@@ -1811,7 +1883,8 @@ local EmbeddedModules = {
             Explorer.HideNilInstances = function()
                 table.clear(nilMap)
 
-                local disconnectCon = Instance.new("Folder").ChildAdded:Connect(function() end).Disconnect
+                local disconnectCon = Instance.new("Folder").ChildAdded:Connect(function()
+                end).Disconnect
                 for i, v in next, nilCons do
                     disconnectCon(v[1])
                     disconnectCon(v[2])
@@ -1834,18 +1907,18 @@ local EmbeddedModules = {
                 local nilInsts = env.getnilinstances()
                 local game = game
                 local getDescs = game.GetDescendants
-                --local newNilMap = {}
-                --local newNilRoots = {}
-                --local nilRoots = Explorer.NilRoots
-                --local connect = game.DescendantAdded.Connect
-                --local disconnect
-                --if not nilRoots then nilRoots = {} Explorer.NilRoots = nilRoots end
+                -- local newNilMap = {}
+                -- local newNilRoots = {}
+                -- local nilRoots = Explorer.NilRoots
+                -- local connect = game.DescendantAdded.Connect
+                -- local disconnect
+                -- if not nilRoots then nilRoots = {} Explorer.NilRoots = nilRoots end
 
                 for i = 1, #nilInsts do
                     local obj = nilInsts[i]
                     if obj ~= game then
                         nilMap[obj] = true
-                        --newNilRoots[obj] = true
+                        -- newNilRoots[obj] = true
 
                         local descs = getDescs(obj)
                         for j = 1, #descs do
@@ -1863,7 +1936,7 @@ local EmbeddedModules = {
 			end
 		end]]
 
-                --nilMap = newNilMap
+                -- nilMap = newNilMap
 
                 for i = 1, #nilInsts do
                     local obj = nilInsts[i]
@@ -1892,8 +1965,8 @@ local EmbeddedModules = {
 			end
 		end]]
 
-                --nilMap = newNilMap
-                --Explorer.NilRoots = newNilRoots
+                -- nilMap = newNilMap
+                -- Explorer.NilRoots = newNilRoots
 
                 Explorer.Update()
                 Explorer.Refresh()
@@ -1938,7 +2011,8 @@ local EmbeddedModules = {
                             indexName = ':GetService("' .. className .. '")'
                         end
                     elseif parObj == nil then
-                        local getnil = "local getNil = function(name, class) for _, v in next, getnilinstances() do if v.ClassName == class and v.Name == name then return v end end end"
+                        local getnil =
+                            "local getNil = function(name, class) for _, v in next, getnilinstances() do if v.ClassName == class and v.Name == name then return v end end end"
                         local gotnil = '\n\ngetNil("%s", "%s")'
                         indexName = getnil .. gotnil:format(curObj.Name, className)
                     end
@@ -1959,14 +2033,14 @@ local EmbeddedModules = {
                         end
                         return Obj.Position
                     end,
-                    Anchored = true,
+                    Anchored = true
                 },
                 ["GuiObject"] = {
                     Position = function(Obj)
                         return (Obj.Parent:IsA("ScreenGui") and UDim2.new(0.5, 0, 0.5, 0)) or Obj.Position
                     end,
-                    Active = true,
-                },
+                    Active = true
+                }
             }
 
             Explorer.InitInsertObject = function()
@@ -1978,7 +2052,7 @@ local EmbeddedModules = {
                     OutlineColor = Settings.Theme.Outline1,
                     DividerColor = Settings.Theme.Outline1,
                     TextColor = Settings.Theme.Text,
-                    HighlightColor = Settings.Theme.ButtonHover,
+                    HighlightColor = Settings.Theme.ButtonHover
                 })
 
                 local classes = {}
@@ -1986,7 +2060,7 @@ local EmbeddedModules = {
                     local tags = class.Tags
                     if not tags.NotCreatable and not tags.Service then
                         local rmdEntry = RMD.Classes[class.Name]
-                        classes[#classes + 1] = { class, rmdEntry and rmdEntry.ClassCategory or "Uncategorized" }
+                        classes[#classes + 1] = {class, rmdEntry and rmdEntry.ClassCategory or "Uncategorized"}
                     end
                 end
                 table.sort(classes, function(a, b)
@@ -2032,7 +2106,12 @@ local EmbeddedModules = {
                         context:AddDivider(category)
                         lastCategory = category
                     end
-                    context:Add({ Name = class.Name, IconMap = Explorer.ClassIcons, Icon = iconInd, OnClick = onClick })
+                    context:Add({
+                        Name = class.Name,
+                        IconMap = Explorer.ClassIcons,
+                        Icon = iconInd,
+                        OnClick = onClick
+                    })
                 end
 
                 Explorer.InsertObjectContext = context
@@ -2049,22 +2128,22 @@ local EmbeddedModules = {
                 end
 
                 local Only = {
-                    remotes = { "RemoteEvent", "RemoteFunction", "BindableEvent", "BindableFunction" },
-                    scripts = { "Script", "LocalScript", "ModuleScript" },
-                    players = { "Player" },
+                    remotes = {"RemoteEvent", "RemoteFunction", "BindableEvent", "BindableFunction"},
+                    scripts = {"Script", "LocalScript", "ModuleScript"},
+                    players = {"Player"}
                 }
 
-                NewFilter({ "parent", "p" }, function(Obj, str)
+                NewFilter({"parent", "p"}, function(Obj, str)
                     return Obj.Parent and (Obj.Parent.Name:lower()):find(str)
                 end)
-                NewFilter({ "class", "c" }, function(Obj, str)
+                NewFilter({"class", "c"}, function(Obj, str)
                     return (Obj.ClassName:lower()):find(str)
                 end)
-                NewFilter({ "isa", "i" }, function(Obj, str)
+                NewFilter({"isa", "i"}, function(Obj, str)
                     return Obj:IsA(str)
                 end)
 
-                NewFilter({ "only", "o" }, function(Obj, str)
+                NewFilter({"only", "o"}, function(Obj, str)
                     local Special = Only[str]
                     return Special and table.find(Special, Obj.ClassName)
                 end)
@@ -2216,8 +2295,12 @@ local EmbeddedModules = {
 
                 local TweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint)
                 local Tweens = {
-                    Start = TweenService:Create(SearchFrame.UIStroke, TweenInfo, { Color = Color3.fromRGB(0, 120, 215) }),
-                    End = TweenService:Create(SearchFrame.UIStroke, TweenInfo, { Color = Color3.fromRGB(42, 42, 42) }),
+                    Start = TweenService:Create(SearchFrame.UIStroke, TweenInfo, {
+                        Color = Color3.fromRGB(0, 120, 215)
+                    }),
+                    End = TweenService:Create(SearchFrame.UIStroke, TweenInfo, {
+                        Color = Color3.fromRGB(42, 42, 42)
+                    })
                 }
 
                 searchBox.FocusLost:Connect(function()
@@ -2235,17 +2318,74 @@ local EmbeddedModules = {
             end
 
             Explorer.InitEntryTemplate = function()
-                entryTemplate = create({
-                    { 1, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 1, BorderColor3 = Color3.new(0, 0, 0), Font = 3, Name = "Entry", Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(0, 250, 0, 20), Text = "", TextSize = 14 } },
-                    { 2, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161), BorderSizePixel = 0, Name = "Indent", Parent = { 1 }, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(1, -20, 1, 0) } },
-                    { 3, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "EntryName", Parent = { 2 }, Position = UDim2.new(0, 26, 0, 0), Size = UDim2.new(1, -26, 1, 0), Text = "Workspace", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                    { 4, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClipsDescendants = true, Font = 3, Name = "Expand", Parent = { 2 }, Position = UDim2.new(0, -20, 0, 0), Size = UDim2.new(0, 20, 0, 20), Text = "", TextSize = 14 } },
-                    { 5, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5642383285", ImageRectOffset = Vector2.new(144, 16), ImageRectSize = Vector2.new(16, 16), Name = "Icon", Parent = { 4 }, Position = UDim2.new(0, 2, 0, 2), ScaleType = 4, Size = UDim2.new(0, 16, 0, 16) } },
-                    { 6, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ImageRectOffset = Vector2.new(304, 0), ImageRectSize = Vector2.new(16, 16), Name = "Icon", Parent = { 2 }, Position = UDim2.new(0, 4, 0, 2), ScaleType = 4, Size = UDim2.new(0, 16, 0, 16) } },
-                })
+                entryTemplate = create({{1, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0, 0, 0),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.new(0, 0, 0),
+                    Font = 3,
+                    Name = "Entry",
+                    Position = UDim2.new(0, 1, 0, 1),
+                    Size = UDim2.new(0, 250, 0, 20),
+                    Text = "",
+                    TextSize = 14
+                }}, {2, "Frame", {
+                    BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161),
+                    BorderSizePixel = 0,
+                    Name = "Indent",
+                    Parent = {1},
+                    Position = UDim2.new(0, 20, 0, 0),
+                    Size = UDim2.new(1, -20, 1, 0)
+                }}, {3, "TextLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Font = 3,
+                    Name = "EntryName",
+                    Parent = {2},
+                    Position = UDim2.new(0, 26, 0, 0),
+                    Size = UDim2.new(1, -26, 1, 0),
+                    Text = "Workspace",
+                    TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                    TextSize = 14,
+                    TextXAlignment = 0
+                }}, {4, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClipsDescendants = true,
+                    Font = 3,
+                    Name = "Expand",
+                    Parent = {2},
+                    Position = UDim2.new(0, -20, 0, 0),
+                    Size = UDim2.new(0, 20, 0, 20),
+                    Text = "",
+                    TextSize = 14
+                }}, {5, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5642383285",
+                    ImageRectOffset = Vector2.new(144, 16),
+                    ImageRectSize = Vector2.new(16, 16),
+                    Name = "Icon",
+                    Parent = {4},
+                    Position = UDim2.new(0, 2, 0, 2),
+                    ScaleType = 4,
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {6, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ImageRectOffset = Vector2.new(304, 0),
+                    ImageRectSize = Vector2.new(16, 16),
+                    Name = "Icon",
+                    Parent = {2},
+                    Position = UDim2.new(0, 4, 0, 2),
+                    ScaleType = 4,
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}})
 
                 local sys = Lib.ClickSystem.new()
-                sys.AllowedButtons = { 1, 2 }
+                sys.AllowedButtons = {1, 2}
                 sys.OnDown:Connect(function(item, combo, button)
                     local ind = table.find(listEntries, item)
                     if not ind then
@@ -2422,13 +2562,35 @@ local EmbeddedModules = {
                     Explorer.SelectionVisualsHolder = holder
                     Explorer.SelectionVisualCons = {}
 
-                    local guiTemplate = create({
-                        { 1, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Size = UDim2.new(0, 100, 0, 100) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, -1, 0, -1), Size = UDim2.new(1, 2, 0, 1) } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, -1, 1, 0), Size = UDim2.new(1, 2, 0, 1) } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, -1, 0, 0), Size = UDim2.new(0, 1, 1, 0) } },
-                        { 5, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(1, 0, 0, 0), Size = UDim2.new(0, 1, 1, 0) } },
-                    })
+                    local guiTemplate = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Size = UDim2.new(0, 100, 0, 100)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, -1, 0, -1),
+                        Size = UDim2.new(1, 2, 0, 1)
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, -1, 1, 0),
+                        Size = UDim2.new(1, 2, 0, 1)
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, -1, 0, 0),
+                        Size = UDim2.new(0, 1, 1, 0)
+                    }}, {5, "Frame", {
+                        BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(1, 0, 0, 0),
+                        Size = UDim2.new(0, 1, 1, 0)
+                    }}})
                     Explorer.SelectionVisualGui = guiTemplate
 
                     local boxTemplate = Instance.new("SelectionBox")
@@ -2472,7 +2634,10 @@ local EmbeddedModules = {
                     if node ~= workspaceNode then
                         if isa(obj, "GuiObject") and guiEnabled then
                             local newVisual = clone(svg)
-                            attachCons[count] = attachTo(newVisual, { Target = obj, Resize = true })
+                            attachCons[count] = attachTo(newVisual, {
+                                Target = obj,
+                                Resize = true
+                            })
                             count = count + 1
                             newVisual.Parent = holder
                             boxCount = boxCount + 1
@@ -2500,27 +2665,113 @@ local EmbeddedModules = {
                 Explorer.InitRightClick()
                 Explorer.InitInsertObject()
                 Explorer.SetSortingEnabled(Settings.Explorer.Sorting)
-                Explorer.Expanded = setmetatable({}, { __mode = "k" })
-                Explorer.SearchExpanded = setmetatable({}, { __mode = "k" })
+                Explorer.Expanded = setmetatable({}, {
+                    __mode = "k"
+                })
+                Explorer.SearchExpanded = setmetatable({}, {
+                    __mode = "k"
+                })
                 expanded = Explorer.Expanded
 
                 nilNode.Obj.Name = "Nil Instances"
                 nilNode.Locked = true
 
-                local explorerItems = create({
-                    { 1, "Folder", { Name = "ExplorerItems" } },
-                    { 2, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "ToolBar", Parent = { 1 }, Size = UDim2.new(1, 0, 0, 22) } },
-                    { 3, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618), BorderSizePixel = 0, Name = "SearchFrame", Parent = { 2 }, Position = UDim2.new(0, 3, 0, 1), Size = UDim2.new(1, -6, 0, 18) } },
-                    { 4, "TextBox", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClearTextOnFocus = false, Font = 3, Name = "SearchBox", Parent = { 3 }, PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537), PlaceholderText = "Search workspace", Position = UDim2.new(0, 4, 0, 0), Size = UDim2.new(1, -24, 0, 18), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0 } },
-                    { 5, "UICorner", { CornerRadius = UDim.new(0, 2), Parent = { 3 } } },
-                    { 6, "UIStroke", { Thickness = 1.4, Parent = { 3 }, Color = Color3.fromRGB(42, 42, 42) } },
-                    { 7, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Reset", Parent = { 3 }, Position = UDim2.new(1, -17, 0, 1), Size = UDim2.new(0, 16, 0, 16), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                    { 8, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5034718129", ImageColor3 = Color3.new(0.39215686917305, 0.39215686917305, 0.39215686917305), Parent = { 7 }, Size = UDim2.new(0, 16, 0, 16) } },
-                    { 9, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Refresh", Parent = { 2 }, Position = UDim2.new(1, -20, 0, 1), Size = UDim2.new(0, 18, 0, 18), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, Visible = false } },
-                    { 10, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5642310344", Parent = { 9 }, Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(0, 12, 0, 12) } },
-                    { 11, "Frame", { BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945), BorderSizePixel = 0, Name = "ScrollCorner", Parent = { 1 }, Position = UDim2.new(1, -16, 1, -16), Size = UDim2.new(0, 16, 0, 16), Visible = false } },
-                    { 12, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClipsDescendants = true, Name = "List", Parent = { 1 }, Position = UDim2.new(0, 0, 0, 23), Size = UDim2.new(1, 0, 1, -23) } },
-                })
+                local explorerItems = create({{1, "Folder", {
+                    Name = "ExplorerItems"
+                }}, {2, "Frame", {
+                    BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                    BorderSizePixel = 0,
+                    Name = "ToolBar",
+                    Parent = {1},
+                    Size = UDim2.new(1, 0, 0, 22)
+                }}, {3, "Frame", {
+                    BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                    BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618),
+                    BorderSizePixel = 0,
+                    Name = "SearchFrame",
+                    Parent = {2},
+                    Position = UDim2.new(0, 3, 0, 1),
+                    Size = UDim2.new(1, -6, 0, 18)
+                }}, {4, "TextBox", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClearTextOnFocus = false,
+                    Font = 3,
+                    Name = "SearchBox",
+                    Parent = {3},
+                    PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537),
+                    PlaceholderText = "Search workspace",
+                    Position = UDim2.new(0, 4, 0, 0),
+                    Size = UDim2.new(1, -24, 0, 18),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextXAlignment = 0
+                }}, {5, "UICorner", {
+                    CornerRadius = UDim.new(0, 2),
+                    Parent = {3}
+                }}, {6, "UIStroke", {
+                    Thickness = 1.4,
+                    Parent = {3},
+                    Color = Color3.fromRGB(42, 42, 42)
+                }}, {7, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "Reset",
+                    Parent = {3},
+                    Position = UDim2.new(1, -17, 0, 1),
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14
+                }}, {8, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5034718129",
+                    ImageColor3 = Color3.new(0.39215686917305, 0.39215686917305, 0.39215686917305),
+                    Parent = {7},
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {9, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "Refresh",
+                    Parent = {2},
+                    Position = UDim2.new(1, -20, 0, 1),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    Visible = false
+                }}, {10, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5642310344",
+                    Parent = {9},
+                    Position = UDim2.new(0, 3, 0, 3),
+                    Size = UDim2.new(0, 12, 0, 12)
+                }}, {11, "Frame", {
+                    BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945),
+                    BorderSizePixel = 0,
+                    Name = "ScrollCorner",
+                    Parent = {1},
+                    Position = UDim2.new(1, -16, 1, -16),
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Visible = false
+                }}, {12, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClipsDescendants = true,
+                    Name = "List",
+                    Parent = {1},
+                    Position = UDim2.new(0, 0, 0, 23),
+                    Size = UDim2.new(1, 0, 1, -23)
+                }}})
 
                 toolBar = explorerItems.ToolBar
                 treeFrame = explorerItems.List
@@ -2593,7 +2844,9 @@ local EmbeddedModules = {
                 autoUpdateSearch = Settings.Explorer.AutoUpdateSearch
 
                 -- Fill in nodes
-                nodes[game] = { Obj = game }
+                nodes[game] = {
+                    Obj = game
+                }
                 expanded[nodes[game]] = true
 
                 -- Nil Instances
@@ -2608,30 +2861,28 @@ local EmbeddedModules = {
                     for i = 1, #insts do
                         local obj = insts[i]
                         local par = nodes[ffa(obj, "Instance")]
-                        if not par then
-                            continue
+                        if par then
+                            local newNode = {
+                                Obj = obj,
+                                Parent = par
+                            }
+                            nodes[obj] = newNode
+                            par[#par + 1] = newNode
                         end
-                        local newNode = {
-                            Obj = obj,
-                            Parent = par,
-                        }
-                        nodes[obj] = newNode
-                        par[#par + 1] = newNode
                     end
                 else
                     for i = 1, #insts do
                         local obj = insts[i]
                         local s, parObj = pcall(ffa, obj, "Instance")
                         local par = nodes[parObj]
-                        if not par then
-                            continue
+                        if par then
+                            local newNode = {
+                                Obj = obj,
+                                Parent = par
+                            }
+                            nodes[obj] = newNode
+                            par[#par + 1] = newNode
                         end
-                        local newNode = {
-                            Obj = obj,
-                            Parent = par,
-                        }
-                        nodes[obj] = newNode
-                        par[#par + 1] = newNode
                     end
                 end
             end
@@ -2639,7 +2890,11 @@ local EmbeddedModules = {
             return Explorer
         end
 
-        return { InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main }
+        return {
+            InitDeps = initDeps,
+            InitAfterMain = initAfterMain,
+            Main = main
+        }
     end,
     Properties = function()
         --[[
@@ -2702,16 +2957,30 @@ local EmbeddedModules = {
             Properties.ClassLists = {}
             Properties.SearchText = ""
 
-            Properties.AddAttributeProp = { Category = "Attributes", Class = "", Name = "", SpecialRow = "AddAttribute", Tags = {} }
-            Properties.SoundPreviewProp = { Category = "Data", ValueType = { Name = "SoundPlayer" }, Class = "Sound", Name = "Preview", Tags = {} }
+            Properties.AddAttributeProp = {
+                Category = "Attributes",
+                Class = "",
+                Name = "",
+                SpecialRow = "AddAttribute",
+                Tags = {}
+            }
+            Properties.SoundPreviewProp = {
+                Category = "Data",
+                ValueType = {
+                    Name = "SoundPlayer"
+                },
+                Class = "Sound",
+                Name = "Preview",
+                Tags = {}
+            }
 
             Properties.IgnoreProps = {
                 ["DataModel"] = {
                     ["PrivateServerId"] = true,
                     ["PrivateServerOwnerId"] = true,
                     ["VIPServerId"] = true,
-                    ["VIPServerOwnerId"] = true,
-                },
+                    ["VIPServerOwnerId"] = true
+                }
             }
 
             Properties.ExpandableTypes = {
@@ -2725,36 +2994,39 @@ local EmbeddedModules = {
                 ["Ray"] = true,
                 ["NumberRange"] = true,
                 ["Faces"] = true,
-                ["Axes"] = true,
+                ["Axes"] = true
             }
 
             Properties.ExpandableProps = {
-                ["Sound.SoundId"] = true,
+                ["Sound.SoundId"] = true
             }
 
             Properties.CollapsedCategories = {
                 ["Surface Inputs"] = true,
-                ["Surface"] = true,
+                ["Surface"] = true
             }
 
             Properties.ConflictSubProps = {
-                ["Vector2"] = { "X", "Y" },
-                ["Vector3"] = { "X", "Y", "Z" },
-                ["UDim"] = { "Scale", "Offset" },
-                ["UDim2"] = { "X", "X.Scale", "X.Offset", "Y", "Y.Scale", "Y.Offset" },
-                ["CFrame"] = { "Position", "Position.X", "Position.Y", "Position.Z", "RightVector", "RightVector.X", "RightVector.Y", "RightVector.Z", "UpVector", "UpVector.X", "UpVector.Y", "UpVector.Z", "LookVector", "LookVector.X", "LookVector.Y", "LookVector.Z" },
-                ["Rect"] = { "Min.X", "Min.Y", "Max.X", "Max.Y" },
-                ["PhysicalProperties"] = { "Density", "Elasticity", "ElasticityWeight", "Friction", "FrictionWeight" },
-                ["Ray"] = { "Origin", "Origin.X", "Origin.Y", "Origin.Z", "Direction", "Direction.X", "Direction.Y", "Direction.Z" },
-                ["NumberRange"] = { "Min", "Max" },
-                ["Faces"] = { "Back", "Bottom", "Front", "Left", "Right", "Top" },
-                ["Axes"] = { "X", "Y", "Z" },
+                ["Vector2"] = {"X", "Y"},
+                ["Vector3"] = {"X", "Y", "Z"},
+                ["UDim"] = {"Scale", "Offset"},
+                ["UDim2"] = {"X", "X.Scale", "X.Offset", "Y", "Y.Scale", "Y.Offset"},
+                ["CFrame"] = {"Position", "Position.X", "Position.Y", "Position.Z", "RightVector", "RightVector.X",
+                              "RightVector.Y", "RightVector.Z", "UpVector", "UpVector.X", "UpVector.Y", "UpVector.Z",
+                              "LookVector", "LookVector.X", "LookVector.Y", "LookVector.Z"},
+                ["Rect"] = {"Min.X", "Min.Y", "Max.X", "Max.Y"},
+                ["PhysicalProperties"] = {"Density", "Elasticity", "ElasticityWeight", "Friction", "FrictionWeight"},
+                ["Ray"] = {"Origin", "Origin.X", "Origin.Y", "Origin.Z", "Direction", "Direction.X", "Direction.Y",
+                           "Direction.Z"},
+                ["NumberRange"] = {"Min", "Max"},
+                ["Faces"] = {"Back", "Bottom", "Front", "Left", "Right", "Top"},
+                ["Axes"] = {"X", "Y", "Z"}
             }
 
             Properties.ConflictIgnore = {
                 ["BasePart"] = {
-                    ["ResizableFaces"] = true,
-                },
+                    ["ResizableFaces"] = true
+                }
             }
 
             Properties.RoundableTypes = {
@@ -2770,19 +3042,19 @@ local EmbeddedModules = {
                 ["NumberSequence"] = true,
                 ["ColorSequence"] = true,
                 ["Ray"] = true,
-                ["CFrame"] = true,
+                ["CFrame"] = true
             }
 
             Properties.TypeNameConvert = {
                 ["number"] = "double",
-                ["boolean"] = "bool",
+                ["boolean"] = "bool"
             }
 
             Properties.ToNumberTypes = {
                 ["int"] = true,
                 ["int64"] = true,
                 ["float"] = true,
-                ["double"] = true,
+                ["double"] = true
             }
 
             Properties.DefaultPropValue = {
@@ -2798,10 +3070,12 @@ local EmbeddedModules = {
                 NumberSequence = NumberSequence.new(1),
                 ColorSequence = ColorSequence.new(Color3.new(1, 1, 1)),
                 NumberRange = NumberRange.new(0),
-                Rect = Rect.new(0, 0, 0, 0),
+                Rect = Rect.new(0, 0, 0, 0)
             }
 
-            Properties.AllowedAttributeTypes = { "string", "boolean", "number", "UDim", "UDim2", "BrickColor", "Color3", "Vector2", "Vector3", "NumberSequence", "ColorSequence", "NumberRange", "Rect" }
+            Properties.AllowedAttributeTypes = {"string", "boolean", "number", "UDim", "UDim2", "BrickColor", "Color3",
+                                                "Vector2", "Vector3", "NumberSequence", "ColorSequence", "NumberRange",
+                                                "Rect"}
 
             Properties.StringToValue = function(prop, str)
                 local typeData = prop.ValueType
@@ -2831,7 +3105,8 @@ local EmbeddedModules = {
                     end
                 elseif typeName == "UDim2" then
                     local vals = str:gsub("[{}]", ""):split(",")
-                    local xScale, xOffset, yScale, yOffset = tonumber(vals[1]), tonumber(vals[2]), tonumber(vals[3]), tonumber(vals[4])
+                    local xScale, xOffset, yScale, yOffset = tonumber(vals[1]), tonumber(vals[2]), tonumber(vals[3]),
+                        tonumber(vals[4])
                     if xScale and xOffset and yScale and yOffset and #vals >= 4 then
                         return UDim2.new(xScale, xOffset, yScale, yOffset)
                     end
@@ -2931,7 +3206,7 @@ local EmbeddedModules = {
                 local t_clear = table.clear
                 local conflictIgnore = Properties.ConflictIgnore
                 local conflictMap = {}
-                local propList = p and { p } or props
+                local propList = p and {p} or props
 
                 if p then
                     local gName = p.Class .. "." .. p.Name
@@ -3135,20 +3410,35 @@ local EmbeddedModules = {
                         for name, val in pairs(attrs) do
                             local typ = typeof(val)
                             if not foundAttrs[name] then
-                                local category = (typ == "Instance" and "Class") or (typ == "EnumItem" and "Enum") or "Other"
-                                local valType = { Name = typeNameConvert[typ] or typ, Category = category }
-                                local attrProp = { IsAttribute = true, Name = "ATTR_" .. name, AttributeName = name, DisplayName = name, Class = "Instance", ValueType = valType, Category = "Attributes", Tags = {} }
+                                local category = (typ == "Instance" and "Class") or (typ == "EnumItem" and "Enum") or
+                                                     "Other"
+                                local valType = {
+                                    Name = typeNameConvert[typ] or typ,
+                                    Category = category
+                                }
+                                local attrProp = {
+                                    IsAttribute = true,
+                                    Name = "ATTR_" .. name,
+                                    AttributeName = name,
+                                    DisplayName = name,
+                                    Class = "Instance",
+                                    ValueType = valType,
+                                    Category = "Attributes",
+                                    Tags = {}
+                                }
                                 props[propCount] = attrProp
                                 propCount = propCount + 1
                                 attrCount = attrCount + 1
-                                foundAttrs[name] = { typ, attrProp }
+                                foundAttrs[name] = {typ, attrProp}
                                 if attrCount == maxAttrs then
                                     break
                                 end
                             elseif foundAttrs[name][1] ~= typ then
                                 foundAttrs[name][2].MultiType = true
                                 foundAttrs[name][2].Tags.ReadOnly = true
-                                foundAttrs[name][2].ValueType = { Name = "string" }
+                                foundAttrs[name][2].ValueType = {
+                                    Name = "string"
+                                }
                             end
                         end
                     end
@@ -3171,7 +3461,7 @@ local EmbeddedModules = {
                 -- Find conflicts and get auto-update instances
                 Properties.ClassLists = classLists
                 Properties.ComputeConflicts()
-                --warn("CONFLICT",tick()-start)
+                -- warn("CONFLICT",tick()-start)
                 if #props > 0 then
                     props[#props + 1] = Properties.AddAttributeProp
                 end
@@ -3194,7 +3484,8 @@ local EmbeddedModules = {
                 scrollH.Gui.Visible = Settings.Properties.ScaleType == 0 and totalWidth > maxX
 
                 local oldSize = propsFrame.Size
-                propsFrame.Size = UDim2.new(1, (scrollV.Gui.Visible and -16 or 0), 1, (scrollH.Gui.Visible and -39 or -23))
+                propsFrame.Size = UDim2.new(1, (scrollV.Gui.Visible and -16 or 0), 1,
+                    (scrollH.Gui.Visible and -39 or -23))
                 if oldSize ~= propsFrame.Size then
                     Properties.UpdateView()
                 else
@@ -3235,51 +3526,121 @@ local EmbeddedModules = {
                 local makeSubProp = Properties.MakeSubProp
 
                 if typeName == "Vector2" then
-                    result[1] = makeSubProp(prop, ".X", { Name = "float" })
-                    result[2] = makeSubProp(prop, ".Y", { Name = "float" })
+                    result[1] = makeSubProp(prop, ".X", {
+                        Name = "float"
+                    })
+                    result[2] = makeSubProp(prop, ".Y", {
+                        Name = "float"
+                    })
                 elseif typeName == "Vector3" then
-                    result[1] = makeSubProp(prop, ".X", { Name = "float" })
-                    result[2] = makeSubProp(prop, ".Y", { Name = "float" })
-                    result[3] = makeSubProp(prop, ".Z", { Name = "float" })
+                    result[1] = makeSubProp(prop, ".X", {
+                        Name = "float"
+                    })
+                    result[2] = makeSubProp(prop, ".Y", {
+                        Name = "float"
+                    })
+                    result[3] = makeSubProp(prop, ".Z", {
+                        Name = "float"
+                    })
                 elseif typeName == "CFrame" then
-                    result[1] = makeSubProp(prop, ".Position", { Name = "Vector3" })
-                    result[2] = makeSubProp(prop, ".RightVector", { Name = "Vector3" })
-                    result[3] = makeSubProp(prop, ".UpVector", { Name = "Vector3" })
-                    result[4] = makeSubProp(prop, ".LookVector", { Name = "Vector3" })
+                    result[1] = makeSubProp(prop, ".Position", {
+                        Name = "Vector3"
+                    })
+                    result[2] = makeSubProp(prop, ".RightVector", {
+                        Name = "Vector3"
+                    })
+                    result[3] = makeSubProp(prop, ".UpVector", {
+                        Name = "Vector3"
+                    })
+                    result[4] = makeSubProp(prop, ".LookVector", {
+                        Name = "Vector3"
+                    })
                 elseif typeName == "UDim" then
-                    result[1] = makeSubProp(prop, ".Scale", { Name = "float" })
-                    result[2] = makeSubProp(prop, ".Offset", { Name = "int" })
+                    result[1] = makeSubProp(prop, ".Scale", {
+                        Name = "float"
+                    })
+                    result[2] = makeSubProp(prop, ".Offset", {
+                        Name = "int"
+                    })
                 elseif typeName == "UDim2" then
-                    result[1] = makeSubProp(prop, ".X", { Name = "UDim" })
-                    result[2] = makeSubProp(prop, ".Y", { Name = "UDim" })
+                    result[1] = makeSubProp(prop, ".X", {
+                        Name = "UDim"
+                    })
+                    result[2] = makeSubProp(prop, ".Y", {
+                        Name = "UDim"
+                    })
                 elseif typeName == "Rect" then
-                    result[1] = makeSubProp(prop, ".Min.X", { Name = "float" }, "X0")
-                    result[2] = makeSubProp(prop, ".Min.Y", { Name = "float" }, "Y0")
-                    result[3] = makeSubProp(prop, ".Max.X", { Name = "float" }, "X1")
-                    result[4] = makeSubProp(prop, ".Max.Y", { Name = "float" }, "Y1")
+                    result[1] = makeSubProp(prop, ".Min.X", {
+                        Name = "float"
+                    }, "X0")
+                    result[2] = makeSubProp(prop, ".Min.Y", {
+                        Name = "float"
+                    }, "Y0")
+                    result[3] = makeSubProp(prop, ".Max.X", {
+                        Name = "float"
+                    }, "X1")
+                    result[4] = makeSubProp(prop, ".Max.Y", {
+                        Name = "float"
+                    }, "Y1")
                 elseif typeName == "PhysicalProperties" then
-                    result[1] = makeSubProp(prop, ".Density", { Name = "float" })
-                    result[2] = makeSubProp(prop, ".Elasticity", { Name = "float" })
-                    result[3] = makeSubProp(prop, ".ElasticityWeight", { Name = "float" })
-                    result[4] = makeSubProp(prop, ".Friction", { Name = "float" })
-                    result[5] = makeSubProp(prop, ".FrictionWeight", { Name = "float" })
+                    result[1] = makeSubProp(prop, ".Density", {
+                        Name = "float"
+                    })
+                    result[2] = makeSubProp(prop, ".Elasticity", {
+                        Name = "float"
+                    })
+                    result[3] = makeSubProp(prop, ".ElasticityWeight", {
+                        Name = "float"
+                    })
+                    result[4] = makeSubProp(prop, ".Friction", {
+                        Name = "float"
+                    })
+                    result[5] = makeSubProp(prop, ".FrictionWeight", {
+                        Name = "float"
+                    })
                 elseif typeName == "Ray" then
-                    result[1] = makeSubProp(prop, ".Origin", { Name = "Vector3" })
-                    result[2] = makeSubProp(prop, ".Direction", { Name = "Vector3" })
+                    result[1] = makeSubProp(prop, ".Origin", {
+                        Name = "Vector3"
+                    })
+                    result[2] = makeSubProp(prop, ".Direction", {
+                        Name = "Vector3"
+                    })
                 elseif typeName == "NumberRange" then
-                    result[1] = makeSubProp(prop, ".Min", { Name = "float" })
-                    result[2] = makeSubProp(prop, ".Max", { Name = "float" })
+                    result[1] = makeSubProp(prop, ".Min", {
+                        Name = "float"
+                    })
+                    result[2] = makeSubProp(prop, ".Max", {
+                        Name = "float"
+                    })
                 elseif typeName == "Faces" then
-                    result[1] = makeSubProp(prop, ".Back", { Name = "bool" })
-                    result[2] = makeSubProp(prop, ".Bottom", { Name = "bool" })
-                    result[3] = makeSubProp(prop, ".Front", { Name = "bool" })
-                    result[4] = makeSubProp(prop, ".Left", { Name = "bool" })
-                    result[5] = makeSubProp(prop, ".Right", { Name = "bool" })
-                    result[6] = makeSubProp(prop, ".Top", { Name = "bool" })
+                    result[1] = makeSubProp(prop, ".Back", {
+                        Name = "bool"
+                    })
+                    result[2] = makeSubProp(prop, ".Bottom", {
+                        Name = "bool"
+                    })
+                    result[3] = makeSubProp(prop, ".Front", {
+                        Name = "bool"
+                    })
+                    result[4] = makeSubProp(prop, ".Left", {
+                        Name = "bool"
+                    })
+                    result[5] = makeSubProp(prop, ".Right", {
+                        Name = "bool"
+                    })
+                    result[6] = makeSubProp(prop, ".Top", {
+                        Name = "bool"
+                    })
                 elseif typeName == "Axes" then
-                    result[1] = makeSubProp(prop, ".X", { Name = "bool" })
-                    result[2] = makeSubProp(prop, ".Y", { Name = "bool" })
-                    result[3] = makeSubProp(prop, ".Z", { Name = "bool" })
+                    result[1] = makeSubProp(prop, ".X", {
+                        Name = "bool"
+                    })
+                    result[2] = makeSubProp(prop, ".Y", {
+                        Name = "bool"
+                    })
+                    result[3] = makeSubProp(prop, ".Z", {
+                        Name = "bool"
+                    })
                 end
 
                 if prop.Name == "SoundId" and prop.Class == "Sound" then
@@ -3324,7 +3685,9 @@ local EmbeddedModules = {
                         end
 
                         if visible and lastCategory ~= category then
-                            viewList[count] = { CategoryName = category }
+                            viewList[count] = {
+                                CategoryName = category
+                            }
                             count = count + 1
                             lastCategory = category
                         end
@@ -3403,24 +3766,32 @@ local EmbeddedModules = {
 
                 nameFrame.Expand.InputBegan:Connect(function(input)
                     local prop = viewList[index + Properties.Index]
-                    if not prop or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not prop or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
-                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." .. prop.Name .. (prop.SubName or "")
+                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." ..
+                                         prop.Name .. (prop.SubName or "")
 
-                    Main.MiscIcons:DisplayByKey(newEntry.NameFrame.Expand.Icon, expanded[fullName] and "Collapse_Over" or "Expand_Over")
+                    Main.MiscIcons:DisplayByKey(newEntry.NameFrame.Expand.Icon,
+                        expanded[fullName] and "Collapse_Over" or "Expand_Over")
                 end)
 
                 nameFrame.Expand.InputEnded:Connect(function(input)
                     local prop = viewList[index + Properties.Index]
-                    if not prop or (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~= Enum.UserInputType.Touch) then
+                    if not prop or
+                        (input.UserInputType ~= Enum.UserInputType.MouseMovement and input.UserInputType ~=
+                            Enum.UserInputType.Touch) then
                         return
                     end
 
-                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." .. prop.Name .. (prop.SubName or "")
+                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." ..
+                                         prop.Name .. (prop.SubName or "")
 
-                    Main.MiscIcons:DisplayByKey(newEntry.NameFrame.Expand.Icon, expanded[fullName] and "Collapse" or "Expand")
+                    Main.MiscIcons:DisplayByKey(newEntry.NameFrame.Expand.Icon,
+                        expanded[fullName] and "Collapse" or "Expand")
                 end)
 
                 nameFrame.Expand.MouseButton1Down:Connect(function()
@@ -3429,8 +3800,10 @@ local EmbeddedModules = {
                         return
                     end
 
-                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." .. prop.Name .. (prop.SubName or "")
-                    if not prop.CategoryName and not Properties.ExpandableTypes[prop.ValueType and prop.ValueType.Name] and not Properties.ExpandableProps[fullName] then
+                    local fullName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." ..
+                                         prop.Name .. (prop.SubName or "")
+                    if not prop.CategoryName and not Properties.ExpandableTypes[prop.ValueType and prop.ValueType.Name] and
+                        not Properties.ExpandableProps[fullName] then
                         return
                     end
 
@@ -3444,23 +3817,28 @@ local EmbeddedModules = {
                     if not prop then
                         return
                     end
-                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and not nameFrame.PropName.TextFits then
+                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                        Enum.UserInputType.Touch) and not nameFrame.PropName.TextFits then
                         local fullNameFrame = Properties.FullNameFrame
                         local nameArr = string.split(prop.Class .. "." .. prop.Name .. (prop.SubName or ""), ".")
                         local dispName = prop.DisplayName or nameArr[#nameArr]
-                        local sizeX = service.TextService:GetTextSize(dispName, 14, Enum.Font.SourceSans, Vector2.new(math.huge, 20)).X
+                        local sizeX = service.TextService:GetTextSize(dispName, 14, Enum.Font.SourceSans,
+                                          Vector2.new(math.huge, 20)).X
 
                         fullNameFrame.TextLabel.Text = dispName
                         fullNameFrame.Size = UDim2.new(0, sizeX + 4, 0, 22)
                         fullNameFrame.Visible = true
                         Properties.FullNameFrameIndex = index
-                        Properties.FullNameFrameAttach.SetData(fullNameFrame, { Target = nameFrame })
+                        Properties.FullNameFrameAttach.SetData(fullNameFrame, {
+                            Target = nameFrame
+                        })
                         Properties.FullNameFrameAttach.Enable()
                     end
                 end)
 
                 nameFrame.PropName.InputEnded:Connect(function(input)
-                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and Properties.FullNameFrameIndex == index then
+                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                        Enum.UserInputType.Touch) and Properties.FullNameFrameIndex == index then
                         Properties.FullNameFrame.Visible = false
                         Properties.FullNameFrameAttach.Disable()
                     end
@@ -3491,7 +3869,8 @@ local EmbeddedModules = {
                     end
 
                     local fullName = prop.Class .. "." .. prop.Name .. (prop.SubName or "")
-                    local inputFullName = inputProp and (inputProp.Class .. "." .. inputProp.Name .. (inputProp.SubName or ""))
+                    local inputFullName = inputProp and
+                                              (inputProp.Class .. "." .. inputProp.Name .. (inputProp.SubName or ""))
 
                     if fullName == inputFullName and inputProp.ValueType.Category == "Class" then
                         inputProp = nil
@@ -3531,13 +3910,15 @@ local EmbeddedModules = {
                 end)
 
                 valueFrame.SoundPreview.InputBegan:Connect(function(input)
-                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                        Enum.UserInputType.Touch then
                         return
                     end
 
                     local releaseEvent, inputEvent
                     releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             releaseEvent:Disconnect()
                             if inputEvent then
                                 inputEvent:Disconnect()
@@ -3557,7 +3938,8 @@ local EmbeddedModules = {
                             return
                         end
 
-                        local inputX = (input.UserInputType == Enum.UserInputType.Touch) and input.Position.X or input.Position.X
+                        local inputX = (input.UserInputType == Enum.UserInputType.Touch) and input.Position.X or
+                                           input.Position.X
                         local timeLineSize = timeLine.AbsoluteSize
                         local relaX = inputX - timeLine.AbsolutePosition.X
 
@@ -3578,7 +3960,8 @@ local EmbeddedModules = {
                     update(input)
 
                     inputEvent = service.UserInputService.InputChanged:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             update(input)
                         end
                     end)
@@ -3605,8 +3988,8 @@ local EmbeddedModules = {
                         EditAttributeButton = newEntry.EditAttributeButton,
                         ToggleAttributes = nameFrame.ToggleAttributes,
                         SoundPreview = valueFrame.SoundPreview,
-                        SoundPreviewSlider = valueFrame.SoundPreview.TimeLine.Slider,
-                    },
+                        SoundPreviewSlider = valueFrame.SoundPreview.TimeLine.Slider
+                    }
                 }
             end
 
@@ -3687,14 +4070,14 @@ local EmbeddedModules = {
                     Name = "Edit",
                     OnClick = function()
                         Properties.DisplayAddAttributeWindow(prop)
-                    end,
+                    end
                 })
                 context:Add({
                     Name = "Delete",
                     OnClick = function()
                         Properties.SetProp(prop, nil, true)
                         Properties.ShowExplorerProps()
-                    end,
+                    end
                 })
 
                 context:Show()
@@ -3768,11 +4151,24 @@ local EmbeddedModules = {
                         end
 
                         local typ = typeChooser.Selected
-                        local valType = { Name = Properties.TypeNameConvert[typ] or typ, Category = "DataType" }
-                        local attrProp = { IsAttribute = true, Name = "ATTR_" .. name, AttributeName = name, DisplayName = name, Class = "Instance", ValueType = valType, Category = "Attributes", Tags = {} }
+                        local valType = {
+                            Name = Properties.TypeNameConvert[typ] or typ,
+                            Category = "DataType"
+                        }
+                        local attrProp = {
+                            IsAttribute = true,
+                            Name = "ATTR_" .. name,
+                            AttributeName = name,
+                            DisplayName = name,
+                            Class = "Instance",
+                            ValueType = valType,
+                            Category = "Attributes",
+                            Tags = {}
+                        }
 
                         Settings.Properties.ShowAttributes = true
-                        Properties.SetProp(attrProp, Properties.DefaultPropValue[valType.Name], true, Properties.EditingAttribute)
+                        Properties.SetProp(attrProp, Properties.DefaultPropValue[valType.Name], true,
+                            Properties.EditingAttribute)
                         Properties.ShowExplorerProps()
                         win:Close()
                     end)
@@ -3794,7 +4190,9 @@ local EmbeddedModules = {
                 local typeData = prop.ValueType
                 local typeName = typeData.Name
 
-                return typeName ~= "bool" and typeData.Category ~= "Enum" and typeData.Category ~= "Class" and typeName ~= "BrickColor"
+                return
+                    typeName ~= "bool" and typeData.Category ~= "Enum" and typeData.Category ~= "Class" and typeName ~=
+                        "BrickColor"
             end
 
             Properties.DisplayEnumDropdown = function(entryIndex)
@@ -3842,7 +4240,10 @@ local EmbeddedModules = {
 
                 for i = 1, #sorted do
                     local enumItem = sorted[i]
-                    context:Add({ Name = enumItem.Name, OnClick = onClick })
+                    context:Add({
+                        Name = enumItem.Name,
+                        OnClick = onClick
+                    })
                 end
 
                 context.Width = valueFrame.AbsoluteSize.X
@@ -4080,7 +4481,8 @@ local EmbeddedModules = {
                 local soundPreview = guiElems.SoundPreview
 
                 local propVal = Properties.GetPropVal(prop, propObj)
-                local inputFullName = inputProp and (inputProp.Class .. "." .. inputProp.Name .. (inputProp.SubName or ""))
+                local inputFullName = inputProp and
+                                          (inputProp.Class .. "." .. inputProp.Name .. (inputProp.SubName or ""))
 
                 local offset = 4
                 local endOffset = 6
@@ -4090,11 +4492,13 @@ local EmbeddedModules = {
                     colorButton.Visible = true
                     enumArrow.Visible = false
                     if propVal then
-                        gradient.Color = (typeName == "Color3" and ColorSequence.new(propVal)) or (typeName == "BrickColor" and ColorSequence.new(propVal.Color)) or propVal
+                        gradient.Color = (typeName == "Color3" and ColorSequence.new(propVal)) or
+                                             (typeName == "BrickColor" and ColorSequence.new(propVal.Color)) or propVal
                     else
                         gradient.Color = ColorSequence.new(Color3.new(1, 1, 1))
                     end
-                    colorPreview.BorderColor3 = (typeName == "ColorSequence" and Color3.new(1, 1, 1) or Color3.new(0, 0, 0))
+                    colorPreview.BorderColor3 = (typeName == "ColorSequence" and Color3.new(1, 1, 1) or
+                                                    Color3.new(0, 0, 0))
                     offset = 22
                     endOffset = 24 + (typeName == "ColorSequence" and 20 or 0)
                 elseif typeData.Category == "Enum" then
@@ -4157,7 +4561,8 @@ local EmbeddedModules = {
                         elseif Properties.RoundableTypes[typeName] and Settings.Properties.NumberRounding then
                             local rawStr = Properties.ValueToString(prop, propVal)
                             valueBox.Text = rawStr:gsub("-?%d+%.%d+", function(num)
-                                return tostring(tonumber(("%." .. Settings.Properties.NumberRounding .. "f"):format(num)))
+                                return tostring(
+                                    tonumber(("%." .. Settings.Properties.NumberRounding .. "f"):format(num)))
                             end)
                         else
                             valueBox.Text = Properties.ValueToString(prop, propVal)
@@ -4214,7 +4619,8 @@ local EmbeddedModules = {
                         local entryXOffset = (scaleType == 0 and scrollH.Index or 0)
                         entry.Visible = true
                         entry.Position = UDim2.new(0, -entryXOffset, 0, entry.Position.Y.Offset)
-                        entry.Size = UDim2.new(scaleType == 0 and 0 or 1, scaleType == 0 and Properties.ViewWidth + valueWidth or 0, 0, 22)
+                        entry.Size = UDim2.new(scaleType == 0 and 0 or 1,
+                            scaleType == 0 and Properties.ViewWidth + valueWidth or 0, 0, 22)
 
                         if prop.SpecialRow then
                             if prop.SpecialRow == "AddAttribute" then
@@ -4232,7 +4638,8 @@ local EmbeddedModules = {
                             nameFrame.Position = UDim2.new(0, leftOffset, 0, 0)
                             propNameLabel.Size = UDim2.new(1, -2 - (scaleType == 0 and 0 or 6), 1, 0)
 
-                            local gName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." .. prop.Name .. (prop.SubName or "")
+                            local gName = (prop.CategoryName and "CAT_" .. prop.CategoryName) or prop.Class .. "." ..
+                                              prop.Name .. (prop.SubName or "")
 
                             if prop.CategoryName then
                                 entry.BackgroundColor3 = Settings.Theme.Main1
@@ -4279,30 +4686,38 @@ local EmbeddedModules = {
                                 entry.BackgroundColor3 = Settings.Theme.Main2
                                 valueFrame.Visible = true
 
-                                expand.Visible = typeData.Category == "DataType" and Properties.ExpandableTypes[typeName] or Properties.ExpandableProps[gName]
-                                propNameBox.TextColor3 = tags.ReadOnly and Settings.Theme.PlaceholderText or Settings.Theme.Text
+                                expand.Visible = typeData.Category == "DataType" and
+                                                     Properties.ExpandableTypes[typeName] or
+                                                     Properties.ExpandableProps[gName]
+                                propNameBox.TextColor3 = tags.ReadOnly and Settings.Theme.PlaceholderText or
+                                                             Settings.Theme.Text
 
                                 -- Display property value
                                 Properties.DisplayProp(prop, i)
                                 if propObj then
                                     if prop.IsAttribute then
-                                        propCons[#propCons + 1] = getAttributeChangedSignal(propObj, prop.AttributeName):Connect(function()
-                                            Properties.DisplayProp(prop, i)
-                                        end)
+                                        propCons[#propCons + 1] =
+                                            getAttributeChangedSignal(propObj, prop.AttributeName):Connect(function()
+                                                Properties.DisplayProp(prop, i)
+                                            end)
                                     else
-                                        propCons[#propCons + 1] = getPropChangedSignal(propObj, propName):Connect(function()
-                                            Properties.DisplayProp(prop, i)
-                                        end)
+                                        propCons[#propCons + 1] =
+                                            getPropChangedSignal(propObj, propName):Connect(function()
+                                                Properties.DisplayProp(prop, i)
+                                            end)
                                     end
                                 end
 
                                 -- Position and resize Input Box
                                 local beforeVisible = valueBox.Visible
-                                local inputFullName = inputProp and (inputProp.Class .. "." .. inputProp.Name .. (inputProp.SubName or ""))
+                                local inputFullName = inputProp and
+                                                          (inputProp.Class .. "." .. inputProp.Name ..
+                                                              (inputProp.SubName or ""))
                                 if gName == inputFullName then
                                     nameFrame.BackgroundColor3 = Settings.Theme.ListSelection
                                     nameFrame.BackgroundTransparency = 0
-                                    if typeData.Category == "Class" or typeData.Category == "Enum" or typeName == "BrickColor" then
+                                    if typeData.Category == "Class" or typeData.Category == "Enum" or typeName ==
+                                        "BrickColor" then
                                         valueFrame.BackgroundColor3 = Settings.Theme.TextBox
                                         valueFrame.BackgroundTransparency = 0
                                         valueBox.Visible = true
@@ -4321,7 +4736,8 @@ local EmbeddedModules = {
                                         end
 
                                         inputBox.Position = UDim2.new(scale, offset, 0, entry.Position.Y.Offset)
-                                        inputBox.Size = UDim2.new(1 - scale, -offset - endOffset - attributeOffset, 0, 22)
+                                        inputBox.Size = UDim2.new(1 - scale, -offset - endOffset - attributeOffset, 0,
+                                            22)
                                         inputBox.Visible = true
                                         valueBox.Visible = false
                                     end
@@ -4335,9 +4751,11 @@ local EmbeddedModules = {
                             end
 
                             -- Expand
-                            if prop.CategoryName or Properties.ExpandableTypes[prop.ValueType and prop.ValueType.Name] or Properties.ExpandableProps[gName] then
+                            if prop.CategoryName or Properties.ExpandableTypes[prop.ValueType and prop.ValueType.Name] or
+                                Properties.ExpandableProps[gName] then
                                 if Lib.CheckMouseInGui(expand) then
-                                    Main.MiscIcons:DisplayByKey(expand.Icon, expanded[gName] and "Collapse_Over" or "Expand_Over")
+                                    Main.MiscIcons:DisplayByKey(expand.Icon,
+                                        expanded[gName] and "Collapse_Over" or "Expand_Over")
                                 else
                                     Main.MiscIcons:DisplayByKey(expand.Icon, expanded[gName] and "Collapse" or "Expand")
                                 end
@@ -4399,44 +4817,82 @@ local EmbeddedModules = {
 
                             if rootTypeName then
                                 if rootTypeName == "Vector2" then
-                                    setVal = Vector2.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y)
+                                    setVal = Vector2.new((subName == ".X" and setVal) or root.X,
+                                        (subName == ".Y" and setVal) or root.Y)
                                 elseif rootTypeName == "Vector3" then
-                                    setVal = Vector3.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y, (subName == ".Z" and setVal) or root.Z)
+                                    setVal = Vector3.new((subName == ".X" and setVal) or root.X,
+                                        (subName == ".Y" and setVal) or root.Y, (subName == ".Z" and setVal) or root.Z)
                                 elseif rootTypeName == "UDim" then
-                                    setVal = UDim.new((subName == ".Scale" and setVal) or root.Scale, (subName == ".Offset" and setVal) or root.Offset)
+                                    setVal = UDim.new((subName == ".Scale" and setVal) or root.Scale,
+                                        (subName == ".Offset" and setVal) or root.Offset)
                                 elseif rootTypeName == "UDim2" then
                                     local rootX, rootY = root.X, root.Y
-                                    local X_UDim = (subName == ".X" and setVal) or UDim.new((subName == ".X.Scale" and setVal) or rootX.Scale, (subName == ".X.Offset" and setVal) or rootX.Offset)
-                                    local Y_UDim = (subName == ".Y" and setVal) or UDim.new((subName == ".Y.Scale" and setVal) or rootY.Scale, (subName == ".Y.Offset" and setVal) or rootY.Offset)
+                                    local X_UDim = (subName == ".X" and setVal) or
+                                                       UDim.new((subName == ".X.Scale" and setVal) or rootX.Scale,
+                                            (subName == ".X.Offset" and setVal) or rootX.Offset)
+                                    local Y_UDim = (subName == ".Y" and setVal) or
+                                                       UDim.new((subName == ".Y.Scale" and setVal) or rootY.Scale,
+                                            (subName == ".Y.Offset" and setVal) or rootY.Offset)
                                     setVal = UDim2.new(X_UDim, Y_UDim)
                                 elseif rootTypeName == "CFrame" then
-                                    local rootPos, rootRight, rootUp, rootLook = root.Position, root.RightVector, root.UpVector, root.LookVector
-                                    local pos = (subName == ".Position" and setVal) or Vector3.new((subName == ".Position.X" and setVal) or rootPos.X, (subName == ".Position.Y" and setVal) or rootPos.Y, (subName == ".Position.Z" and setVal) or rootPos.Z)
-                                    local rightV = (subName == ".RightVector" and setVal) or Vector3.new((subName == ".RightVector.X" and setVal) or rootRight.X, (subName == ".RightVector.Y" and setVal) or rootRight.Y, (subName == ".RightVector.Z" and setVal) or rootRight.Z)
-                                    local upV = (subName == ".UpVector" and setVal) or Vector3.new((subName == ".UpVector.X" and setVal) or rootUp.X, (subName == ".UpVector.Y" and setVal) or rootUp.Y, (subName == ".UpVector.Z" and setVal) or rootUp.Z)
-                                    local lookV = (subName == ".LookVector" and setVal) or Vector3.new((subName == ".LookVector.X" and setVal) or rootLook.X, (subName == ".RightVector.Y" and setVal) or rootLook.Y, (subName == ".RightVector.Z" and setVal) or rootLook.Z)
+                                    local rootPos, rootRight, rootUp, rootLook = root.Position, root.RightVector,
+                                        root.UpVector, root.LookVector
+                                    local pos = (subName == ".Position" and setVal) or
+                                                    Vector3.new((subName == ".Position.X" and setVal) or rootPos.X,
+                                            (subName == ".Position.Y" and setVal) or rootPos.Y,
+                                            (subName == ".Position.Z" and setVal) or rootPos.Z)
+                                    local rightV = (subName == ".RightVector" and setVal) or
+                                                       Vector3.new(
+                                            (subName == ".RightVector.X" and setVal) or rootRight.X,
+                                            (subName == ".RightVector.Y" and setVal) or rootRight.Y,
+                                            (subName == ".RightVector.Z" and setVal) or rootRight.Z)
+                                    local upV = (subName == ".UpVector" and setVal) or
+                                                    Vector3.new((subName == ".UpVector.X" and setVal) or rootUp.X,
+                                            (subName == ".UpVector.Y" and setVal) or rootUp.Y,
+                                            (subName == ".UpVector.Z" and setVal) or rootUp.Z)
+                                    local lookV = (subName == ".LookVector" and setVal) or
+                                                      Vector3.new((subName == ".LookVector.X" and setVal) or rootLook.X,
+                                            (subName == ".RightVector.Y" and setVal) or rootLook.Y, (subName ==
+                                                ".RightVector.Z" and setVal) or rootLook.Z)
                                     setVal = CFrame.fromMatrix(pos, rightV, upV, -lookV)
                                 elseif rootTypeName == "Rect" then
                                     local rootMin, rootMax = root.Min, root.Max
-                                    local min = Vector2.new((subName == ".Min.X" and setVal) or rootMin.X, (subName == ".Min.Y" and setVal) or rootMin.Y)
-                                    local max = Vector2.new((subName == ".Max.X" and setVal) or rootMax.X, (subName == ".Max.Y" and setVal) or rootMax.Y)
+                                    local min = Vector2.new((subName == ".Min.X" and setVal) or rootMin.X,
+                                        (subName == ".Min.Y" and setVal) or rootMin.Y)
+                                    local max = Vector2.new((subName == ".Max.X" and setVal) or rootMax.X,
+                                        (subName == ".Max.Y" and setVal) or rootMax.Y)
                                     setVal = Rect.new(min, max)
                                 elseif rootTypeName == "PhysicalProperties" then
                                     local rootProps = PhysicalProperties.new(obj.Material)
-                                    local density = (subName == ".Density" and setVal) or (root and root.Density) or rootProps.Density
-                                    local friction = (subName == ".Friction" and setVal) or (root and root.Friction) or rootProps.Friction
-                                    local elasticity = (subName == ".Elasticity" and setVal) or (root and root.Elasticity) or rootProps.Elasticity
-                                    local frictionWeight = (subName == ".FrictionWeight" and setVal) or (root and root.FrictionWeight) or rootProps.FrictionWeight
-                                    local elasticityWeight = (subName == ".ElasticityWeight" and setVal) or (root and root.ElasticityWeight) or rootProps.ElasticityWeight
-                                    setVal = PhysicalProperties.new(density, friction, elasticity, frictionWeight, elasticityWeight)
+                                    local density = (subName == ".Density" and setVal) or (root and root.Density) or
+                                                        rootProps.Density
+                                    local friction = (subName == ".Friction" and setVal) or (root and root.Friction) or
+                                                         rootProps.Friction
+                                    local elasticity = (subName == ".Elasticity" and setVal) or
+                                                           (root and root.Elasticity) or rootProps.Elasticity
+                                    local frictionWeight = (subName == ".FrictionWeight" and setVal) or
+                                                               (root and root.FrictionWeight) or
+                                                               rootProps.FrictionWeight
+                                    local elasticityWeight =
+                                        (subName == ".ElasticityWeight" and setVal) or (root and root.ElasticityWeight) or
+                                            rootProps.ElasticityWeight
+                                    setVal = PhysicalProperties.new(density, friction, elasticity, frictionWeight,
+                                        elasticityWeight)
                                 elseif rootTypeName == "Ray" then
                                     local rootOrigin, rootDirection = root.Origin, root.Direction
-                                    local origin = (subName == ".Origin" and setVal) or Vector3.new((subName == ".Origin.X" and setVal) or rootOrigin.X, (subName == ".Origin.Y" and setVal) or rootOrigin.Y, (subName == ".Origin.Z" and setVal) or rootOrigin.Z)
-                                    local direction = (subName == ".Direction" and setVal) or Vector3.new((subName == ".Direction.X" and setVal) or rootDirection.X, (subName == ".Direction.Y" and setVal) or rootDirection.Y, (subName == ".Direction.Z" and setVal) or rootDirection.Z)
+                                    local origin = (subName == ".Origin" and setVal) or
+                                                       Vector3.new((subName == ".Origin.X" and setVal) or rootOrigin.X,
+                                            (subName == ".Origin.Y" and setVal) or rootOrigin.Y,
+                                            (subName == ".Origin.Z" and setVal) or rootOrigin.Z)
+                                    local direction = (subName == ".Direction" and setVal) or
+                                                          Vector3.new(
+                                            (subName == ".Direction.X" and setVal) or rootDirection.X,
+                                            (subName == ".Direction.Y" and setVal) or rootDirection.Y,
+                                            (subName == ".Direction.Z" and setVal) or rootDirection.Z)
                                     setVal = Ray.new(origin, direction)
                                 elseif rootTypeName == "Faces" then
                                     local faces = {}
-                                    local faceList = { "Back", "Bottom", "Front", "Left", "Right", "Top" }
+                                    local faceList = {"Back", "Bottom", "Front", "Left", "Right", "Top"}
                                     for _, face in pairs(faceList) do
                                         local val
                                         if subName == "." .. face then
@@ -4451,7 +4907,7 @@ local EmbeddedModules = {
                                     setVal = Faces.new(unpack(faces))
                                 elseif rootTypeName == "Axes" then
                                     local axes = {}
-                                    local axesList = { "X", "Y", "Z" }
+                                    local axesList = {"X", "Y", "Z"}
                                     for _, axe in pairs(axesList) do
                                         local val
                                         if subName == "." .. axe then
@@ -4465,7 +4921,8 @@ local EmbeddedModules = {
                                     end
                                     setVal = Axes.new(unpack(axes))
                                 elseif rootTypeName == "NumberRange" then
-                                    setVal = NumberRange.new(subName == ".Min" and setVal or root.Min, subName == ".Max" and setVal or root.Max)
+                                    setVal = NumberRange.new(subName == ".Min" and setVal or root.Min,
+                                        subName == ".Max" and setVal or root.Max)
                                 end
                             end
 
@@ -4488,10 +4945,30 @@ local EmbeddedModules = {
             end
 
             Properties.InitInputBox = function()
-                inputBox = create({
-                    { 1, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderSizePixel = 0, Name = "InputBox", Size = UDim2.new(0, 200, 0, 22), Visible = false, ZIndex = 2 } },
-                    { 2, "TextBox", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.062745101749897, 0.51764708757401, 1), BorderSizePixel = 0, ClearTextOnFocus = false, Font = 3, Parent = { 1 }, PlaceholderColor3 = Color3.new(0.69803923368454, 0.69803923368454, 0.69803923368454), Position = UDim2.new(0, 3, 0, 0), Size = UDim2.new(1, -6, 1, 0), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0, ZIndex = 2 } },
-                })
+                inputBox = create({{1, "Frame", {
+                    BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                    BorderSizePixel = 0,
+                    Name = "InputBox",
+                    Size = UDim2.new(0, 200, 0, 22),
+                    Visible = false,
+                    ZIndex = 2
+                }}, {2, "TextBox", {
+                    BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.new(0.062745101749897, 0.51764708757401, 1),
+                    BorderSizePixel = 0,
+                    ClearTextOnFocus = false,
+                    Font = 3,
+                    Parent = {1},
+                    PlaceholderColor3 = Color3.new(0.69803923368454, 0.69803923368454, 0.69803923368454),
+                    Position = UDim2.new(0, 3, 0, 0),
+                    Size = UDim2.new(1, -6, 1, 0),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextXAlignment = 0,
+                    ZIndex = 2
+                }}})
                 inputTextBox = inputBox.TextBox
                 inputBox.BackgroundColor3 = Settings.Theme.TextBox
                 inputBox.Parent = Properties.Window.GuiElems.Content.List
@@ -4572,8 +5049,12 @@ local EmbeddedModules = {
                 local TweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Quint)
 
                 local Tweens = {
-                    Start = TweenService:Create(SearchFrame.UIStroke, TweenInfo, { Color = Color3.fromRGB(0, 120, 215) }),
-                    End = TweenService:Create(SearchFrame.UIStroke, TweenInfo, { Color = Color3.fromRGB(42, 42, 42) }),
+                    Start = TweenService:Create(SearchFrame.UIStroke, TweenInfo, {
+                        Color = Color3.fromRGB(0, 120, 215)
+                    }),
+                    End = TweenService:Create(SearchFrame.UIStroke, TweenInfo, {
+                        Color = Color3.fromRGB(42, 42, 42)
+                    })
                 }
 
                 Lib.ViewportTextBox.convert(searchBox)
@@ -4593,34 +5074,257 @@ local EmbeddedModules = {
             end
 
             Properties.InitEntryStuff = function()
-                Properties.EntryTemplate = create({
-                    { 1, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935), Font = 3, Name = "Entry", Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(0, 250, 0, 22), Text = "", TextSize = 14 } },
-                    { 2, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161), BorderSizePixel = 0, Name = "NameFrame", Parent = { 1 }, Position = UDim2.new(0, 20, 0, 0), Size = UDim2.new(1, -40, 1, 0) } },
-                    { 3, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "PropName", Parent = { 2 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(1, -2, 1, 0), Text = "Anchored", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.10000000149012, TextTruncate = 1, TextXAlignment = 0 } },
-                    { 4, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClipsDescendants = true, Font = 3, Name = "Expand", Parent = { 2 }, Position = UDim2.new(0, -20, 0, 1), Size = UDim2.new(0, 20, 0, 20), Text = "", TextSize = 14, Visible = false } },
-                    { 5, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5642383285", ImageRectOffset = Vector2.new(144, 16), ImageRectSize = Vector2.new(16, 16), Name = "Icon", Parent = { 4 }, Position = UDim2.new(0, 2, 0, 2), ScaleType = 4, Size = UDim2.new(0, 16, 0, 16) } },
-                    { 6, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 4, Name = "ToggleAttributes", Parent = { 2 }, Position = UDim2.new(1, -85, 0, 0), Size = UDim2.new(0, 85, 0, 22), Text = "[SETTING: OFF]", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.10000000149012, Visible = false } },
-                    { 7, "Frame", { BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.33725491166115, 0.49019607901573, 0.73725491762161), BorderSizePixel = 0, Name = "ValueFrame", Parent = { 1 }, Position = UDim2.new(1, -100, 0, 0), Size = UDim2.new(0, 80, 1, 0) } },
-                    { 8, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161), BorderSizePixel = 0, Name = "Line", Parent = { 7 }, Position = UDim2.new(0, -1, 0, 0), Size = UDim2.new(0, 1, 1, 0) } },
-                    { 9, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "ColorButton", Parent = { 7 }, Size = UDim2.new(0, 20, 0, 22), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, Visible = false } },
-                    { 10, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0, 0, 0), Name = "ColorPreview", Parent = { 9 }, Position = UDim2.new(0, 5, 0, 6), Size = UDim2.new(0, 10, 0, 10) } },
-                    { 11, "UIGradient", { Parent = { 10 } } },
-                    { 12, "Frame", { BackgroundTransparency = 1, Name = "EnumArrow", Parent = { 7 }, Position = UDim2.new(1, -16, 0, 3), Size = UDim2.new(0, 16, 0, 16), Visible = false } },
-                    { 13, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 12 }, Position = UDim2.new(0, 8, 0, 9), Size = UDim2.new(0, 1, 0, 1) } },
-                    { 14, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 12 }, Position = UDim2.new(0, 7, 0, 8), Size = UDim2.new(0, 3, 0, 1) } },
-                    { 15, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 12 }, Position = UDim2.new(0, 6, 0, 7), Size = UDim2.new(0, 5, 0, 1) } },
-                    { 16, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "ValueBox", Parent = { 7 }, Position = UDim2.new(0, 4, 0, 0), Size = UDim2.new(1, -8, 1, 0), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.10000000149012, TextTruncate = 1, TextXAlignment = 0 } },
-                    { 17, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "RightButton", Parent = { 7 }, Position = UDim2.new(1, -20, 0, 0), Size = UDim2.new(0, 20, 0, 22), Text = "...", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, Visible = false } },
-                    { 18, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "SettingsButton", Parent = { 7 }, Position = UDim2.new(1, -20, 0, 0), Size = UDim2.new(0, 20, 0, 22), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, Visible = false } },
-                    { 19, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "SoundPreview", Parent = { 7 }, Size = UDim2.new(1, 0, 1, 0), Visible = false } },
-                    { 20, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "ControlButton", Parent = { 19 }, Size = UDim2.new(0, 20, 0, 22), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                    { 21, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5642383285", ImageRectOffset = Vector2.new(144, 16), ImageRectSize = Vector2.new(16, 16), Name = "Icon", Parent = { 20 }, Position = UDim2.new(0, 2, 0, 3), ScaleType = 4, Size = UDim2.new(0, 16, 0, 16) } },
-                    { 22, "Frame", { BackgroundColor3 = Color3.new(0.3137255012989, 0.3137255012989, 0.3137255012989), BorderSizePixel = 0, Name = "TimeLine", Parent = { 19 }, Position = UDim2.new(0, 26, 0.5, -1), Size = UDim2.new(1, -34, 0, 2) } },
-                    { 23, "Frame", { BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935), Name = "Slider", Parent = { 22 }, Position = UDim2.new(0, -4, 0, -8), Size = UDim2.new(0, 8, 0, 18) } },
-                    { 24, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "EditAttributeButton", Parent = { 1 }, Position = UDim2.new(1, -20, 0, 0), Size = UDim2.new(0, 20, 0, 22), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                    { 25, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5034718180", ImageTransparency = 0.20000000298023, Name = "Icon", Parent = { 24 }, Position = UDim2.new(0, 2, 0, 3), Size = UDim2.new(0, 16, 0, 16) } },
-                    { 26, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderSizePixel = 0, Font = 3, Name = "RowButton", Parent = { 1 }, Size = UDim2.new(1, 0, 1, 0), Text = "Add Attribute", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.10000000149012, Visible = false } },
-                })
+                Properties.EntryTemplate = create({{1, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                    BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935),
+                    Font = 3,
+                    Name = "Entry",
+                    Position = UDim2.new(0, 1, 0, 1),
+                    Size = UDim2.new(0, 250, 0, 22),
+                    Text = "",
+                    TextSize = 14
+                }}, {2, "Frame", {
+                    BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161),
+                    BorderSizePixel = 0,
+                    Name = "NameFrame",
+                    Parent = {1},
+                    Position = UDim2.new(0, 20, 0, 0),
+                    Size = UDim2.new(1, -40, 1, 0)
+                }}, {3, "TextLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Font = 3,
+                    Name = "PropName",
+                    Parent = {2},
+                    Position = UDim2.new(0, 2, 0, 0),
+                    Size = UDim2.new(1, -2, 1, 0),
+                    Text = "Anchored",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextTransparency = 0.10000000149012,
+                    TextTruncate = 1,
+                    TextXAlignment = 0
+                }}, {4, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClipsDescendants = true,
+                    Font = 3,
+                    Name = "Expand",
+                    Parent = {2},
+                    Position = UDim2.new(0, -20, 0, 1),
+                    Size = UDim2.new(0, 20, 0, 20),
+                    Text = "",
+                    TextSize = 14,
+                    Visible = false
+                }}, {5, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5642383285",
+                    ImageRectOffset = Vector2.new(144, 16),
+                    ImageRectSize = Vector2.new(16, 16),
+                    Name = "Icon",
+                    Parent = {4},
+                    Position = UDim2.new(0, 2, 0, 2),
+                    ScaleType = 4,
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {6, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 4,
+                    Name = "ToggleAttributes",
+                    Parent = {2},
+                    Position = UDim2.new(1, -85, 0, 0),
+                    Size = UDim2.new(0, 85, 0, 22),
+                    Text = "[SETTING: OFF]",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextTransparency = 0.10000000149012,
+                    Visible = false
+                }}, {7, "Frame", {
+                    BackgroundColor3 = Color3.new(0.04313725605607, 0.35294118523598, 0.68627452850342),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.new(0.33725491166115, 0.49019607901573, 0.73725491762161),
+                    BorderSizePixel = 0,
+                    Name = "ValueFrame",
+                    Parent = {1},
+                    Position = UDim2.new(1, -100, 0, 0),
+                    Size = UDim2.new(0, 80, 1, 0)
+                }}, {8, "Frame", {
+                    BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                    BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161),
+                    BorderSizePixel = 0,
+                    Name = "Line",
+                    Parent = {7},
+                    Position = UDim2.new(0, -1, 0, 0),
+                    Size = UDim2.new(0, 1, 1, 0)
+                }}, {9, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "ColorButton",
+                    Parent = {7},
+                    Size = UDim2.new(0, 20, 0, 22),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    Visible = false
+                }}, {10, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BorderColor3 = Color3.new(0, 0, 0),
+                    Name = "ColorPreview",
+                    Parent = {9},
+                    Position = UDim2.new(0, 5, 0, 6),
+                    Size = UDim2.new(0, 10, 0, 10)
+                }}, {11, "UIGradient", {
+                    Parent = {10}
+                }}, {12, "Frame", {
+                    BackgroundTransparency = 1,
+                    Name = "EnumArrow",
+                    Parent = {7},
+                    Position = UDim2.new(1, -16, 0, 3),
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Visible = false
+                }}, {13, "Frame", {
+                    BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                    BorderSizePixel = 0,
+                    Parent = {12},
+                    Position = UDim2.new(0, 8, 0, 9),
+                    Size = UDim2.new(0, 1, 0, 1)
+                }}, {14, "Frame", {
+                    BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                    BorderSizePixel = 0,
+                    Parent = {12},
+                    Position = UDim2.new(0, 7, 0, 8),
+                    Size = UDim2.new(0, 3, 0, 1)
+                }}, {15, "Frame", {
+                    BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                    BorderSizePixel = 0,
+                    Parent = {12},
+                    Position = UDim2.new(0, 6, 0, 7),
+                    Size = UDim2.new(0, 5, 0, 1)
+                }}, {16, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Font = 3,
+                    Name = "ValueBox",
+                    Parent = {7},
+                    Position = UDim2.new(0, 4, 0, 0),
+                    Size = UDim2.new(1, -8, 1, 0),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextTransparency = 0.10000000149012,
+                    TextTruncate = 1,
+                    TextXAlignment = 0
+                }}, {17, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "RightButton",
+                    Parent = {7},
+                    Position = UDim2.new(1, -20, 0, 0),
+                    Size = UDim2.new(0, 20, 0, 22),
+                    Text = "...",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    Visible = false
+                }}, {18, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "SettingsButton",
+                    Parent = {7},
+                    Position = UDim2.new(1, -20, 0, 0),
+                    Size = UDim2.new(0, 20, 0, 22),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    Visible = false
+                }}, {19, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Name = "SoundPreview",
+                    Parent = {7},
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Visible = false
+                }}, {20, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "ControlButton",
+                    Parent = {19},
+                    Size = UDim2.new(0, 20, 0, 22),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14
+                }}, {21, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5642383285",
+                    ImageRectOffset = Vector2.new(144, 16),
+                    ImageRectSize = Vector2.new(16, 16),
+                    Name = "Icon",
+                    Parent = {20},
+                    Position = UDim2.new(0, 2, 0, 3),
+                    ScaleType = 4,
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {22, "Frame", {
+                    BackgroundColor3 = Color3.new(0.3137255012989, 0.3137255012989, 0.3137255012989),
+                    BorderSizePixel = 0,
+                    Name = "TimeLine",
+                    Parent = {19},
+                    Position = UDim2.new(0, 26, 0.5, -1),
+                    Size = UDim2.new(1, -34, 0, 2)
+                }}, {23, "Frame", {
+                    BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                    BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935),
+                    Name = "Slider",
+                    Parent = {22},
+                    Position = UDim2.new(0, -4, 0, -8),
+                    Size = UDim2.new(0, 8, 0, 18)
+                }}, {24, "TextButton", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "EditAttributeButton",
+                    Parent = {1},
+                    Position = UDim2.new(1, -20, 0, 0),
+                    Size = UDim2.new(0, 20, 0, 22),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14
+                }}, {25, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5034718180",
+                    ImageTransparency = 0.20000000298023,
+                    Name = "Icon",
+                    Parent = {24},
+                    Position = UDim2.new(0, 2, 0, 3),
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {26, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "RowButton",
+                    Parent = {1},
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Text = "Add Attribute",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextTransparency = 0.10000000149012,
+                    Visible = false
+                }}})
 
                 local fullNameFrame = Lib.Frame.new()
                 local label = Lib.Label.new()
@@ -4635,20 +5339,102 @@ local EmbeddedModules = {
             end
 
             Properties.Init = function() -- TODO: MAKE BETTER
-                local guiItems = create({
-                    { 1, "Folder", { Name = "Items" } },
-                    { 2, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "ToolBar", Parent = { 1 }, Size = UDim2.new(1, 0, 0, 22) } },
-                    { 3, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618), BorderSizePixel = 0, Name = "SearchFrame", Parent = { 2 }, Position = UDim2.new(0, 3, 0, 1), Size = UDim2.new(1, -6, 0, 18) } },
-                    { 4, "TextBox", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClearTextOnFocus = false, Font = 3, Name = "SearchBox", Parent = { 3 }, PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537), PlaceholderText = "Search properties", Position = UDim2.new(0, 4, 0, 0), Size = UDim2.new(1, -24, 0, 18), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0 } },
-                    { 5, "UICorner", { CornerRadius = UDim.new(0, 2), Parent = { 3 } } },
-                    { 6, "UIStroke", { Thickness = 1.4, Parent = { 3 }, Color = Color3.fromRGB(42, 42, 42) } },
-                    { 7, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Reset", Parent = { 3 }, Position = UDim2.new(1, -17, 0, 1), Size = UDim2.new(0, 16, 0, 16), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                    { 8, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5034718129", ImageColor3 = Color3.new(0.39215686917305, 0.39215686917305, 0.39215686917305), Parent = { 7 }, Size = UDim2.new(0, 16, 0, 16) } },
-                    { 9, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Refresh", Parent = { 2 }, Position = UDim2.new(1, -20, 0, 1), Size = UDim2.new(0, 18, 0, 18), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, Visible = false } },
-                    { 10, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5642310344", Parent = { 9 }, Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(0, 12, 0, 12) } },
-                    { 11, "Frame", { BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945), BorderSizePixel = 0, Name = "ScrollCorner", Parent = { 1 }, Position = UDim2.new(1, -16, 1, -16), Size = UDim2.new(0, 16, 0, 16), Visible = false } },
-                    { 12, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ClipsDescendants = true, Name = "List", Parent = { 1 }, Position = UDim2.new(0, 0, 0, 23), Size = UDim2.new(1, 0, 1, -23) } },
-                })
+                local guiItems = create({{1, "Folder", {
+                    Name = "Items"
+                }}, {2, "Frame", {
+                    BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                    BorderSizePixel = 0,
+                    Name = "ToolBar",
+                    Parent = {1},
+                    Size = UDim2.new(1, 0, 0, 22)
+                }}, {3, "Frame", {
+                    BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                    BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618),
+                    BorderSizePixel = 0,
+                    Name = "SearchFrame",
+                    Parent = {2},
+                    Position = UDim2.new(0, 3, 0, 1),
+                    Size = UDim2.new(1, -6, 0, 18)
+                }}, {4, "TextBox", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClearTextOnFocus = false,
+                    Font = 3,
+                    Name = "SearchBox",
+                    Parent = {3},
+                    PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537),
+                    PlaceholderText = "Search properties",
+                    Position = UDim2.new(0, 4, 0, 0),
+                    Size = UDim2.new(1, -24, 0, 18),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    TextXAlignment = 0
+                }}, {5, "UICorner", {
+                    CornerRadius = UDim.new(0, 2),
+                    Parent = {3}
+                }}, {6, "UIStroke", {
+                    Thickness = 1.4,
+                    Parent = {3},
+                    Color = Color3.fromRGB(42, 42, 42)
+                }}, {7, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "Reset",
+                    Parent = {3},
+                    Position = UDim2.new(1, -17, 0, 1),
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14
+                }}, {8, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5034718129",
+                    ImageColor3 = Color3.new(0.39215686917305, 0.39215686917305, 0.39215686917305),
+                    Parent = {7},
+                    Size = UDim2.new(0, 16, 0, 16)
+                }}, {9, "TextButton", {
+                    AutoButtonColor = false,
+                    BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                    BackgroundTransparency = 1,
+                    BorderSizePixel = 0,
+                    Font = 3,
+                    Name = "Refresh",
+                    Parent = {2},
+                    Position = UDim2.new(1, -20, 0, 1),
+                    Size = UDim2.new(0, 18, 0, 18),
+                    Text = "",
+                    TextColor3 = Color3.new(1, 1, 1),
+                    TextSize = 14,
+                    Visible = false
+                }}, {10, "ImageLabel", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    Image = "rbxassetid://5642310344",
+                    Parent = {9},
+                    Position = UDim2.new(0, 3, 0, 3),
+                    Size = UDim2.new(0, 12, 0, 12)
+                }}, {11, "Frame", {
+                    BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945),
+                    BorderSizePixel = 0,
+                    Name = "ScrollCorner",
+                    Parent = {1},
+                    Position = UDim2.new(1, -16, 1, -16),
+                    Size = UDim2.new(0, 16, 0, 16),
+                    Visible = false
+                }}, {12, "Frame", {
+                    BackgroundColor3 = Color3.new(1, 1, 1),
+                    BackgroundTransparency = 1,
+                    ClipsDescendants = true,
+                    Name = "List",
+                    Parent = {1},
+                    Position = UDim2.new(0, 0, 0, 23),
+                    Size = UDim2.new(1, 0, 1, -23)
+                }}})
 
                 -- Vars
                 categoryOrder = API.CategoryOrder
@@ -4722,7 +5508,11 @@ local EmbeddedModules = {
             return Properties
         end
 
-        return { InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main }
+        return {
+            InitDeps = initDeps,
+            InitAfterMain = initAfterMain,
+            Main = main
+        }
     end,
     ScriptViewer = function()
         --[[
@@ -4766,7 +5556,8 @@ local EmbeddedModules = {
             ScriptViewer.ViewScript = function(scr)
                 local success, source = pcall(env.decompile, scr)
                 if not success or not source then
-                    source, PreviousScr = ("-- DEX - %s failed to decompile %s"):format(env.executor, scr.ClassName), nil
+                    source, PreviousScr = ("-- DEX - %s failed to decompile %s"):format(env.executor, scr.ClassName),
+                        nil
                 else
                     PreviousScr = scr
                 end
@@ -4829,12 +5620,16 @@ local EmbeddedModules = {
                             local getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
                             local getconstants = (debug and debug.getconstants) or getconstants or getconsts
                             local getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
-                            local original = ("\n-- // Function Dumper made by diddy\n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
+                            local original =
+                                ("\n-- // Function Dumper made by diddy\n-- // Script Path: %s\n\n--[["):format(
+                                    PreviousScr:GetFullName())
                             local dump = original
                             local functions, function_count, data_base = {}, 0, {}
                             function functions:add_to_dump(str, indentation, new_line)
                                 local new_line = new_line or true
-                                dump = dump .. ("%s%s%s"):format(string.rep("		", indentation), tostring(str), new_line and "\n" or "")
+                                dump = dump ..
+                                           ("%s%s%s"):format(string.rep("		", indentation), tostring(str),
+                                        new_line and "\n" or "")
                             end
                             function functions:get_function_name(func)
                                 local n = getinfo(func).name
@@ -4842,62 +5637,82 @@ local EmbeddedModules = {
                             end
                             function functions:dump_table(input, indent, index)
                                 local indent = indent < 0 and 0 or indent
-                                functions:add_to_dump(("%s [%s] %s"):format(tostring(index), tostring(typeof(input)), tostring(input)), indent - 1)
+                                functions:add_to_dump(("%s [%s] %s"):format(tostring(index), tostring(typeof(input)),
+                                    tostring(input)), indent - 1)
                                 local count = 0
                                 for index, value in pairs(input) do
                                     count = count + 1
                                     if type(value) == "function" then
-                                        functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(value)), indent)
+                                        functions:add_to_dump(
+                                            ("%d [function] = %s"):format(count, functions:get_function_name(value)),
+                                            indent)
                                     elseif type(value) == "table" then
                                         if not data_base[value] then
                                             data_base[value] = true
                                             functions:add_to_dump(("%d [table]:"):format(count), indent)
                                             functions:dump_table(value, indent + 1, index)
                                         else
-                                            functions:add_to_dump(("%d [table] (Recursive table detected)"):format(count), indent)
+                                            functions:add_to_dump(
+                                                ("%d [table] (Recursive table detected)"):format(count), indent)
                                         end
                                     else
-                                        functions:add_to_dump(("%d [%s] = %s"):format(count, tostring(typeof(value)), tostring(value)), indent)
+                                        functions:add_to_dump(
+                                            ("%d [%s] = %s"):format(count, tostring(typeof(value)), tostring(value)),
+                                            indent)
                                     end
                                 end
                             end
                             function functions:dump_function(input, indent)
-                                functions:add_to_dump(("\nFunction Dump: %s"):format(functions:get_function_name(input)), indent)
-                                functions:add_to_dump(("\nFunction Upvalues: %s"):format(functions:get_function_name(input)), indent)
+                                functions:add_to_dump(
+                                    ("\nFunction Dump: %s"):format(functions:get_function_name(input)), indent)
+                                functions:add_to_dump(("\nFunction Upvalues: %s"):format(functions:get_function_name(
+                                    input)), indent)
                                 for index, upvalue in pairs(getupvalues(input)) do
                                     if type(upvalue) == "function" then
-                                        functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
+                                        functions:add_to_dump(
+                                            ("%d [function] = %s"):format(index, functions:get_function_name(upvalue)),
+                                            indent + 1)
                                     elseif type(upvalue) == "table" then
                                         if not data_base[upvalue] then
                                             data_base[upvalue] = true
                                             functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
                                             functions:dump_table(upvalue, indent + 2, index)
                                         else
-                                            functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+                                            functions:add_to_dump(
+                                                ("%d [table] (Recursive table detected)"):format(index), indent + 1)
                                         end
                                     else
-                                        functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)), indent + 1)
+                                        functions:add_to_dump(
+                                            ("%d [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)),
+                                            indent + 1)
                                     end
                                 end
-                                functions:add_to_dump(("\nFunction Constants: %s"):format(functions:get_function_name(input)), indent)
+                                functions:add_to_dump(("\nFunction Constants: %s"):format(functions:get_function_name(
+                                    input)), indent)
                                 for index, constant in pairs(getconstants(input)) do
                                     if type(constant) == "function" then
-                                        functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
+                                        functions:add_to_dump(
+                                            ("%d [function] = %s"):format(index, functions:get_function_name(constant)),
+                                            indent + 1)
                                     elseif type(constant) == "table" then
                                         if not data_base[constant] then
                                             data_base[constant] = true
                                             functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
                                             functions:dump_table(constant, indent + 2, index)
                                         else
-                                            functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+                                            functions:add_to_dump(
+                                                ("%d [table] (Recursive table detected)"):format(index), indent + 1)
                                         end
                                     else
-                                        functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(constant)), tostring(constant)), indent + 1)
+                                        functions:add_to_dump(
+                                            ("%d [%s] = %s"):format(index, tostring(typeof(constant)),
+                                                tostring(constant)), indent + 1)
                                     end
                                 end
                             end
                             for _, _function in pairs(getgc()) do
-                                if typeof(_function) == "function" and getfenv(_function).script and getfenv(_function).script == PreviousScr then
+                                if typeof(_function) == "function" and getfenv(_function).script and
+                                    getfenv(_function).script == PreviousScr then
                                     functions:dump_function(_function, 0)
                                     functions:add_to_dump("\n" .. ("="):rep(100), 0, false)
                                 end
@@ -4916,7 +5731,11 @@ local EmbeddedModules = {
             return ScriptViewer
         end
 
-        return { InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main }
+        return {
+            InitDeps = initDeps,
+            InitAfterMain = initAfterMain,
+            Main = main
+        }
     end,
     Lib = function()
         --[[
@@ -4994,7 +5813,7 @@ local EmbeddedModules = {
                         else
                             rawset(self, ind, val)
                         end
-                    end,
+                    end
                 }
             end
 
@@ -5005,7 +5824,10 @@ local EmbeddedModules = {
                 local gsub = string.gsub
                 local format = string.format
                 local char = string.char
-                local cleanTable = { ['"'] = '\\"', ["\\"] = "\\\\" }
+                local cleanTable = {
+                    ['"'] = '\\"',
+                    ["\\"] = "\\\\"
+                }
                 for i = 0, 31 do
                     cleanTable[char(i)] = "\\" .. format("%03d", i)
                 end
@@ -5026,15 +5848,18 @@ local EmbeddedModules = {
                 local guiPosition = gui.AbsolutePosition
                 local guiSize = gui.AbsoluteSize
 
-                return mouse.X >= guiPosition.X and mouse.X < guiPosition.X + guiSize.X and mouse.Y >= guiPosition.Y and mouse.Y < guiPosition.Y + guiSize.Y
+                return mouse.X >= guiPosition.X and mouse.X < guiPosition.X + guiSize.X and mouse.Y >= guiPosition.Y and
+                           mouse.Y < guiPosition.Y + guiSize.Y
             end
 
             Lib.IsShiftDown = function()
-                return service.UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or service.UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
+                return service.UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) or
+                           service.UserInputService:IsKeyDown(Enum.KeyCode.RightShift)
             end
 
             Lib.IsCtrlDown = function()
-                return service.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or service.UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
+                return service.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) or
+                           service.UserInputService:IsKeyDown(Enum.KeyCode.RightControl)
             end
 
             Lib.CreateArrow = function(size, num, dir)
@@ -5042,16 +5867,17 @@ local EmbeddedModules = {
                 local arrowFrame = createSimple("Frame", {
                     BackgroundTransparency = 1,
                     Name = "Arrow",
-                    Size = UDim2.new(0, size, 0, size),
+                    Size = UDim2.new(0, size, 0, size)
                 })
                 if dir == "up" then
                     for i = 1, num do
                         local newLine = createSimple("Frame", {
                             BackgroundColor3 = Color3.new(220 / 255, 220 / 255, 220 / 255),
                             BorderSizePixel = 0,
-                            Position = UDim2.new(0, math.floor(size / 2) - (i - 1), 0, math.floor(size / 2) + i - math.floor(max / 2) - 1),
+                            Position = UDim2.new(0, math.floor(size / 2) - (i - 1), 0,
+                                math.floor(size / 2) + i - math.floor(max / 2) - 1),
                             Size = UDim2.new(0, i + (i - 1), 0, 1),
-                            Parent = arrowFrame,
+                            Parent = arrowFrame
                         })
                     end
                     return arrowFrame
@@ -5060,9 +5886,10 @@ local EmbeddedModules = {
                         local newLine = createSimple("Frame", {
                             BackgroundColor3 = Color3.new(220 / 255, 220 / 255, 220 / 255),
                             BorderSizePixel = 0,
-                            Position = UDim2.new(0, math.floor(size / 2) - (i - 1), 0, math.floor(size / 2) - i + math.floor(max / 2) + 1),
+                            Position = UDim2.new(0, math.floor(size / 2) - (i - 1), 0,
+                                math.floor(size / 2) - i + math.floor(max / 2) + 1),
                             Size = UDim2.new(0, i + (i - 1), 0, 1),
-                            Parent = arrowFrame,
+                            Parent = arrowFrame
                         })
                     end
                     return arrowFrame
@@ -5071,9 +5898,10 @@ local EmbeddedModules = {
                         local newLine = createSimple("Frame", {
                             BackgroundColor3 = Color3.new(220 / 255, 220 / 255, 220 / 255),
                             BorderSizePixel = 0,
-                            Position = UDim2.new(0, math.floor(size / 2) + i - math.floor(max / 2) - 1, 0, math.floor(size / 2) - (i - 1)),
+                            Position = UDim2.new(0, math.floor(size / 2) + i - math.floor(max / 2) - 1, 0,
+                                math.floor(size / 2) - (i - 1)),
                             Size = UDim2.new(0, 1, 0, i + (i - 1)),
-                            Parent = arrowFrame,
+                            Parent = arrowFrame
                         })
                     end
                     return arrowFrame
@@ -5082,9 +5910,10 @@ local EmbeddedModules = {
                         local newLine = createSimple("Frame", {
                             BackgroundColor3 = Color3.new(220 / 255, 220 / 255, 220 / 255),
                             BorderSizePixel = 0,
-                            Position = UDim2.new(0, math.floor(size / 2) - i + math.floor(max / 2) + 1, 0, math.floor(size / 2) - (i - 1)),
+                            Position = UDim2.new(0, math.floor(size / 2) - i + math.floor(max / 2) + 1, 0,
+                                math.floor(size / 2) - (i - 1)),
                             Size = UDim2.new(0, 1, 0, i + (i - 1)),
-                            Parent = arrowFrame,
+                            Parent = arrowFrame
                         })
                     end
                     return arrowFrame
@@ -5120,7 +5949,10 @@ local EmbeddedModules = {
                             local pos = s:find("<[_%w]")
                             if pos then
                                 s:sub(1, pos):gsub("<!ENTITY%s+([_%w]+)%s+(.)(.-)%2", function(name, q, entity)
-                                    entities[#entities + 1] = { name = name, value = entity }
+                                    entities[#entities + 1] = {
+                                        name = name,
+                                        value = entity
+                                    }
                                 end)
                                 tentities = createEntityTable(entities)
                                 s = replaceEntities(s:sub(pos), tentities)
@@ -5132,7 +5964,9 @@ local EmbeddedModules = {
                         local addtext = function(txt)
                             txt = txt:match("^%s*(.*%S)") or ""
                             if #txt ~= 0 then
-                                t[#t + 1] = { text = txt }
+                                t[#t + 1] = {
+                                    text = txt
+                                }
                             end
                         end
 
@@ -5142,7 +5976,8 @@ local EmbeddedModules = {
                                 local a = {}
                                 if #closed == 0 then
                                     local len = 0
-                                    for all, aname, _, value, starttxt in string.gmatch(txt, "(.-([-_%w]+)%s*=%s*(.)(.-)%3%s*(/?>?))") do
+                                    for all, aname, _, value, starttxt in string.gmatch(txt,
+                                        "(.-([-_%w]+)%s*=%s*(.)(.-)%3%s*(/?>?))") do
                                         len = len + #all
                                         a[aname] = value
                                         if #starttxt ~= 0 then
@@ -5152,7 +5987,11 @@ local EmbeddedModules = {
                                         end
                                     end
                                 end
-                                t[#t + 1] = { tag = name, attrs = a, children = {} }
+                                t[#t + 1] = {
+                                    tag = name,
+                                    attrs = a,
+                                    children = {}
+                                }
 
                                 if closed:byte(1) ~= slashchar then
                                     l[#l + 1] = t
@@ -5170,7 +6009,10 @@ local EmbeddedModules = {
                             elseif "!" == type then
                                 if E == name:byte(1) then
                                     txt:gsub("([_%w]+)%s+(.)(.-)%2", function(name, q, entity)
-                                        entities[#entities + 1] = { name = name, value = entity }
+                                        entities[#entities + 1] = {
+                                            name = name,
+                                            value = entity
+                                        }
                                     end, 1)
                                 end
                                 -- elseif '?' == type then
@@ -5182,7 +6024,11 @@ local EmbeddedModules = {
                             end
                         end)
 
-                        return { children = t, entities = entities, tentities = tentities }
+                        return {
+                            children = t,
+                            entities = entities,
+                            tentities = tentities
+                        }
                     end
 
                     function parseText(txt)
@@ -5190,7 +6036,15 @@ local EmbeddedModules = {
                     end
 
                     function defaultEntityTable()
-                        return { quot = '"', apos = "'", lt = "<", gt = ">", amp = "&", tab = "\t", nbsp = " " }
+                        return {
+                            quot = '"',
+                            apos = "'",
+                            lt = "<",
+                            gt = ">",
+                            amp = "&",
+                            tab = "\t",
+                            nbsp = " "
+                        }
                     end
 
                     function replaceEntities(s, entities)
@@ -5208,7 +6062,9 @@ local EmbeddedModules = {
 
                     return parseText
                 end
-                local newEnv = setmetatable({}, { __index = getfenv() })
+                local newEnv = setmetatable({}, {
+                    __index = getfenv()
+                })
                 setfenv(func, newEnv)
                 return func()
             end)()
@@ -5243,7 +6099,8 @@ local EmbeddedModules = {
                         return
                     end
 
-                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         if not holding then
                             if mode == 1 then
                                 button.BackgroundTransparency = 0.4
@@ -5251,7 +6108,8 @@ local EmbeddedModules = {
                                 button.BackgroundColor3 = control.HoverColor
                             end
                         end
-                    elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         holding = true
                         if mode == 1 then
                             button.BackgroundTransparency = 0
@@ -5269,7 +6127,8 @@ local EmbeddedModules = {
                         return
                     end
 
-                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         if not holding then
                             if mode == 1 then
                                 button.BackgroundTransparency = 1
@@ -5277,12 +6136,14 @@ local EmbeddedModules = {
                                 button.BackgroundColor3 = control.StartColor
                             end
                         end
-                    elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                    elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                        Enum.UserInputType.Touch then
                         holding = false
                         if mode == 1 then
                             button.BackgroundTransparency = Lib.CheckMouseInGui(button) and 0.4 or 1
                         elseif mode == 2 then
-                            button.BackgroundColor3 = Lib.CheckMouseInGui(button) and control.HoverColor or control.StartColor
+                            button.BackgroundColor3 = Lib.CheckMouseInGui(button) and control.HoverColor or
+                                                          control.StartColor
                             if control.OutlineColor then
                                 button.BorderColor3 = control.OutlineColor
                             end
@@ -5372,7 +6233,7 @@ local EmbeddedModules = {
                     Destroy = function()
                         con:Disconnect()
                         con = nil
-                    end,
+                    end
                 }
             end
 
@@ -5451,7 +6312,7 @@ local EmbeddedModules = {
                     local con = {
                         Signal = self,
                         Func = func,
-                        Disconnect = disconnect,
+                        Disconnect = disconnect
                     }
                     self.Connections[#self.Connections + 1] = con
                     return con
@@ -5469,7 +6330,7 @@ local EmbeddedModules = {
                     __index = funcs,
                     __tostring = function(self)
                         return "Signal: " .. tostring(#self.Connections) .. " Connections"
-                    end,
+                    end
                 }
 
                 local function new()
@@ -5479,7 +6340,9 @@ local EmbeddedModules = {
                     return setmetatable(obj, mt)
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.Set = (function()
@@ -5553,8 +6416,10 @@ local EmbeddedModules = {
                         return
                     end
 
-                    self.List = { obj }
-                    self.Map = { [obj] = true }
+                    self.List = {obj}
+                    self.Map = {
+                        [obj] = true
+                    }
                     self.Changed:Fire()
                 end
 
@@ -5577,19 +6442,23 @@ local EmbeddedModules = {
                     self.Changed:Fire()
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
 
                 local function new()
                     local obj = setmetatable({
                         List = {},
                         Map = {},
-                        Changed = Lib.Signal.new(),
+                        Changed = Lib.Signal.new()
                     }, mt)
 
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.IconMap = (function()
@@ -5799,9 +6668,12 @@ local EmbeddedModules = {
                     ["VelocityMotor"] = 34,
                     ["WedgePart"] = 1,
                     ["Weld"] = 34,
-                    ["Workspace"] = 19,
+                    ["Workspace"] = 19
                 }
-                funcs.ExplorerIcons = { ["MapId"] = _MapId, ["Icons"] = _Icons }
+                funcs.ExplorerIcons = {
+                    ["MapId"] = _MapId,
+                    ["Icons"] = _Icons
+                }
 
                 funcs.GetLabel = function(self)
                     local label = Instance.new("ImageLabel")
@@ -5822,7 +6694,8 @@ local EmbeddedModules = {
                     if not self.NumX then
                         obj.ImageRectOffset = Vector2.new(self.IconSizeX * index, 0)
                     else
-                        obj.ImageRectOffset = Vector2.new(self.IconSizeX * (index % self.NumX), self.IconSizeY * math.floor(index / self.NumX))
+                        obj.ImageRectOffset = Vector2.new(self.IconSizeX * (index % self.NumX),
+                            self.IconSizeY * math.floor(index / self.NumX))
                     end
                 end
 
@@ -5846,7 +6719,8 @@ local EmbeddedModules = {
                     local pad, border = 2, 1
                     local IconSize = 16
 
-                    obj.Position = UDim2.new(-col - (pad * (col + 1) + border) / IconSize, 0, -row - (pad * (row + 1) + border) / IconSize, 0)
+                    obj.Position = UDim2.new(-col - (pad * (col + 1) + border) / IconSize, 0,
+                        -row - (pad * (row + 1) + border) / IconSize, 0)
                     obj.Size = UDim2.new(MapSize.X / IconSize, 0, MapSize.Y / IconSize, 0)
                 end
 
@@ -5879,7 +6753,7 @@ local EmbeddedModules = {
                         IconSizeX = iconSizeX,
                         IconSizeY = iconSizeY,
                         NumX = mapSizeX / iconSizeX,
-                        IndexDict = {},
+                        IndexDict = {}
                     }, mt)
                     return obj
                 end
@@ -5889,12 +6763,15 @@ local EmbeddedModules = {
                         MapId = mapId,
                         IconSizeX = iconSizeX,
                         IconSizeY = iconSizeY,
-                        IndexDict = {},
+                        IndexDict = {}
                     }, mt)
                     return obj
                 end
 
-                return { new = new, newLinear = newLinear }
+                return {
+                    new = new,
+                    newLinear = newLinear
+                }
             end)()
 
             Lib.ScrollBar = (function()
@@ -5937,7 +6814,25 @@ local EmbeddedModules = {
                 end
 
                 local function createFrame(self)
-                    local newFrame = createSimple("Frame", { Style = 0, Active = true, AnchorPoint = Vector2.new(0, 0), BackgroundColor3 = Color3.new(0.35294118523598, 0.35294118523598, 0.35294118523598), BackgroundTransparency = 0, BorderColor3 = Color3.new(0.10588236153126, 0.16470588743687, 0.20784315466881), BorderSizePixel = 0, ClipsDescendants = false, Draggable = false, Position = UDim2.new(1, -16, 0, 0), Rotation = 0, Selectable = false, Size = UDim2.new(0, 16, 1, 0), SizeConstraint = 0, Visible = true, ZIndex = 1, Name = "ScrollBar" })
+                    local newFrame = createSimple("Frame", {
+                        Style = 0,
+                        Active = true,
+                        AnchorPoint = Vector2.new(0, 0),
+                        BackgroundColor3 = Color3.new(0.35294118523598, 0.35294118523598, 0.35294118523598),
+                        BackgroundTransparency = 0,
+                        BorderColor3 = Color3.new(0.10588236153126, 0.16470588743687, 0.20784315466881),
+                        BorderSizePixel = 0,
+                        ClipsDescendants = false,
+                        Draggable = false,
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Rotation = 0,
+                        Selectable = false,
+                        Size = UDim2.new(0, 16, 1, 0),
+                        SizeConstraint = 0,
+                        Visible = true,
+                        ZIndex = 1,
+                        Name = "ScrollBar"
+                    })
                     local button1, button2
 
                     if self.Horizontal then
@@ -5948,7 +6843,7 @@ local EmbeddedModules = {
                             Size = UDim2.new(0, 16, 0, 16),
                             BackgroundTransparency = 1,
                             BorderSizePixel = 0,
-                            AutoButtonColor = false,
+                            AutoButtonColor = false
                         })
                         createArrow(16, 4, "left").Parent = button1
                         button2 = createSimple("ImageButton", {
@@ -5958,7 +6853,7 @@ local EmbeddedModules = {
                             Size = UDim2.new(0, 16, 0, 16),
                             BackgroundTransparency = 1,
                             BorderSizePixel = 0,
-                            AutoButtonColor = false,
+                            AutoButtonColor = false
                         })
                         createArrow(16, 4, "right").Parent = button2
                     else
@@ -5969,7 +6864,7 @@ local EmbeddedModules = {
                             Size = UDim2.new(0, 16, 0, 16),
                             BackgroundTransparency = 1,
                             BorderSizePixel = 0,
-                            AutoButtonColor = false,
+                            AutoButtonColor = false
                         })
                         createArrow(16, 4, "up").Parent = button1
                         button2 = createSimple("ImageButton", {
@@ -5979,14 +6874,14 @@ local EmbeddedModules = {
                             Size = UDim2.new(0, 16, 0, 16),
                             BackgroundTransparency = 1,
                             BorderSizePixel = 0,
-                            AutoButtonColor = false,
+                            AutoButtonColor = false
                         })
                         createArrow(16, 4, "down").Parent = button2
                     end
 
                     local scrollThumbFrame = createSimple("ImageButton", {
                         BackgroundTransparency = 1,
-                        Parent = newFrame,
+                        Parent = newFrame
                     })
                     if self.Horizontal then
                         scrollThumbFrame.Position = UDim2.new(0, 16, 0, 0)
@@ -5999,14 +6894,14 @@ local EmbeddedModules = {
                     local scrollThumb = createSimple("Frame", {
                         BackgroundColor3 = Color3.new(120 / 255, 120 / 255, 120 / 255),
                         BorderSizePixel = 0,
-                        Parent = scrollThumbFrame,
+                        Parent = scrollThumbFrame
                     })
 
                     local markerFrame = createSimple("Frame", {
                         BackgroundTransparency = 1,
                         Name = "Markers",
                         Size = UDim2.new(1, 0, 1, 0),
-                        Parent = scrollThumbFrame,
+                        Parent = scrollThumbFrame
                     })
 
                     local buttonPress = false
@@ -6021,7 +6916,8 @@ local EmbeddedModules = {
                             local buttonTick = tick()
                             local releaseEvent
                             releaseEvent = user.InputEnded:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     releaseEvent:Disconnect()
                                     button.BackgroundTransparency = checkMouseInGui(button) and 0.8 or 1
                                     buttonPress = false
@@ -6043,7 +6939,8 @@ local EmbeddedModules = {
                     end)
 
                     button1.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             button1.BackgroundTransparency = 1
                         end
                     end)
@@ -6054,13 +6951,15 @@ local EmbeddedModules = {
                     end)
 
                     button2.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             button2.BackgroundTransparency = 1
                         end
                     end)
 
                     scrollThumb.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             local dir = self.Horizontal and "X" or "Y"
                             local lastThumbPos = nil
                             thumbPress = true
@@ -6070,7 +6969,8 @@ local EmbeddedModules = {
                             local mouseEvent
 
                             releaseEvent = user.InputEnded:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     releaseEvent:Disconnect()
                                     if mouseEvent then
                                         mouseEvent:Disconnect()
@@ -6081,8 +6981,10 @@ local EmbeddedModules = {
                             end)
 
                             mouseEvent = user.InputChanged:Connect(function(input)
-                                if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and thumbPress then
-                                    local thumbFrameSize = scrollThumbFrame.AbsoluteSize[dir] - scrollThumb.AbsoluteSize[dir]
+                                if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                    Enum.UserInputType.Touch) and thumbPress then
+                                    local thumbFrameSize = scrollThumbFrame.AbsoluteSize[dir] -
+                                                               scrollThumb.AbsoluteSize[dir]
                                     local pos = mouse[dir] - scrollThumbFrame.AbsolutePosition[dir] - mouseOffset
                                     if pos > thumbFrameSize then
                                         pos = thumbFrameSize
@@ -6091,7 +6993,8 @@ local EmbeddedModules = {
                                     end
                                     if lastThumbPos ~= pos then
                                         lastThumbPos = pos
-                                        self:ScrollTo(math.floor(0.5 + pos / thumbFrameSize * (self.TotalSpace - self.VisibleSpace)))
+                                        self:ScrollTo(math.floor(0.5 + pos / thumbFrameSize *
+                                                                     (self.TotalSpace - self.VisibleSpace)))
                                     end
                                 end
                             end)
@@ -6099,20 +7002,24 @@ local EmbeddedModules = {
                     end)
 
                     scrollThumb.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             scrollThumb.BackgroundTransparency = 0
                         end
                     end)
 
                     scrollThumbFrame.InputBegan:Connect(function(input)
-                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not checkMouseInGui(scrollThumb) then
+                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch) and not checkMouseInGui(scrollThumb) then
                             local dir = self.Horizontal and "X" or "Y"
-                            local scrollDir = (mouse[dir] >= scrollThumb.AbsolutePosition[dir] + scrollThumb.AbsoluteSize[dir]) and 1 or 0
+                            local scrollDir = (mouse[dir] >= scrollThumb.AbsolutePosition[dir] +
+                                                  scrollThumb.AbsoluteSize[dir]) and 1 or 0
                             local function doTick()
                                 local scrollSize = self.VisibleSpace - 1
                                 if scrollDir == 0 and mouse[dir] < scrollThumb.AbsolutePosition[dir] then
                                     self:ScrollTo(self.Index - scrollSize)
-                                elseif scrollDir == 1 and mouse[dir] >= scrollThumb.AbsolutePosition[dir] + scrollThumb.AbsoluteSize[dir] then
+                                elseif scrollDir == 1 and mouse[dir] >= scrollThumb.AbsolutePosition[dir] +
+                                    scrollThumb.AbsoluteSize[dir] then
                                     self:ScrollTo(self.Index + scrollSize)
                                 end
                             end
@@ -6123,7 +7030,8 @@ local EmbeddedModules = {
                             local thumbFrameTick = tick()
                             local releaseEvent
                             releaseEvent = user.InputEnded:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     releaseEvent:Disconnect()
                                     thumbFramePress = false
                                 end
@@ -6203,10 +7111,11 @@ local EmbeddedModules = {
                                 BackgroundTransparency = 0,
                                 BackgroundColor3 = v,
                                 BorderSizePixel = 0,
-                                Position = self.Horizontal and UDim2.new(i / self.TotalSpace, 0, 1, -6) or UDim2.new(1, -6, i / self.TotalSpace, 0),
+                                Position = self.Horizontal and UDim2.new(i / self.TotalSpace, 0, 1, -6) or
+                                    UDim2.new(1, -6, i / self.TotalSpace, 0),
                                 Size = self.Horizontal and UDim2.new(0, 1, 0, 6) or UDim2.new(0, 6, 0, 1),
                                 Name = "Marker" .. tostring(i),
-                                Parent = markerFrame,
+                                Parent = markerFrame
                             })
                         end
                     end
@@ -6305,7 +7214,7 @@ local EmbeddedModules = {
                         GuiElems = {},
                         Horizontal = hor,
                         LastTotalSpace = 0,
-                        Scrolled = Lib.Signal.new(),
+                        Scrolled = Lib.Signal.new()
                     }, mt)
                     obj.Gui = createFrame(obj)
                     obj:Texture({
@@ -6313,22 +7222,37 @@ local EmbeddedModules = {
                         ThumbSelectColor = Color3.fromRGB(75, 75, 75),
                         ArrowColor = Color3.new(1, 1, 1),
                         FrameColor = Color3.fromRGB(40, 40, 40),
-                        ButtonColor = Color3.fromRGB(75, 75, 75),
+                        ButtonColor = Color3.fromRGB(75, 75, 75)
                     })
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.Window = (function()
                 local funcs = {}
-                local static = { MinWidth = 200, FreeWidth = 200 }
+                local static = {
+                    MinWidth = 200,
+                    FreeWidth = 200
+                }
                 local mouse = plr:GetMouse()
                 local sidesGui, alignIndicator
                 local visibleWindows = {}
-                local leftSide = { Width = 300, Windows = {}, ResizeCons = {}, Hidden = true }
-                local rightSide = { Width = 300, Windows = {}, ResizeCons = {}, Hidden = true }
+                local leftSide = {
+                    Width = 300,
+                    Windows = {},
+                    ResizeCons = {},
+                    Hidden = true
+                }
+                local rightSide = {
+                    Width = 300,
+                    Windows = {},
+                    ResizeCons = {},
+                    Hidden = true
+                }
 
                 local displayOrderStart
                 local sideDisplayOrder
@@ -6339,7 +7263,7 @@ local EmbeddedModules = {
                 local theme = {
                     MainColor1 = Color3.fromRGB(52, 52, 52),
                     MainColor2 = Color3.fromRGB(45, 45, 45),
-                    Button = Color3.fromRGB(60, 60, 60),
+                    Button = Color3.fromRGB(60, 60, 60)
                 }
 
                 local function stopTweens()
@@ -6362,9 +7286,11 @@ local EmbeddedModules = {
                                 return
                             end
 
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 resizer.BackgroundTransparency = 0.5
-                            elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local releaseEvent, mouseEvent
 
                                 local offX = input.Position.X - resizer.AbsolutePosition.X
@@ -6374,7 +7300,8 @@ local EmbeddedModules = {
                                 resizer.BackgroundTransparency = 1
 
                                 releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         releaseEvent:Disconnect()
                                         if mouseEvent then
                                             mouseEvent:Disconnect()
@@ -6385,7 +7312,9 @@ local EmbeddedModules = {
                                 end)
 
                                 mouseEvent = service.UserInputService.InputChanged:Connect(function(input)
-                                    if self.Resizable and self.ResizableInternal and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                                    if self.Resizable and self.ResizableInternal and
+                                        (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                            Enum.UserInputType.Touch) then
                                         self:StopTweens()
                                         local deltaX = input.Position.X - resizer.AbsolutePosition.X - offX
                                         local deltaY = input.Position.Y - resizer.AbsolutePosition.Y - offY
@@ -6400,7 +7329,9 @@ local EmbeddedModules = {
                                             deltaY = -guiMain.AbsolutePosition.Y
                                         end
 
-                                        guiMain.Position = guiMain.Position + UDim2.new(0, (signX < 0 and deltaX or 0), 0, (signY < 0 and deltaY or 0))
+                                        guiMain.Position = guiMain.Position +
+                                                               UDim2.new(0, (signX < 0 and deltaX or 0), 0,
+                                                (signY < 0 and deltaY or 0))
                                         self.SizeX = self.SizeX + (isH and deltaX * signX or 0)
                                         self.SizeY = self.SizeY + (isV and deltaY * signY or 0)
                                         guiMain.Size = UDim2.new(0, self.SizeX, 0, self.Minimized and 20 or self.SizeY)
@@ -6411,7 +7342,8 @@ local EmbeddedModules = {
                     end)
 
                     resizer.InputEnded:Connect(function(input)
-                        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and self.Resizing ~= resizer then
+                        if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch) and self.Resizing ~= resizer then
                             resizer.BackgroundTransparency = 1
                         end
                     end)
@@ -6443,7 +7375,7 @@ local EmbeddedModules = {
 
                 local function getSideInsertPos(side, curY)
                     local pos = #side.Windows + 1
-                    local range = { 0, sidesGui.AbsoluteSize.Y }
+                    local range = {0, sidesGui.AbsoluteSize.Y}
 
                     for i, v in pairs(side.Windows) do
                         local midPos = v.PosY + v.SizeY / 2
@@ -6472,30 +7404,220 @@ local EmbeddedModules = {
                 end
 
                 local createGui = function(self)
-                    local gui = create({
-                        { 1, "ScreenGui", { Name = "Window" } },
-                        { 2, "Frame", { Active = true, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "Main", Parent = { 1 }, Position = UDim2.new(0.40000000596046, 0, 0.40000000596046, 0), Size = UDim2.new(0, 300, 0, 300) } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, Name = "Content", Parent = { 2 }, Position = UDim2.new(0, 0, 0, 20), Size = UDim2.new(1, 0, 1, -20), ClipsDescendants = true } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.fromRGB(33, 33, 33), BorderSizePixel = 0, Name = "Line", Parent = { 3 }, Size = UDim2.new(1, 0, 0, 1) } },
-                        { 5, "TextButton", { Text = "", AutoButtonColor = false, BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "TopBar", Parent = { 2 }, Size = UDim2.new(1, 0, 0, 20) } },
-                        { 6, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 5 }, Position = UDim2.new(0, 5, 0, 0), Size = UDim2.new(1, -10, 0, 20), Text = "Window", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0 } },
-                        { 7, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Close", Parent = { 5 }, Position = UDim2.new(1, -18, 0, 2), Size = UDim2.new(0, 16, 0, 16), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                        { 8, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5054663650", Parent = { 7 }, Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(0, 10, 0, 10) } },
-                        { 9, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 7 } } },
-                        { 10, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Minimize", Parent = { 5 }, Position = UDim2.new(1, -36, 0, 2), Size = UDim2.new(0, 16, 0, 16), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                        { 11, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://5034768003", Parent = { 10 }, Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(0, 10, 0, 10) } },
-                        { 12, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 10 } } },
-                        { 13, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Image = "rbxassetid://1427967925", Name = "Outlines", Parent = { 2 }, Position = UDim2.new(0, -5, 0, -5), ScaleType = 1, Size = UDim2.new(1, 10, 1, 10), SliceCenter = Rect.new(6, 6, 25, 25), TileSize = UDim2.new(0, 20, 0, 20) } },
-                        { 14, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "ResizeControls", Parent = { 2 }, Position = UDim2.new(0, -5, 0, -5), Size = UDim2.new(1, 10, 1, 10) } },
-                        { 15, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "North", Parent = { 14 }, Position = UDim2.new(0, 5, 0, 0), Size = UDim2.new(1, -10, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 16, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "South", Parent = { 14 }, Position = UDim2.new(0, 5, 1, -5), Size = UDim2.new(1, -10, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 17, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "NorthEast", Parent = { 14 }, Position = UDim2.new(1, -5, 0, 0), Size = UDim2.new(0, 5, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 18, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "East", Parent = { 14 }, Position = UDim2.new(1, -5, 0, 5), Size = UDim2.new(0, 5, 1, -10), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 19, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "West", Parent = { 14 }, Position = UDim2.new(0, 0, 0, 5), Size = UDim2.new(0, 5, 1, -10), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 20, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "SouthEast", Parent = { 14 }, Position = UDim2.new(1, -5, 1, -5), Size = UDim2.new(0, 5, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 21, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "NorthWest", Parent = { 14 }, Size = UDim2.new(0, 5, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 22, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "SouthWest", Parent = { 14 }, Position = UDim2.new(0, 0, 1, -5), Size = UDim2.new(0, 5, 0, 5), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                    })
+                    local gui = create({{1, "ScreenGui", {
+                        Name = "Window"
+                    }}, {2, "Frame", {
+                        Active = true,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "Main",
+                        Parent = {1},
+                        Position = UDim2.new(0.40000000596046, 0, 0.40000000596046, 0),
+                        Size = UDim2.new(0, 300, 0, 300)
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0,
+                        Name = "Content",
+                        Parent = {2},
+                        Position = UDim2.new(0, 0, 0, 20),
+                        Size = UDim2.new(1, 0, 1, -20),
+                        ClipsDescendants = true
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.fromRGB(33, 33, 33),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {3},
+                        Size = UDim2.new(1, 0, 0, 1)
+                    }}, {5, "TextButton", {
+                        Text = "",
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BorderSizePixel = 0,
+                        Name = "TopBar",
+                        Parent = {2},
+                        Size = UDim2.new(1, 0, 0, 20)
+                    }}, {6, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {5},
+                        Position = UDim2.new(0, 5, 0, 0),
+                        Size = UDim2.new(1, -10, 0, 20),
+                        Text = "Window",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {7, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Close",
+                        Parent = {5},
+                        Position = UDim2.new(1, -18, 0, 2),
+                        Size = UDim2.new(0, 16, 0, 16),
+                        Text = "",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14
+                    }}, {8, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Image = "rbxassetid://5054663650",
+                        Parent = {7},
+                        Position = UDim2.new(0, 3, 0, 3),
+                        Size = UDim2.new(0, 10, 0, 10)
+                    }}, {9, "UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = {7}
+                    }}, {10, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Minimize",
+                        Parent = {5},
+                        Position = UDim2.new(1, -36, 0, 2),
+                        Size = UDim2.new(0, 16, 0, 16),
+                        Text = "",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14
+                    }}, {11, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Image = "rbxassetid://5034768003",
+                        Parent = {10},
+                        Position = UDim2.new(0, 3, 0, 3),
+                        Size = UDim2.new(0, 10, 0, 10)
+                    }}, {12, "UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = {10}
+                    }}, {13, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Image = "rbxassetid://1427967925",
+                        Name = "Outlines",
+                        Parent = {2},
+                        Position = UDim2.new(0, -5, 0, -5),
+                        ScaleType = 1,
+                        Size = UDim2.new(1, 10, 1, 10),
+                        SliceCenter = Rect.new(6, 6, 25, 25),
+                        TileSize = UDim2.new(0, 20, 0, 20)
+                    }}, {14, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Name = "ResizeControls",
+                        Parent = {2},
+                        Position = UDim2.new(0, -5, 0, -5),
+                        Size = UDim2.new(1, 10, 1, 10)
+                    }}, {15, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "North",
+                        Parent = {14},
+                        Position = UDim2.new(0, 5, 0, 0),
+                        Size = UDim2.new(1, -10, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {16, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "South",
+                        Parent = {14},
+                        Position = UDim2.new(0, 5, 1, -5),
+                        Size = UDim2.new(1, -10, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {17, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "NorthEast",
+                        Parent = {14},
+                        Position = UDim2.new(1, -5, 0, 0),
+                        Size = UDim2.new(0, 5, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {18, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "East",
+                        Parent = {14},
+                        Position = UDim2.new(1, -5, 0, 5),
+                        Size = UDim2.new(0, 5, 1, -10),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {19, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "West",
+                        Parent = {14},
+                        Position = UDim2.new(0, 0, 0, 5),
+                        Size = UDim2.new(0, 5, 1, -10),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {20, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "SouthEast",
+                        Parent = {14},
+                        Position = UDim2.new(1, -5, 1, -5),
+                        Size = UDim2.new(0, 5, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {21, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "NorthWest",
+                        Parent = {14},
+                        Size = UDim2.new(0, 5, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {22, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.27450981736183, 0.27450981736183, 0.27450981736183),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "SouthWest",
+                        Parent = {14},
+                        Position = UDim2.new(0, 0, 1, -5),
+                        Size = UDim2.new(0, 5, 0, 5),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}})
 
                     local guiMain = gui.Main
                     local guiTopBar = guiMain.TopBar
@@ -6521,7 +7643,8 @@ local EmbeddedModules = {
                     end)
 
                     guiTopBar.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             if self.Draggable then
                                 local releaseEvent, mouseEvent
 
@@ -6536,7 +7659,8 @@ local EmbeddedModules = {
                                 guiDragging = true
 
                                 releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         releaseEvent:Disconnect()
                                         if mouseEvent then
                                             mouseEvent:Disconnect()
@@ -6544,14 +7668,17 @@ local EmbeddedModules = {
                                         guiDragging = false
                                         alignIndicator.Parent = nil
                                         if alignInsertSide then
-                                            local targetSide = (alignInsertSide == "left" and leftSide) or (alignInsertSide == "right" and rightSide)
+                                            local targetSide =
+                                                (alignInsertSide == "left" and leftSide) or
+                                                    (alignInsertSide == "right" and rightSide)
                                             self:AlignTo(targetSide, alignInsertPos)
                                         end
                                     end
                                 end)
 
                                 mouseEvent = service.UserInputService.InputChanged:Connect(function(input)
-                                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and self.Draggable and not self.Closed and ButtonDown then
+                                    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                        Enum.UserInputType.Touch) and self.Draggable and not self.Closed and ButtonDown then
                                         if self.Aligned then
                                             if leftSide.Resizing or rightSide.Resizing then
                                                 return
@@ -6573,8 +7700,10 @@ local EmbeddedModules = {
                                                 if inputX < 25 then
                                                     if sideHasRoom(leftSide, self.MinY or 100) then
                                                         local insertPos, range = getSideInsertPos(leftSide, inputY)
-                                                        alignIndicator.Indicator.Position = UDim2.new(0, -15, 0, range[1])
-                                                        alignIndicator.Indicator.Size = UDim2.new(0, 40, 0, range[2] - range[1])
+                                                        alignIndicator.Indicator.Position = UDim2.new(0, -15, 0,
+                                                            range[1])
+                                                        alignIndicator.Indicator.Size = UDim2.new(0, 40, 0,
+                                                            range[2] - range[1])
                                                         Lib.ShowGui(alignIndicator)
                                                         alignInsertPos = insertPos
                                                         alignInsertSide = "left"
@@ -6583,8 +7712,10 @@ local EmbeddedModules = {
                                                 elseif inputX >= maxX - 25 then
                                                     if sideHasRoom(rightSide, self.MinY or 100) then
                                                         local insertPos, range = getSideInsertPos(rightSide, inputY)
-                                                        alignIndicator.Indicator.Position = UDim2.new(0, maxX - 25, 0, range[1])
-                                                        alignIndicator.Indicator.Size = UDim2.new(0, 40, 0, range[2] - range[1])
+                                                        alignIndicator.Indicator.Position = UDim2.new(0, maxX - 25, 0,
+                                                            range[1])
+                                                        alignIndicator.Indicator.Size = UDim2.new(0, 40, 0,
+                                                            range[2] - range[1])
                                                         Lib.ShowGui(alignIndicator)
                                                         alignInsertPos = insertPos
                                                         alignInsertSide = "right"
@@ -6631,7 +7762,8 @@ local EmbeddedModules = {
                     end)
 
                     guiMain.InputBegan:Connect(function(input)
-                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not self.Aligned and not self.Closed then
+                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch) and not self.Aligned and not self.Closed then
                             moveToTop(self)
                         end
                     end)
@@ -6674,8 +7806,8 @@ local EmbeddedModules = {
                     leftSide.Frame.Resizer.Position = UDim2.new(0, leftSide.Width, 0, 0)
                     rightSide.Frame.Resizer.Position = UDim2.new(0, -5, 0, 0)
 
-                    --leftSide.Frame.Visible = (#leftSide.Windows > 0)
-                    --rightSide.Frame.Visible = (#rightSide.Windows > 0)
+                    -- leftSide.Frame.Visible = (#leftSide.Windows > 0)
+                    -- rightSide.Frame.Visible = (#rightSide.Windows > 0)
 
                     --[[if #leftSide.Windows > 0 and leftSide.Frame.Position == UDim2.new(0,-leftSide.Width-5,0,0) then
 				leftSide.Frame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
@@ -6698,10 +7830,18 @@ local EmbeddedModules = {
                             tweens[#tweens + 1] = tween
                             tween:Play()
                         end
-                        insertTween(leftSide.Frame, sideTweenInfo, { Position = leftPos })
-                        insertTween(rightSide.Frame, sideTweenInfo, { Position = rightPos })
-                        insertTween(sidesGui.LeftToggle, sideTweenInfo, { Position = UDim2.new(0, #leftSide.Windows == 0 and -16 or 0, 0, -36) })
-                        insertTween(sidesGui.RightToggle, sideTweenInfo, { Position = UDim2.new(1, #rightSide.Windows == 0 and 0 or -16, 0, -36) })
+                        insertTween(leftSide.Frame, sideTweenInfo, {
+                            Position = leftPos
+                        })
+                        insertTween(rightSide.Frame, sideTweenInfo, {
+                            Position = rightPos
+                        })
+                        insertTween(sidesGui.LeftToggle, sideTweenInfo, {
+                            Position = UDim2.new(0, #leftSide.Windows == 0 and -16 or 0, 0, -36)
+                        })
+                        insertTween(sidesGui.RightToggle, sideTweenInfo, {
+                            Position = UDim2.new(1, #rightSide.Windows == 0 and 0 or -16, 0, -36)
+                        })
                     else
                         leftSide.Frame.Position = leftPos
                         rightSide.Frame.Position = rightPos
@@ -6739,7 +7879,8 @@ local EmbeddedModules = {
                         if not side.Resizing then
                             if input.UserInputType == Enum.UserInputType.MouseMovement then
                                 resizer.BackgroundColor3 = theme.MainColor2
-                            elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local releaseEvent, inputEvent
 
                                 local offX = input.Position.X - resizer.AbsolutePosition.X
@@ -6749,7 +7890,8 @@ local EmbeddedModules = {
                                 resizer.BackgroundColor3 = theme.MainColor2
 
                                 releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         releaseEvent:Disconnect()
                                         if inputEvent then
                                             inputEvent:Disconnect()
@@ -6769,7 +7911,8 @@ local EmbeddedModules = {
                                         return
                                     end
 
-                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         if dir == "V" then
                                             local delta = input.Position.Y - resizer.AbsolutePosition.Y - offY
 
@@ -6777,20 +7920,24 @@ local EmbeddedModules = {
                                                 local neededSize = delta
                                                 for i = pos + 1, #windows do
                                                     local window = windows[i]
-                                                    local newSize = math.max(window.SizeY - neededSize, (window.MinY or 100))
+                                                    local newSize =
+                                                        math.max(window.SizeY - neededSize, (window.MinY or 100))
                                                     neededSize = neededSize - (window.SizeY - newSize)
                                                     window.SizeY = newSize
                                                 end
-                                                windows[pos].SizeY = windows[pos].SizeY + math.max(0, delta - neededSize)
+                                                windows[pos].SizeY = windows[pos].SizeY +
+                                                                         math.max(0, delta - neededSize)
                                             else
                                                 local neededSize = -delta
                                                 for i = pos, 1, -1 do
                                                     local window = windows[i]
-                                                    local newSize = math.max(window.SizeY - neededSize, (window.MinY or 100))
+                                                    local newSize =
+                                                        math.max(window.SizeY - neededSize, (window.MinY or 100))
                                                     neededSize = neededSize - (window.SizeY - newSize)
                                                     window.SizeY = newSize
                                                 end
-                                                windows[pos + 1].SizeY = windows[pos + 1].SizeY + math.max(0, -delta - neededSize)
+                                                windows[pos + 1].SizeY = windows[pos + 1].SizeY +
+                                                                             math.max(0, -delta - neededSize)
                                             end
 
                                             updateSideFrames()
@@ -6826,7 +7973,8 @@ local EmbeddedModules = {
                     end)
 
                     resizer.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             if side.Resizing ~= resizer then
                                 resizer.BackgroundColor3 = theme.Button
                             end
@@ -6855,12 +8003,15 @@ local EmbeddedModules = {
                         local size = UDim2.new(0, side.Width, 0, v.SizeY)
                         local pos = UDim2.new(sideFramePos.X.Scale, sideFramePos.X.Offset, 0, currentPos)
                         Lib.ShowGui(v.Gui)
-                        --v.GuiElems.Main:TweenSizeAndPosition(size,pos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
+                        -- v.GuiElems.Main:TweenSizeAndPosition(size,pos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
                         if noTween then
                             v.GuiElems.Main.Size = size
                             v.GuiElems.Main.Position = pos
                         else
-                            local tween = service.TweenService:Create(v.GuiElems.Main, sideTweenInfo, { Size = size, Position = pos })
+                            local tween = service.TweenService:Create(v.GuiElems.Main, sideTweenInfo, {
+                                Size = size,
+                                Position = pos
+                            })
                             tweens[#tweens + 1] = tween
                             tween:Play()
                         end
@@ -6869,19 +8020,25 @@ local EmbeddedModules = {
                         if not isEnd then
                             local newTemplate = template:Clone()
                             newTemplate.Position = UDim2.new(1, -side.Width, 0, currentPos - 4)
-                            side.ResizeCons[#side.ResizeCons + 1] = v.Gui.Main:GetPropertyChangedSignal("Size"):Connect(function()
-                                newTemplate.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
-                            end)
-                            side.ResizeCons[#side.ResizeCons + 1] = v.Gui.Main:GetPropertyChangedSignal("Position"):Connect(function()
-                                newTemplate.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
-                            end)
+                            side.ResizeCons[#side.ResizeCons + 1] =
+                                v.Gui.Main:GetPropertyChangedSignal("Size"):Connect(function()
+                                    newTemplate.Position =
+                                        UDim2.new(1, -side.Width, 0,
+                                            v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+                                end)
+                            side.ResizeCons[#side.ResizeCons + 1] =
+                                v.Gui.Main:GetPropertyChangedSignal("Position"):Connect(function()
+                                    newTemplate.Position =
+                                        UDim2.new(1, -side.Width, 0,
+                                            v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+                                end)
                             sideResizerHook(newTemplate, "V", side, i)
                             newTemplate.Parent = side.Frame
                         end
                     end
 
-                    --side.Frame.Back.Position = UDim2.new(0,0,0,0)
-                    --side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
+                    -- side.Frame.Back.Position = UDim2.new(0,0,0,0)
+                    -- side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
                 end
 
                 local function updateSide(side, noTween)
@@ -6948,7 +8105,7 @@ local EmbeddedModules = {
                     end
 
                     local resizeControls = self.GuiElems.ResizeControls
-                    local minimizeControls = { "North", "NorthEast", "NorthWest", "South", "SouthEast", "SouthWest" }
+                    local minimizeControls = {"North", "NorthEast", "NorthWest", "South", "SouthEast", "SouthWest"}
                     for i = 1, #minimizeControls do
                         local control = resizeControls:FindFirstChild(minimizeControls[i])
                         if control then
@@ -6959,15 +8116,21 @@ local EmbeddedModules = {
                     if mode == 1 or mode == 2 then
                         self:StopTweens()
                         if mode == 1 then
-                            self.GuiElems.Main:TweenSize(UDim2.new(0, self.SizeX, 0, newVal and 20 or self.SizeY), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
+                            self.GuiElems.Main:TweenSize(UDim2.new(0, self.SizeX, 0, newVal and 20 or self.SizeY),
+                                Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
                         else
                             local maxY = sidesGui.AbsoluteSize.Y
-                            local newPos = UDim2.new(0, self.PosX, 0, newVal and math.min(maxY - 20, self.PosY + self.SizeY - 20) or math.max(0, self.PosY - self.SizeY + 20))
+                            local newPos = UDim2.new(0, self.PosX, 0, newVal and
+                                math.min(maxY - 20, self.PosY + self.SizeY - 20) or
+                                math.max(0, self.PosY - self.SizeY + 20))
 
-                            self.GuiElems.Main:TweenPosition(newPos, Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
-                            self.GuiElems.Main:TweenSize(UDim2.new(0, self.SizeX, 0, newVal and 20 or self.SizeY), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
+                            self.GuiElems.Main:TweenPosition(newPos, Enum.EasingDirection.Out, Enum.EasingStyle.Quart,
+                                0.25, true)
+                            self.GuiElems.Main:TweenSize(UDim2.new(0, self.SizeX, 0, newVal and 20 or self.SizeY),
+                                Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.25, true)
                         end
-                        self.GuiElems.Minimize.ImageLabel.Image = newVal and "rbxassetid://5060023708" or "rbxassetid://5034768003"
+                        self.GuiElems.Minimize.ImageLabel.Image =
+                            newVal and "rbxassetid://5060023708" or "rbxassetid://5034768003"
                     end
 
                     if oldVal ~= newVal then
@@ -7106,17 +8269,29 @@ local EmbeddedModules = {
                         local closeTime = tick()
                         self.LastClose = closeTime
 
-                        self:DoTween(self.GuiElems.Main, ti, { Size = UDim2.new(0, self.SizeX, 0, 20) })
-                        self:DoTween(self.GuiElems.Title, ti, { TextTransparency = 1 })
-                        self:DoTween(self.GuiElems.Minimize.ImageLabel, ti, { ImageTransparency = 1 })
-                        self:DoTween(self.GuiElems.Close.ImageLabel, ti, { ImageTransparency = 1 })
+                        self:DoTween(self.GuiElems.Main, ti, {
+                            Size = UDim2.new(0, self.SizeX, 0, 20)
+                        })
+                        self:DoTween(self.GuiElems.Title, ti, {
+                            TextTransparency = 1
+                        })
+                        self:DoTween(self.GuiElems.Minimize.ImageLabel, ti, {
+                            ImageTransparency = 1
+                        })
+                        self:DoTween(self.GuiElems.Close.ImageLabel, ti, {
+                            ImageTransparency = 1
+                        })
                         Lib.FastWait(0.2)
                         if closeTime ~= self.LastClose then
                             return
                         end
 
-                        self:DoTween(self.GuiElems.TopBar, ti, { BackgroundTransparency = 1 })
-                        self:DoTween(self.GuiElems.Outlines, ti, { ImageTransparency = 1 })
+                        self:DoTween(self.GuiElems.TopBar, ti, {
+                            BackgroundTransparency = 1
+                        })
+                        self:DoTween(self.GuiElems.Outlines, ti, {
+                            ImageTransparency = 1
+                        })
                         Lib.FastWait(0.2)
                         if closeTime ~= self.LastClose then
                             return
@@ -7219,7 +8394,9 @@ local EmbeddedModules = {
                             window.GuiElems.Main.Size = UDim2.new(0, window.SizeX, 0, 20)
                             local ti = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
                             window:StopTweens()
-                            window:DoTween(window.GuiElems.Main, ti, { Size = UDim2.new(0, window.SizeX, 0, window.SizeY) })
+                            window:DoTween(window.GuiElems.Main, ti, {
+                                Size = UDim2.new(0, window.SizeX, 0, window.SizeY)
+                            })
 
                             window.SizeY = size or window.SizeY
                             table.insert(visibleWindows, 1, window)
@@ -7262,26 +8439,96 @@ local EmbeddedModules = {
                     sideDisplayOrder = Main.DisplayOrders.SideWindow
 
                     sidesGui = Instance.new("ScreenGui")
-                    local leftFrame = create({
-                        { 1, "Frame", { Active = true, Name = "LeftSide", BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0 } },
-                        { 2, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933), BorderSizePixel = 0, Font = 3, Name = "Resizer", Parent = { 1 }, Size = UDim2.new(0, 5, 1, 0), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "Line", Parent = { 2 }, Position = UDim2.new(0, 0, 0, 0), Size = UDim2.new(0, 1, 1, 0) } },
-                        { 4, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933), BorderSizePixel = 0, Font = 3, Name = "WindowResizer", Parent = { 1 }, Position = UDim2.new(1, -300, 0, 0), Size = UDim2.new(1, 0, 0, 4), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 5, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "Line", Parent = { 4 }, Size = UDim2.new(1, 0, 0, 1) } },
-                    })
+                    local leftFrame = create({{1, "Frame", {
+                        Active = true,
+                        Name = "LeftSide",
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0
+                    }}, {2, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Resizer",
+                        Parent = {1},
+                        Size = UDim2.new(0, 5, 1, 0),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {2},
+                        Position = UDim2.new(0, 0, 0, 0),
+                        Size = UDim2.new(0, 1, 1, 0)
+                    }}, {4, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "WindowResizer",
+                        Parent = {1},
+                        Position = UDim2.new(1, -300, 0, 0),
+                        Size = UDim2.new(1, 0, 0, 4),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {5, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {4},
+                        Size = UDim2.new(1, 0, 0, 1)
+                    }}})
                     leftSide.Frame = leftFrame
                     leftFrame.Position = UDim2.new(0, -leftSide.Width - 10, 0, 0)
                     leftSide.WindowResizer = leftFrame.WindowResizer
                     leftFrame.WindowResizer.Parent = nil
                     leftFrame.Parent = sidesGui
 
-                    local rightFrame = create({
-                        { 1, "Frame", { Active = true, Name = "RightSide", BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0 } },
-                        { 2, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933), BorderSizePixel = 0, Font = 3, Name = "Resizer", Parent = { 1 }, Size = UDim2.new(0, 5, 1, 0), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "Line", Parent = { 2 }, Position = UDim2.new(0, 4, 0, 0), Size = UDim2.new(0, 1, 1, 0) } },
-                        { 4, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933), BorderSizePixel = 0, Font = 3, Name = "WindowResizer", Parent = { 1 }, Position = UDim2.new(1, -300, 0, 0), Size = UDim2.new(1, 0, 0, 4), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-                        { 5, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "Line", Parent = { 4 }, Size = UDim2.new(1, 0, 0, 1) } },
-                    })
+                    local rightFrame = create({{1, "Frame", {
+                        Active = true,
+                        Name = "RightSide",
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0
+                    }}, {2, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Resizer",
+                        Parent = {1},
+                        Size = UDim2.new(0, 5, 1, 0),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {2},
+                        Position = UDim2.new(0, 4, 0, 0),
+                        Size = UDim2.new(0, 1, 1, 0)
+                    }}, {4, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2549019753933, 0.2549019753933, 0.2549019753933),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "WindowResizer",
+                        Parent = {1},
+                        Position = UDim2.new(1, -300, 0, 0),
+                        Size = UDim2.new(1, 0, 0, 4),
+                        Text = "",
+                        TextColor3 = Color3.new(0, 0, 0),
+                        TextSize = 14
+                    }}, {5, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {4},
+                        Size = UDim2.new(1, 0, 0, 1)
+                    }}})
                     rightSide.Frame = rightFrame
                     rightFrame.Position = UDim2.new(1, 10, 0, 0)
                     rightSide.WindowResizer = rightFrame.WindowResizer
@@ -7301,12 +8548,30 @@ local EmbeddedModules = {
                     local corner = Instance.new("UICorner", indicator)
                     corner.CornerRadius = UDim.new(0, 10)
 
-                    local leftToggle = create({ { 1, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderMode = 2, Font = 10, Name = "LeftToggle", Position = UDim2.new(0, 0, 0, -36), Size = UDim2.new(0, 16, 0, 36), Text = "<", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } } })
+                    local leftToggle = create({{1, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BorderColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderMode = 2,
+                        Font = 10,
+                        Name = "LeftToggle",
+                        Position = UDim2.new(0, 0, 0, -36),
+                        Size = UDim2.new(0, 16, 0, 36),
+                        Text = "<",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14
+                    }}})
                     local rightToggle = leftToggle:Clone()
                     rightToggle.Name = "RightToggle"
                     rightToggle.Position = UDim2.new(1, -16, 0, -36)
-                    Lib.ButtonAnim(leftToggle, { Mode = 2, PressColor = Color3.fromRGB(32, 32, 32) })
-                    Lib.ButtonAnim(rightToggle, { Mode = 2, PressColor = Color3.fromRGB(32, 32, 32) })
+                    Lib.ButtonAnim(leftToggle, {
+                        Mode = 2,
+                        PressColor = Color3.fromRGB(32, 32, 32)
+                    })
+                    Lib.ButtonAnim(rightToggle, {
+                        Mode = 2,
+                        PressColor = Color3.fromRGB(32, 32, 32)
+                    })
 
                     leftToggle.MouseButton1Click:Connect(function()
                         static.ToggleSide("left")
@@ -7322,7 +8587,8 @@ local EmbeddedModules = {
                     sidesGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
                         local maxWidth = math.max(300, sidesGui.AbsoluteSize.X - static.FreeWidth)
                         leftSide.Width = math.max(static.MinWidth, math.min(leftSide.Width, maxWidth - rightSide.Width))
-                        rightSide.Width = math.max(static.MinWidth, math.min(rightSide.Width, maxWidth - leftSide.Width))
+                        rightSide.Width =
+                            math.max(static.MinWidth, math.min(rightSide.Width, maxWidth - leftSide.Width))
                         for i = 1, #visibleWindows do
                             visibleWindows[i]:MoveInBoundary()
                         end
@@ -7334,7 +8600,9 @@ local EmbeddedModules = {
                     updateSideFrames()
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
                 static.new = function()
                     local obj = setmetatable({
                         Minimized = false,
@@ -7358,7 +8626,7 @@ local EmbeddedModules = {
                         OnActivate = Lib.Signal.new(),
                         OnDeactivate = Lib.Signal.new(),
                         OnMinimize = Lib.Signal.new(),
-                        OnRestore = Lib.Signal.new(),
+                        OnRestore = Lib.Signal.new()
                     }, mt)
                     obj.Gui = createGui(obj)
                     return obj
@@ -7372,28 +8640,169 @@ local EmbeddedModules = {
                 local mouse
 
                 local function createGui(self)
-                    local contextGui = create({
-                        { 1, "ScreenGui", { DisplayOrder = 1000000, Name = "Context", ZIndexBehavior = 1 } },
-                        { 2, "Frame", { Active = true, BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), Name = "Main", Parent = { 1 }, Position = UDim2.new(0.5, -100, 0.5, -150), Size = UDim2.new(0, 200, 0, 100) } },
-                        { 3, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 2 } } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), Name = "Container", Parent = { 2 }, Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(1, -2, 1, -2) } },
-                        { 5, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 4 } } },
-                        { 6, "ScrollingFrame", { Active = true, BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.new(0, 0, 0, 0), Name = "List", Parent = { 4 }, Position = UDim2.new(0, 2, 0, 2), ScrollBarImageColor3 = Color3.new(0, 0, 0), ScrollBarThickness = 4, Size = UDim2.new(1, -4, 1, -4), VerticalScrollBarInset = 1 } },
-                        { 7, "UIListLayout", { Parent = { 6 }, SortOrder = 2 } },
-                        { 8, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "SearchFrame", Parent = { 4 }, Size = UDim2.new(1, 0, 0, 24), Visible = false } },
-                        { 9, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618), BorderSizePixel = 0, Name = "SearchContainer", Parent = { 8 }, Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(1, -6, 0, 18) } },
-                        { 10, "TextBox", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "SearchBox", Parent = { 9 }, PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537), PlaceholderText = "Search", Position = UDim2.new(0, 4, 0, 0), Size = UDim2.new(1, -8, 0, 18), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 0 } },
-                        { 11, "UICorner", { CornerRadius = UDim.new(0, 2), Parent = { 9 } } },
-                        { 12, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "Line", Parent = { 8 }, Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 1) } },
-                        { 13, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161), BorderSizePixel = 0, Font = 3, Name = "Entry", Parent = { 1 }, Size = UDim2.new(1, 0, 0, 22), Text = "", TextSize = 14, Visible = false } },
-                        { 14, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "EntryName", Parent = { 13 }, Position = UDim2.new(0, 24, 0, 0), Size = UDim2.new(1, -24, 1, 0), Text = "Duplicate", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 15, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Shortcut", Parent = { 13 }, Position = UDim2.new(0, 24, 0, 0), Size = UDim2.new(1, -30, 1, 0), Text = "Ctrl+D", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 16, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, ImageRectOffset = Vector2.new(304, 0), ImageRectSize = Vector2.new(16, 16), Name = "Icon", Parent = { 13 }, Position = UDim2.new(0, 2, 0, 3), ScaleType = 4, Size = UDim2.new(0, 16, 0, 16) } },
-                        { 17, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 13 } } },
-                        { 18, "Frame", { BackgroundColor3 = Color3.new(0.21568629145622, 0.21568629145622, 0.21568629145622), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "Divider", Parent = { 1 }, Position = UDim2.new(0, 0, 0, 20), Size = UDim2.new(1, 0, 0, 7), Visible = false } },
-                        { 19, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "Line", Parent = { 18 }, Position = UDim2.new(0, 0, 0.5, 0), Size = UDim2.new(1, 0, 0, 1) } },
-                        { 20, "TextLabel", { AnchorPoint = Vector2.new(0, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "DividerName", Parent = { 18 }, Position = UDim2.new(0, 2, 0.5, 0), Size = UDim2.new(1, -4, 1, 0), Text = "Objects", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.60000002384186, TextXAlignment = 0, Visible = false } },
-                    })
+                    local contextGui = create({{1, "ScreenGui", {
+                        DisplayOrder = 1000000,
+                        Name = "Context",
+                        ZIndexBehavior = 1
+                    }}, {2, "Frame", {
+                        Active = true,
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        Name = "Main",
+                        Parent = {1},
+                        Position = UDim2.new(0.5, -100, 0.5, -150),
+                        Size = UDim2.new(0, 200, 0, 100)
+                    }}, {3, "UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = {2}
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        Name = "Container",
+                        Parent = {2},
+                        Position = UDim2.new(0, 1, 0, 1),
+                        Size = UDim2.new(1, -2, 1, -2)
+                    }}, {5, "UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = {4}
+                    }}, {6, "ScrollingFrame", {
+                        Active = true,
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        CanvasSize = UDim2.new(0, 0, 0, 0),
+                        Name = "List",
+                        Parent = {4},
+                        Position = UDim2.new(0, 2, 0, 2),
+                        ScrollBarImageColor3 = Color3.new(0, 0, 0),
+                        ScrollBarThickness = 4,
+                        Size = UDim2.new(1, -4, 1, -4),
+                        VerticalScrollBarInset = 1
+                    }}, {7, "UIListLayout", {
+                        Parent = {6},
+                        SortOrder = 2
+                    }}, {8, "Frame", {
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BorderSizePixel = 0,
+                        Name = "SearchFrame",
+                        Parent = {4},
+                        Size = UDim2.new(1, 0, 0, 24),
+                        Visible = false
+                    }}, {9, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.1176470592618, 0.1176470592618, 0.1176470592618),
+                        BorderSizePixel = 0,
+                        Name = "SearchContainer",
+                        Parent = {8},
+                        Position = UDim2.new(0, 3, 0, 3),
+                        Size = UDim2.new(1, -6, 0, 18)
+                    }}, {10, "TextBox", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "SearchBox",
+                        Parent = {9},
+                        PlaceholderColor3 = Color3.new(0.39215689897537, 0.39215689897537, 0.39215689897537),
+                        PlaceholderText = "Search",
+                        Position = UDim2.new(0, 4, 0, 0),
+                        Size = UDim2.new(1, -8, 0, 18),
+                        Text = "",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {11, "UICorner", {
+                        CornerRadius = UDim.new(0, 2),
+                        Parent = {9}
+                    }}, {12, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {8},
+                        Position = UDim2.new(0, 0, 1, 0),
+                        Size = UDim2.new(1, 0, 0, 1)
+                    }}, {13, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.33725491166115, 0.49019610881805, 0.73725491762161),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Entry",
+                        Parent = {1},
+                        Size = UDim2.new(1, 0, 0, 22),
+                        Text = "",
+                        TextSize = 14,
+                        Visible = false
+                    }}, {14, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "EntryName",
+                        Parent = {13},
+                        Position = UDim2.new(0, 24, 0, 0),
+                        Size = UDim2.new(1, -24, 1, 0),
+                        Text = "Duplicate",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {15, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Shortcut",
+                        Parent = {13},
+                        Position = UDim2.new(0, 24, 0, 0),
+                        Size = UDim2.new(1, -30, 1, 0),
+                        Text = "Ctrl+D",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {16, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        ImageRectOffset = Vector2.new(304, 0),
+                        ImageRectSize = Vector2.new(16, 16),
+                        Name = "Icon",
+                        Parent = {13},
+                        Position = UDim2.new(0, 2, 0, 3),
+                        ScaleType = 4,
+                        Size = UDim2.new(0, 16, 0, 16)
+                    }}, {17, "UICorner", {
+                        CornerRadius = UDim.new(0, 4),
+                        Parent = {13}
+                    }}, {18, "Frame", {
+                        BackgroundColor3 = Color3.new(0.21568629145622, 0.21568629145622, 0.21568629145622),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "Divider",
+                        Parent = {1},
+                        Position = UDim2.new(0, 0, 0, 20),
+                        Size = UDim2.new(1, 0, 0, 7),
+                        Visible = false
+                    }}, {19, "Frame", {
+                        BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {18},
+                        Position = UDim2.new(0, 0, 0.5, 0),
+                        Size = UDim2.new(1, 0, 0, 1)
+                    }}, {20, "TextLabel", {
+                        AnchorPoint = Vector2.new(0, 0.5),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "DividerName",
+                        Parent = {18},
+                        Position = UDim2.new(0, 2, 0.5, 0),
+                        Size = UDim2.new(1, -4, 1, 0),
+                        Text = "Objects",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14,
+                        TextTransparency = 0.60000002384186,
+                        TextXAlignment = 0,
+                        Visible = false
+                    }}})
 
                     self.GuiElems.Main = contextGui.Main
                     self.GuiElems.List = contextGui.Main.Container.List
@@ -7459,7 +8868,7 @@ local EmbeddedModules = {
                         Disabled = item.Disabled or false,
                         DisabledIcon = item.DisabledIcon or "",
                         IconMap = item.IconMap,
-                        OnRightClick = item.OnRightClick,
+                        OnRightClick = item.OnRightClick
                     }
 
                     if self.QueuedDivider then
@@ -7493,7 +8902,7 @@ local EmbeddedModules = {
                         OnHover = item.OnHover,
                         DisabledIcon = item.DisabledIcon or "",
                         IconMap = item.IconMap,
-                        OnRightClick = item.OnRightClick,
+                        OnRightClick = item.OnRightClick
                     }
                 end
 
@@ -7503,8 +8912,14 @@ local EmbeddedModules = {
 
                 funcs.AddDivider = function(self, text)
                     self.QueuedDivider = false
-                    local textWidth = text and service.TextService:GetTextSize(text, 14, Enum.Font.SourceSans, Vector2.new(999999999, 20)).X or nil
-                    table.insert(self.Items, { Divider = true, Text = text, TextSize = textWidth and textWidth + 4 })
+                    local textWidth = text and
+                                          service.TextService:GetTextSize(text, 14, Enum.Font.SourceSans,
+                                              Vector2.new(999999999, 20)).X or nil
+                    table.insert(self.Items, {
+                        Divider = true,
+                        Text = text,
+                        TextSize = textWidth and textWidth + 4
+                    })
                     self.Updated = nil
                 end
 
@@ -7598,13 +9013,15 @@ local EmbeddedModules = {
                             end
 
                             newEntry.InputBegan:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     newEntry.BackgroundTransparency = 0
                                 end
                             end)
 
                             newEntry.InputEnded:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     newEntry.BackgroundTransparency = 1
                                 end
                             end)
@@ -7667,7 +9084,8 @@ local EmbeddedModules = {
                             return
                         end
 
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             if not Lib.CheckMouseInGui(elems.Main) then
                                 self.CloseEvent:Disconnect()
                                 self:Hide()
@@ -7680,9 +9098,11 @@ local EmbeddedModules = {
                         elems.Main.Position = UDim2.new(0, x, 0, y - (self.ReverseYOffset or 0))
                         local newY = y - toSize - (self.ReverseYOffset or 0)
                         y = newY >= 0 and newY or 0
-                        elems.Main:TweenSizeAndPosition(UDim2.new(0, self.Width, 0, toSize), UDim2.new(0, x, 0, y), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.2, true)
+                        elems.Main:TweenSizeAndPosition(UDim2.new(0, self.Width, 0, toSize), UDim2.new(0, x, 0, y),
+                            Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.2, true)
                     else
-                        elems.Main:TweenSize(UDim2.new(0, self.Width, 0, toSize), Enum.EasingDirection.Out, Enum.EasingStyle.Quart, 0.2, true)
+                        elems.Main:TweenSize(UDim2.new(0, self.Width, 0, toSize), Enum.EasingDirection.Out,
+                            Enum.EasingStyle.Quart, 0.2, true)
                     end
 
                     -- Close debounce
@@ -7709,7 +9129,9 @@ local EmbeddedModules = {
                     self.GuiElems.Main.Container.BackgroundColor3 = theme.ContentColor
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
                 local function new()
                     if not mouse then
                         mouse = Main.Mouse or service.Players.LocalPlayer:GetMouse()
@@ -7728,14 +9150,16 @@ local EmbeddedModules = {
                         Items = {},
                         Registered = {},
                         GuiElems = {},
-                        Theme = {},
+                        Theme = {}
                     }, mt)
                     obj.Gui = createGui(obj)
                     obj:ApplyTheme({})
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.CodeFrame = (function()
@@ -7758,7 +9182,7 @@ local EmbeddedModules = {
                     [14] = "Local",
                     [15] = "Self",
                     [16] = "FunctionName",
-                    [17] = "Bracket",
+                    [17] = "Bracket"
                 }
 
                 local specialKeywordsTypes = {
@@ -7767,7 +9191,7 @@ local EmbeddedModules = {
                     ["false"] = 12,
                     ["function"] = 13,
                     ["local"] = 14,
-                    ["self"] = 15,
+                    ["self"] = 15
                 }
 
                 local keywords = {
@@ -7792,7 +9216,7 @@ local EmbeddedModules = {
                     ["true"] = true,
                     ["until"] = true,
                     ["while"] = true,
-                    ["plugin"] = true,
+                    ["plugin"] = true
                 }
 
                 local builtIns = {
@@ -7869,7 +9293,7 @@ local EmbeddedModules = {
                     ["Vector2"] = true,
                     ["Vector2int16"] = true,
                     ["Vector3"] = true,
-                    ["Vector3int16"] = true,
+                    ["Vector3int16"] = true
                 }
 
                 local builtInInited = false
@@ -7879,7 +9303,7 @@ local EmbeddedModules = {
                     ['"'] = "&quot;",
                     ["<"] = "&lt;",
                     [">"] = "&gt;",
-                    ["&"] = "&amp;",
+                    ["&"] = "&amp;"
                 }
 
                 local tabSub = "\t"
@@ -7889,7 +9313,7 @@ local EmbeddedModules = {
                     [("[^%s] "):format(tabSub)] = 0,
                     [(" %s"):format(tabSub)] = -1,
                     [("%s "):format(tabSub)] = 2,
-                    [(" [^%s]"):format(tabSub)] = 1,
+                    [(" [^%s]"):format(tabSub)] = 1
                 }
 
                 local tweenService = service.TweenService
@@ -7949,7 +9373,8 @@ local EmbeddedModules = {
                     local lines = obj.Lines
 
                     codeFrame.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             local fontSizeX, fontSizeY = math.ceil(obj.FontSize / 2), obj.FontSize
                             local relX = input.Position.X - codeFrame.AbsolutePosition.X
                             local relY = input.Position.Y - codeFrame.AbsolutePosition.Y
@@ -7961,7 +9386,7 @@ local EmbeddedModules = {
                             local relativeLine = lines[selY + 1] or ""
                             selX = math.min(#relativeLine, selX + obj:TabAdjust(selX, selY))
 
-                            obj.SelectionRange = { { -1, -1 }, { -1, -1 } }
+                            obj.SelectionRange = {{-1, -1}, {-1, -1}}
                             obj:MoveCursor(selX, selY)
                             obj.FloatCursorX = selX
 
@@ -7976,9 +9401,9 @@ local EmbeddedModules = {
                                 sel2X = math.min(#relativeLine, sel2X + obj:TabAdjust(sel2X, sel2Y))
 
                                 if sel2Y < selY or (sel2Y == selY and sel2X < selX) then
-                                    obj.SelectionRange = { { sel2X, sel2Y }, { selX, selY } }
+                                    obj.SelectionRange = {{sel2X, sel2Y}, {selX, selY}}
                                 else
-                                    obj.SelectionRange = { { selX, selY }, { sel2X, sel2Y } }
+                                    obj.SelectionRange = {{selX, selY}, {sel2X, sel2Y}}
                                 end
 
                                 obj:MoveCursor(sel2X, sel2Y)
@@ -7987,7 +9412,8 @@ local EmbeddedModules = {
                             end
 
                             releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     releaseEvent:Disconnect()
                                     inputEvent:Disconnect()
                                     scrollEvent:Disconnect()
@@ -7996,11 +9422,14 @@ local EmbeddedModules = {
                             end)
 
                             inputEvent = service.UserInputService.InputChanged:Connect(function(input)
-                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                    Enum.UserInputType.Touch then
                                     local upDelta = input.Position.Y - codeFrame.AbsolutePosition.Y
-                                    local downDelta = input.Position.Y - codeFrame.AbsolutePosition.Y - codeFrame.AbsoluteSize.Y
+                                    local downDelta = input.Position.Y - codeFrame.AbsolutePosition.Y -
+                                                          codeFrame.AbsoluteSize.Y
                                     local leftDelta = input.Position.X - codeFrame.AbsolutePosition.X
-                                    local rightDelta = input.Position.X - codeFrame.AbsolutePosition.X - codeFrame.AbsoluteSize.X
+                                    local rightDelta = input.Position.X - codeFrame.AbsolutePosition.X -
+                                                           codeFrame.AbsoluteSize.X
 
                                     scrollPowerV = 0
                                     scrollPowerH = 0
@@ -8031,9 +9460,12 @@ local EmbeddedModules = {
                 end
 
                 local function makeFrame(obj)
-                    local frame = create({
-                        { 1, "Frame", { BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945), BorderSizePixel = 0, Position = UDim2.new(0.5, -300, 0.5, -200), Size = UDim2.new(0, 600, 0, 400) } },
-                    })
+                    local frame = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.5, -300, 0.5, -200),
+                        Size = UDim2.new(0, 600, 0, 400)
+                    }}})
                     local elems = {}
 
                     local linesFrame = Instance.new("Frame")
@@ -8065,18 +9497,32 @@ local EmbeddedModules = {
                     editBox.Visible = false
                     editBox.Parent = frame
 
-                    lineTweens.Invis = tweenService:Create(cursor, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 1 })
-                    lineTweens.Vis = tweenService:Create(cursor, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), { BackgroundTransparency = 0 })
+                    lineTweens.Invis = tweenService:Create(cursor, TweenInfo.new(0.4, Enum.EasingStyle.Quart,
+                        Enum.EasingDirection.Out), {
+                        BackgroundTransparency = 1
+                    })
+                    lineTweens.Vis = tweenService:Create(cursor, TweenInfo.new(0.2, Enum.EasingStyle.Quart,
+                        Enum.EasingDirection.Out), {
+                        BackgroundTransparency = 0
+                    })
 
                     elems.LinesFrame = linesFrame
                     elems.LineNumbersLabel = lineNumbersLabel
                     elems.Cursor = cursor
                     elems.EditBox = editBox
-                    elems.ScrollCorner = create({ { 1, "Frame", { BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945), BorderSizePixel = 0, Name = "ScrollCorner", Position = UDim2.new(1, -16, 1, -16), Size = UDim2.new(0, 16, 0, 16), Visible = false } } })
+                    elems.ScrollCorner = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(0.15686275064945, 0.15686275064945, 0.15686275064945),
+                        BorderSizePixel = 0,
+                        Name = "ScrollCorner",
+                        Position = UDim2.new(1, -16, 1, -16),
+                        Size = UDim2.new(0, 16, 0, 16),
+                        Visible = false
+                    }}})
 
                     elems.ScrollCorner.Parent = frame
                     linesFrame.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             obj:SetEditing(true, input)
                         end
                     end)
@@ -8179,7 +9625,9 @@ local EmbeddedModules = {
                         elseif keycode == keycodes.Left then
                             setupMove(keycodes.Left, function()
                                 local line = self.Lines[self.CursorY + 1] or ""
-                                self.CursorX = self.CursorX - 1 - (line:sub(self.CursorX - 3, self.CursorX) == tabReplacement and 3 or 0)
+                                self.CursorX = self.CursorX - 1 -
+                                                   (line:sub(self.CursorX - 3, self.CursorX) == tabReplacement and 3 or
+                                                       0)
                                 if self.CursorX < 0 then
                                     self.CursorY = self.CursorY - 1
                                     local line2 = self.Lines[self.CursorY + 1] or ""
@@ -8192,7 +9640,9 @@ local EmbeddedModules = {
                         elseif keycode == keycodes.Right then
                             setupMove(keycodes.Right, function()
                                 local line = self.Lines[self.CursorY + 1] or ""
-                                self.CursorX = self.CursorX + 1 + (line:sub(self.CursorX + 1, self.CursorX + 4) == tabReplacement and 3 or 0)
+                                self.CursorX = self.CursorX + 1 +
+                                                   (line:sub(self.CursorX + 1, self.CursorX + 4) == tabReplacement and 3 or
+                                                       0)
                                 if self.CursorX > #line then
                                     self.CursorY = self.CursorY + 1
                                     self.CursorX = 0
@@ -8208,12 +9658,14 @@ local EmbeddedModules = {
                                     startRange = self.SelectionRange[1]
                                     endRange = self.SelectionRange[2]
                                 else
-                                    endRange = { self.CursorX, self.CursorY }
+                                    endRange = {self.CursorX, self.CursorY}
                                 end
 
                                 if not startRange then
                                     local line = self.Lines[self.CursorY + 1] or ""
-                                    self.CursorX = self.CursorX - 1 - (line:sub(self.CursorX - 3, self.CursorX) == tabReplacement and 3 or 0)
+                                    self.CursorX = self.CursorX - 1 -
+                                                       (line:sub(self.CursorX - 3, self.CursorX) == tabReplacement and 3 or
+                                                           0)
                                     if self.CursorX < 0 then
                                         self.CursorY = self.CursorY - 1
                                         local line2 = self.Lines[self.CursorY + 1] or ""
@@ -8222,10 +9674,10 @@ local EmbeddedModules = {
                                     self.FloatCursorX = self.CursorX
                                     self:UpdateCursor()
 
-                                    startRange = startRange or { self.CursorX, self.CursorY }
+                                    startRange = startRange or {self.CursorX, self.CursorY}
                                 end
 
-                                self:DeleteRange({ startRange, endRange }, false, true)
+                                self:DeleteRange({startRange, endRange}, false, true)
                                 self:ResetSelection(true)
                                 self:JumpToCursor()
                             end)
@@ -8236,12 +9688,14 @@ local EmbeddedModules = {
                                     startRange = self.SelectionRange[1]
                                     endRange = self.SelectionRange[2]
                                 else
-                                    startRange = { self.CursorX, self.CursorY }
+                                    startRange = {self.CursorX, self.CursorY}
                                 end
 
                                 if not endRange then
                                     local line = self.Lines[self.CursorY + 1] or ""
-                                    local endCursorX = self.CursorX + 1 + (line:sub(self.CursorX + 1, self.CursorX + 4) == tabReplacement and 3 or 0)
+                                    local endCursorX = self.CursorX + 1 +
+                                                           (line:sub(self.CursorX + 1, self.CursorX + 4) ==
+                                                               tabReplacement and 3 or 0)
                                     local endCursorY = self.CursorY
                                     if endCursorX > #line then
                                         endCursorY = endCursorY + 1
@@ -8249,16 +9703,16 @@ local EmbeddedModules = {
                                     end
                                     self:UpdateCursor()
 
-                                    endRange = endRange or { endCursorX, endCursorY }
+                                    endRange = endRange or {endCursorX, endCursorY}
                                 end
 
-                                self:DeleteRange({ startRange, endRange }, false, true)
+                                self:DeleteRange({startRange, endRange}, false, true)
                                 self:ResetSelection(true)
                                 self:JumpToCursor()
                             end)
                         elseif service.UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
                             if keycode == keycodes.A then
-                                self.SelectionRange = { { 0, 0 }, { #self.Lines[#self.Lines], #self.Lines - 1 } }
+                                self.SelectionRange = {{0, 0}, {#self.Lines[#self.Lines], #self.Lines - 1}}
                                 self:SetCopyableSelection()
                                 self:Refresh()
                             end
@@ -8273,7 +9727,7 @@ local EmbeddedModules = {
                 end
 
                 funcs.ResetSelection = function(self, norefresh)
-                    self.SelectionRange = { { -1, -1 }, { -1, -1 } }
+                    self.SelectionRange = {{-1, -1}, {-1, -1}}
                     if not norefresh then
                         self:Refresh()
                     end
@@ -8316,7 +9770,7 @@ local EmbeddedModules = {
                     end
 
                     if range == self.SelectionRange then
-                        self.SelectionRange = { { -1, -1 }, { -1, -1 } }
+                        self.SelectionRange = {{-1, -1}, {-1, -1}}
                     end
                     if updatemouse then
                         self.CursorX = selX
@@ -8380,7 +9834,8 @@ local EmbeddedModules = {
                         local left = line:sub(x - 1, x - 1)
                         local middle = line:sub(x, x)
                         local right = line:sub(x + 1, x + 1)
-                        local selRange = (#left > 0 and left or " ") .. (#middle > 0 and middle or " ") .. (#right > 0 and right or " ")
+                        local selRange = (#left > 0 and left or " ") .. (#middle > 0 and middle or " ") ..
+                                             (#right > 0 and right or " ")
 
                         for i, v in pairs(tabJumps) do
                             if selRange:find(i) then
@@ -8488,11 +9943,13 @@ local EmbeddedModules = {
                     self.CursorX = cursorX
                     self.CursorY = cursorY
 
-                    local cursorVisible = (cursorX >= viewX) and (cursorY >= viewY) and (cursorX <= viewX + maxCols) and (cursorY <= viewY + maxLines)
+                    local cursorVisible = (cursorX >= viewX) and (cursorY >= viewY) and (cursorX <= viewX + maxCols) and
+                                              (cursorY <= viewY + maxLines)
                     if cursorVisible then
                         local offX = (cursorX - viewX)
                         local offY = (cursorY - viewY)
-                        cursor.Position = UDim2.new(0, linesOffset + offX * math.ceil(self.FontSize / 2) - 1, 0, offY * self.FontSize)
+                        cursor.Position = UDim2.new(0, linesOffset + offX * math.ceil(self.FontSize / 2) - 1, 0,
+                            offY * self.FontSize)
                         cursor.Size = UDim2.new(0, 1, 0, self.FontSize + 2)
                         cursor.Visible = true
                         self:CursorAnim(true)
@@ -8522,7 +9979,7 @@ local EmbeddedModules = {
                 funcs.PreHighlight = function(self)
                     local start = tick()
                     local text = self.Text:gsub("\\\\", "	")
-                    --print("BACKSLASH SUB",tick()-start)
+                    -- print("BACKSLASH SUB",tick()-start)
                     local textLen = #text
                     local found = {}
                     local foundMap = {}
@@ -8564,74 +10021,73 @@ local EmbeddedModules = {
 
                     for i = 1, #found do
                         local pos = found[i]
-                        if pos <= lastEnding then
-                            continue
-                        end
+                        if pos > lastEnding then
 
-                        local ending = pos
-                        local typ = foundMap[pos]
-                        if typ == 1 then
-                            ending = find(text, '"', pos + 1, true)
-                            while ending and sub(text, ending - 1, ending - 1) == "\\" do
-                                ending = find(text, '"', ending + 1, true)
-                            end
-                            if not ending then
-                                ending = textLen
-                            end
-                        elseif typ == 2 then
-                            ending = find(text, "'", pos + 1, true)
-                            while ending and sub(text, ending - 1, ending - 1) == "\\" do
-                                ending = find(text, "'", ending + 1, true)
-                            end
-                            if not ending then
-                                ending = textLen
-                            end
-                        elseif typ == 3 then
-                            _, ending = find(text, "]" .. extras[pos] .. "]", pos + 1, true)
-                            if not ending then
-                                ending = textLen
-                            end
-                        elseif typ == 4 then
-                            local ahead = foundMap[pos + 2]
-
-                            if ahead == 3 then
-                                _, ending = find(text, "]" .. extras[pos + 2] .. "]", pos + 1, true)
+                            local ending = pos
+                            local typ = foundMap[pos]
+                            if typ == 1 then
+                                ending = find(text, '"', pos + 1, true)
+                                while ending and sub(text, ending - 1, ending - 1) == "\\" do
+                                    ending = find(text, '"', ending + 1, true)
+                                end
                                 if not ending then
                                     ending = textLen
                                 end
-                            else
-                                ending = find(text, "\n", pos + 1, true) or textLen
-                            end
-                        end
+                            elseif typ == 2 then
+                                ending = find(text, "'", pos + 1, true)
+                                while ending and sub(text, ending - 1, ending - 1) == "\\" do
+                                    ending = find(text, "'", ending + 1, true)
+                                end
+                                if not ending then
+                                    ending = textLen
+                                end
+                            elseif typ == 3 then
+                                _, ending = find(text, "]" .. extras[pos] .. "]", pos + 1, true)
+                                if not ending then
+                                    ending = textLen
+                                end
+                            elseif typ == 4 then
+                                local ahead = foundMap[pos + 2]
 
-                        while pos > lineEnd do
-                            curLine = curLine + 1
-                            --lineTableCount = 1
-                            lineEnd = newLines[curLine] or textLen + 1
-                        end
-                        while true do
-                            local lineTable = foundHighlights[curLine]
-                            if not lineTable then
-                                lineTable = {}
-                                foundHighlights[curLine] = lineTable
+                                if ahead == 3 then
+                                    _, ending = find(text, "]" .. extras[pos + 2] .. "]", pos + 1, true)
+                                    if not ending then
+                                        ending = textLen
+                                    end
+                                else
+                                    ending = find(text, "\n", pos + 1, true) or textLen
+                                end
                             end
-                            lineTable[pos] = { typ, ending }
-                            --lineTableCount = lineTableCount + 1
 
-                            if ending > lineEnd then
+                            while pos > lineEnd do
                                 curLine = curLine + 1
+                                -- lineTableCount = 1
                                 lineEnd = newLines[curLine] or textLen + 1
-                            else
-                                break
                             end
-                        end
+                            while true do
+                                local lineTable = foundHighlights[curLine]
+                                if not lineTable then
+                                    lineTable = {}
+                                    foundHighlights[curLine] = lineTable
+                                end
+                                lineTable[pos] = {typ, ending}
+                                -- lineTableCount = lineTableCount + 1
 
-                        lastEnding = ending
-                        --if i < 200 then print(curLine) end
+                                if ending > lineEnd then
+                                    curLine = curLine + 1
+                                    lineEnd = newLines[curLine] or textLen + 1
+                                else
+                                    break
+                                end
+                            end
+
+                            lastEnding = ending
+                            -- if i < 200 then print(curLine) end
+                        end
                     end
                     self.PreHighlights = foundHighlights
-                    --print(tick()-start)
-                    --print(#found,curLine)
+                    -- print(tick()-start)
+                    -- print(#found,curLine)
                 end
 
                 funcs.HighlightLine = function(self, line)
@@ -8660,109 +10116,111 @@ local EmbeddedModules = {
                         if relativePos < 1 then
                             currentType = data[1]
                             lastEnding = data[2] - lineStart
-                            --warn(pos,data[2])
+                            -- warn(pos,data[2])
                         else
-                            preHighlightMap[relativePos] = { data[1], data[2] - lineStart }
+                            preHighlightMap[relativePos] = {data[1], data[2] - lineStart}
                         end
                     end
 
                     for col = 1, #lineText do
                         if col <= lastEnding then
                             highlights[col] = currentType
-                            continue
-                        end
-
-                        local pre = preHighlightMap[col]
-                        if pre then
-                            currentType = pre[1]
-                            lastEnding = pre[2]
-                            highlights[col] = currentType
-                            wordBeginsDotted = false
-                            lastWord = nil
-                            funcStatus = 0
                         else
-                            local char = sub(lineText, col, col)
-                            if find(char, "[%a_]") then
-                                local word = match(lineText, "[%a%d_]+", col)
-                                local wordType = (keywords[word] and 7) or (builtIns[word] and 8)
 
-                                lastEnding = col + #word - 1
-
-                                if wordType ~= 7 then
-                                    if wordBeginsDotted then
-                                        local prevBuiltIn = lastWord and builtIns[lastWord]
-                                        wordType = (prevBuiltIn and type(prevBuiltIn) == "table" and prevBuiltIn[word] and 8) or 10
-                                    end
-
-                                    if wordType ~= 8 then
-                                        local x, y, br = find(lineText, "^%s*([%({\"'])", lastEnding + 1)
-                                        if x then
-                                            wordType = (funcStatus > 0 and br == "(" and 16) or 9
-                                            funcStatus = 0
-                                        end
-                                    end
-                                else
-                                    wordType = specialKeywordsTypes[word] or wordType
-                                    funcStatus = (word == "function" and 1 or 0)
-                                end
-
-                                lastWord = word
-                                wordBeginsDotted = false
-                                if funcStatus > 0 then
-                                    funcStatus = 1
-                                end
-
-                                if wordType then
-                                    currentType = wordType
-                                    highlights[col] = currentType
-                                else
-                                    currentType = nil
-                                end
-                            elseif find(char, "%p") then
-                                local isDot = (char == ".")
-                                local isNum = isDot and find(sub(lineText, col + 1, col + 1), "%d")
-                                highlights[col] = (isNum and 6 or 5)
-
-                                if not isNum then
-                                    local dotStr = isDot and match(lineText, "%.%.?%.?", col)
-                                    if dotStr and #dotStr > 1 then
-                                        currentType = 5
-                                        lastEnding = col + #dotStr - 1
-                                        wordBeginsDotted = false
-                                        lastWord = nil
-                                        funcStatus = 0
-                                    else
-                                        if isDot then
-                                            if wordBeginsDotted then
-                                                lastWord = nil
-                                            else
-                                                wordBeginsDotted = true
-                                            end
-                                        else
-                                            wordBeginsDotted = false
-                                            lastWord = nil
-                                        end
-
-                                        funcStatus = ((isDot or char == ":") and funcStatus == 1 and 2) or 0
-                                    end
-                                end
-                            elseif find(char, "%d") then
-                                local _, endPos = find(lineText, "%x+", col)
-                                local endPart = sub(lineText, endPos, endPos + 1)
-                                if (endPart == "e+" or endPart == "e-") and find(sub(lineText, endPos + 2, endPos + 2), "%d") then
-                                    endPos = endPos + 1
-                                end
-                                currentType = 6
-                                lastEnding = endPos
-                                highlights[col] = 6
+                            local pre = preHighlightMap[col]
+                            if pre then
+                                currentType = pre[1]
+                                lastEnding = pre[2]
+                                highlights[col] = currentType
                                 wordBeginsDotted = false
                                 lastWord = nil
                                 funcStatus = 0
                             else
-                                highlights[col] = currentType
-                                local _, endPos = find(lineText, "%s+", col)
-                                if endPos then
+                                local char = sub(lineText, col, col)
+                                if find(char, "[%a_]") then
+                                    local word = match(lineText, "[%a%d_]+", col)
+                                    local wordType = (keywords[word] and 7) or (builtIns[word] and 8)
+
+                                    lastEnding = col + #word - 1
+
+                                    if wordType ~= 7 then
+                                        if wordBeginsDotted then
+                                            local prevBuiltIn = lastWord and builtIns[lastWord]
+                                            wordType = (prevBuiltIn and type(prevBuiltIn) == "table" and
+                                                           prevBuiltIn[word] and 8) or 10
+                                        end
+
+                                        if wordType ~= 8 then
+                                            local x, y, br = find(lineText, "^%s*([%({\"'])", lastEnding + 1)
+                                            if x then
+                                                wordType = (funcStatus > 0 and br == "(" and 16) or 9
+                                                funcStatus = 0
+                                            end
+                                        end
+                                    else
+                                        wordType = specialKeywordsTypes[word] or wordType
+                                        funcStatus = (word == "function" and 1 or 0)
+                                    end
+
+                                    lastWord = word
+                                    wordBeginsDotted = false
+                                    if funcStatus > 0 then
+                                        funcStatus = 1
+                                    end
+
+                                    if wordType then
+                                        currentType = wordType
+                                        highlights[col] = currentType
+                                    else
+                                        currentType = nil
+                                    end
+                                elseif find(char, "%p") then
+                                    local isDot = (char == ".")
+                                    local isNum = isDot and find(sub(lineText, col + 1, col + 1), "%d")
+                                    highlights[col] = (isNum and 6 or 5)
+
+                                    if not isNum then
+                                        local dotStr = isDot and match(lineText, "%.%.?%.?", col)
+                                        if dotStr and #dotStr > 1 then
+                                            currentType = 5
+                                            lastEnding = col + #dotStr - 1
+                                            wordBeginsDotted = false
+                                            lastWord = nil
+                                            funcStatus = 0
+                                        else
+                                            if isDot then
+                                                if wordBeginsDotted then
+                                                    lastWord = nil
+                                                else
+                                                    wordBeginsDotted = true
+                                                end
+                                            else
+                                                wordBeginsDotted = false
+                                                lastWord = nil
+                                            end
+
+                                            funcStatus = ((isDot or char == ":") and funcStatus == 1 and 2) or 0
+                                        end
+                                    end
+                                elseif find(char, "%d") then
+                                    local _, endPos = find(lineText, "%x+", col)
+                                    local endPart = sub(lineText, endPos, endPos + 1)
+                                    if (endPart == "e+" or endPart == "e-") and
+                                        find(sub(lineText, endPos + 2, endPos + 2), "%d") then
+                                        endPos = endPos + 1
+                                    end
+                                    currentType = 6
                                     lastEnding = endPos
+                                    highlights[col] = 6
+                                    wordBeginsDotted = false
+                                    lastWord = nil
+                                    funcStatus = 0
+                                else
+                                    highlights[col] = currentType
+                                    local _, endPos = find(lineText, "%s+", col)
+                                    if endPos then
+                                        lastEnding = endPos
+                                    end
                                 end
                             end
                         end
@@ -8852,7 +10310,9 @@ local EmbeddedModules = {
                         end
 
                         -- Selection Text Color for first char
-                        local inSelection = selRelaY >= selRow and selRelaY <= sel2Row and (selRelaY == selRow and viewX >= selColumn or selRelaY ~= selRow) and (selRelaY == sel2Row and viewX < sel2Column or selRelaY ~= sel2Row)
+                        local inSelection = selRelaY >= selRow and selRelaY <= sel2Row and
+                                                (selRelaY == selRow and viewX >= selColumn or selRelaY ~= selRow) and
+                                                (selRelaY == sel2Row and viewX < sel2Column or selRelaY ~= sel2Row)
                         if inSelection then
                             curType = -999
                             curTemplate = selectionTemplate
@@ -8864,17 +10324,24 @@ local EmbeddedModules = {
                             local posType = highlights[relaX]
 
                             -- Selection Text Color
-                            local inSelection = selRelaY >= selRow and selRelaY <= sel2Row and (selRelaY == selRow and selRelaX >= selColumn or selRelaY ~= selRow) and (selRelaY == sel2Row and selRelaX < sel2Column or selRelaY ~= sel2Row)
+                            local inSelection = selRelaY >= selRow and selRelaY <= sel2Row and
+                                                    (selRelaY == selRow and selRelaX >= selColumn or selRelaY ~= selRow) and
+                                                    (selRelaY == sel2Row and selRelaX < sel2Column or selRelaY ~=
+                                                        sel2Row)
                             if inSelection then
                                 posType = -999
                             end
 
                             if posType ~= curType then
-                                local template = (inSelection and selectionTemplate) or richTemplates[typeMap[posType]] or textTemplate
+                                local template =
+                                    (inSelection and selectionTemplate) or richTemplates[typeMap[posType]] or
+                                        textTemplate
 
                                 if template ~= curTemplate then
                                     local nextText = gsub(sub(lineText, colStart, relaX - 1), "['\"<>&]", richReplace)
-                                    resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. nextText .. "</font>") or nextText)
+                                    resText = resText ..
+                                                  (curTemplate ~= textTemplate and
+                                                      (curTemplate .. nextText .. "</font>") or nextText)
                                     colStart = relaX
                                     curTemplate = template
                                 end
@@ -8883,13 +10350,16 @@ local EmbeddedModules = {
                         end
 
                         local lastText = gsub(sub(lineText, colStart, viewX + maxCols), "['\"<>&]", richReplace)
-                        --warn("SUB",colStart,viewX+maxCols-1)
+                        -- warn("SUB",colStart,viewX+maxCols-1)
                         if #lastText > 0 then
-                            resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. lastText .. "</font>") or lastText)
+                            resText = resText ..
+                                          (curTemplate ~= textTemplate and (curTemplate .. lastText .. "</font>") or
+                                              lastText)
                         end
 
                         if self.Lines[relaY] then
-                            lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>" .. relaY .. "</b>\n") or relaY .. "\n")
+                            lineNumberStr = lineNumberStr ..
+                                                (relaY == self.CursorY and ("<b>" .. relaY .. "</b>\n") or relaY .. "\n")
                         end
 
                         lineFrame.Label.Text = resText
@@ -8903,7 +10373,7 @@ local EmbeddedModules = {
                     self.Frame.LineNumbers.Text = lineNumberStr
                     self:UpdateCursor()
 
-                    --print("REFRESH TIME",tick()-start)
+                    -- print("REFRESH TIME",tick()-start)
                 end
 
                 funcs.UpdateView = function(self)
@@ -8972,7 +10442,7 @@ local EmbeddedModules = {
                     self:MapNewLines()
                     self:PreHighlight()
                     self:Refresh()
-                    --self.TextChanged:Fire()
+                    -- self.TextChanged:Fire()
                 end
 
                 funcs.ConvertText = function(self, text, toEditor)
@@ -9008,7 +10478,8 @@ local EmbeddedModules = {
                     local templates = {}
 
                     for name, color in pairs(self.Colors) do
-                        templates[name] = ('<font color="rgb(%s,%s,%s)">'):format(floor(color.r * 255), floor(color.g * 255), floor(color.b * 255))
+                        templates[name] = ('<font color="rgb(%s,%s,%s)">'):format(floor(color.r * 255),
+                            floor(color.g * 255), floor(color.b * 255))
                     end
 
                     self.RichTemplates = templates
@@ -9021,7 +10492,9 @@ local EmbeddedModules = {
                     self.Frame.BackgroundColor3 = colors.Background
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
 
                 local function new()
                     if not builtInInited then
@@ -9037,7 +10510,7 @@ local EmbeddedModules = {
                         ViewY = 0,
                         Colors = Settings.Theme.Syntax,
                         ColoredLines = {},
-                        Lines = { "" },
+                        Lines = {""},
                         LineFrames = {},
                         Editable = true,
                         Editing = false,
@@ -9046,12 +10519,12 @@ local EmbeddedModules = {
                         FloatCursorX = 0,
                         Text = "",
                         PreHighlights = {},
-                        SelectionRange = { { -1, -1 }, { -1, -1 } },
+                        SelectionRange = {{-1, -1}, {-1, -1}},
                         NewLines = {},
                         FrameOffsets = Vector2.new(0, 0),
                         MaxTextCols = 0,
                         ScrollV = scrollV,
-                        ScrollH = scrollH,
+                        ScrollH = scrollH
                     }, mt)
 
                     scrollV.WheelIncrement = 3
@@ -9084,7 +10557,9 @@ local EmbeddedModules = {
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.Checkbox = (function()
@@ -9117,27 +10592,115 @@ local EmbeddedModules = {
                     local size = max(abssz.X, abssz.Y) * 5 / 3
 
                     TweenSize(circle, ud2o(size, size), "Out", "Quart", 0.4)
-                    service.TweenService:Create(circle, ti(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), { BackgroundTransparency = 1 }):Play()
+                    service.TweenService:Create(circle, ti(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In), {
+                        BackgroundTransparency = 1
+                    }):Play()
 
                     service.Debris:AddItem(circle, 0.4)
                 end
 
                 local function initGui(self, frame)
-                    local checkbox = frame or create({
-                        { 1, "ImageButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "Checkbox", Position = UDim2.new(0, 3, 0, 3), Size = UDim2.new(0, 16, 0, 16) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ripples", Parent = { 1 }, Size = UDim2.new(1, 0, 1, 0) } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.10196078568697, 0.10196078568697, 0.10196078568697), BorderSizePixel = 0, Name = "outline", Parent = { 1 }, Size = UDim2.new(0, 16, 0, 16) } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462), BorderSizePixel = 0, Name = "filler", Parent = { 3 }, Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(0, 14, 0, 14) } },
-                        { 5, "Frame", { BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196), BorderSizePixel = 0, Name = "top", Parent = { 4 }, Size = UDim2.new(0, 16, 0, 0) } },
-                        { 6, "Frame", { AnchorPoint = Vector2.new(0, 1), BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196), BorderSizePixel = 0, Name = "bottom", Parent = { 4 }, Position = UDim2.new(0, 0, 0, 14), Size = UDim2.new(0, 16, 0, 0) } },
-                        { 7, "Frame", { BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196), BorderSizePixel = 0, Name = "left", Parent = { 4 }, Size = UDim2.new(0, 0, 0, 16) } },
-                        { 8, "Frame", { AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196), BorderSizePixel = 0, Name = "right", Parent = { 4 }, Position = UDim2.new(0, 14, 0, 0), Size = UDim2.new(0, 0, 0, 16) } },
-                        { 9, "Frame", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, ClipsDescendants = true, Name = "checkmark", Parent = { 4 }, Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 0, 0, 20) } },
-                        { 10, "ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Image = "rbxassetid://6234266378", Parent = { 9 }, Position = UDim2.new(0.5, 0, 0.5, 0), ScaleType = 3, Size = UDim2.new(0, 15, 0, 11) } },
-                        { 11, "ImageLabel", { AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://6401617475", ImageColor3 = Color3.new(0.20784313976765, 0.69803923368454, 0.98431372642517), Name = "checkmark2", Parent = { 4 }, Position = UDim2.new(0.5, 0, 0.5, 0), Size = UDim2.new(0, 12, 0, 12), Visible = false } },
-                        { 12, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://6425281788", ImageTransparency = 0.20000000298023, Name = "middle", Parent = { 4 }, ScaleType = 2, Size = UDim2.new(1, 0, 1, 0), TileSize = UDim2.new(0, 2, 0, 2), Visible = false } },
-                        { 13, "UICorner", { CornerRadius = UDim.new(0, 2), Parent = { 3 } } },
-                    })
+                    local checkbox = frame or create({{1, "ImageButton", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "Checkbox",
+                        Position = UDim2.new(0, 3, 0, 3),
+                        Size = UDim2.new(0, 16, 0, 16)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ripples",
+                        Parent = {1},
+                        Size = UDim2.new(1, 0, 1, 0)
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.10196078568697, 0.10196078568697, 0.10196078568697),
+                        BorderSizePixel = 0,
+                        Name = "outline",
+                        Parent = {1},
+                        Size = UDim2.new(0, 16, 0, 16)
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14117647707462, 0.14117647707462, 0.14117647707462),
+                        BorderSizePixel = 0,
+                        Name = "filler",
+                        Parent = {3},
+                        Position = UDim2.new(0, 1, 0, 1),
+                        Size = UDim2.new(0, 14, 0, 14)
+                    }}, {5, "Frame", {
+                        BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196),
+                        BorderSizePixel = 0,
+                        Name = "top",
+                        Parent = {4},
+                        Size = UDim2.new(0, 16, 0, 0)
+                    }}, {6, "Frame", {
+                        AnchorPoint = Vector2.new(0, 1),
+                        BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196),
+                        BorderSizePixel = 0,
+                        Name = "bottom",
+                        Parent = {4},
+                        Position = UDim2.new(0, 0, 0, 14),
+                        Size = UDim2.new(0, 16, 0, 0)
+                    }}, {7, "Frame", {
+                        BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196),
+                        BorderSizePixel = 0,
+                        Name = "left",
+                        Parent = {4},
+                        Size = UDim2.new(0, 0, 0, 16)
+                    }}, {8, "Frame", {
+                        AnchorPoint = Vector2.new(1, 0),
+                        BackgroundColor3 = Color3.new(0.90196084976196, 0.90196084976196, 0.90196084976196),
+                        BorderSizePixel = 0,
+                        Name = "right",
+                        Parent = {4},
+                        Position = UDim2.new(0, 14, 0, 0),
+                        Size = UDim2.new(0, 0, 0, 16)
+                    }}, {9, "Frame", {
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        ClipsDescendants = true,
+                        Name = "checkmark",
+                        Parent = {4},
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        Size = UDim2.new(0, 0, 0, 20)
+                    }}, {10, "ImageLabel", {
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Image = "rbxassetid://6234266378",
+                        Parent = {9},
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        ScaleType = 3,
+                        Size = UDim2.new(0, 15, 0, 11)
+                    }}, {11, "ImageLabel", {
+                        AnchorPoint = Vector2.new(0.5, 0.5),
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Image = "rbxassetid://6401617475",
+                        ImageColor3 = Color3.new(0.20784313976765, 0.69803923368454, 0.98431372642517),
+                        Name = "checkmark2",
+                        Parent = {4},
+                        Position = UDim2.new(0.5, 0, 0.5, 0),
+                        Size = UDim2.new(0, 12, 0, 12),
+                        Visible = false
+                    }}, {12, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Image = "rbxassetid://6425281788",
+                        ImageTransparency = 0.20000000298023,
+                        Name = "middle",
+                        Parent = {4},
+                        ScaleType = 2,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        TileSize = UDim2.new(0, 2, 0, 2),
+                        Visible = false
+                    }}, {13, "UICorner", {
+                        CornerRadius = UDim.new(0, 2),
+                        Parent = {3}
+                    }}})
                     local outline = checkbox.outline
                     local filler = outline.filler
                     local checkmark = filler.checkmark
@@ -9156,7 +10719,7 @@ local EmbeddedModules = {
                         Filler = filler,
                         Checkmark = checkmark,
                         Checkmark2 = filler.checkmark2,
-                        Middle = filler.middle,
+                        Middle = filler.middle
                     }
 
                     checkbox.Activated:Connect(function()
@@ -9239,16 +10802,20 @@ local EmbeddedModules = {
 
                     if self.Style == 0 then
                         local color_base = self.Disabled and self.Colors.Disabled
-                        guiElems.Outline.BackgroundColor3 = color_base or (self.Toggled and self.Colors.Primary) or self.Colors.Secondary
+                        guiElems.Outline.BackgroundColor3 = color_base or (self.Toggled and self.Colors.Primary) or
+                                                                self.Colors.Secondary
                         local walls_color = color_base or self.Colors.Primary
                         guiElems.Top.BackgroundColor3 = walls_color
                         guiElems.Bottom.BackgroundColor3 = walls_color
                         guiElems.Left.BackgroundColor3 = walls_color
                         guiElems.Right.BackgroundColor3 = walls_color
                     else
-                        guiElems.Outline.BackgroundColor3 = self.Disabled and self.Colors.Disabled or self.Colors.Secondary
-                        guiElems.Filler.BackgroundColor3 = self.Disabled and self.Colors.DisabledBackground or self.Colors.Background
-                        guiElems.Checkmark2.ImageColor3 = self.Disabled and self.Colors.DisabledCheck or self.Colors.Primary
+                        guiElems.Outline.BackgroundColor3 = self.Disabled and self.Colors.Disabled or
+                                                                self.Colors.Secondary
+                        guiElems.Filler.BackgroundColor3 = self.Disabled and self.Colors.DisabledBackground or
+                                                               self.Colors.Background
+                        guiElems.Checkmark2.ImageColor3 = self.Disabled and self.Colors.DisabledCheck or
+                                                              self.Colors.Primary
                     end
                 end
 
@@ -9264,7 +10831,10 @@ local EmbeddedModules = {
                     if self.Toggled then
                         if self.Style == 0 then
                             if anim then
-                                self.OutlineColorTween = service.TweenService:Create(self.GuiElems.Outline, ti(4 / 15, Enum.EasingStyle.Circular, Enum.EasingDirection.Out), { BackgroundColor3 = self.Colors.Primary })
+                                self.OutlineColorTween = service.TweenService:Create(self.GuiElems.Outline, ti(4 / 15,
+                                    Enum.EasingStyle.Circular, Enum.EasingDirection.Out), {
+                                    BackgroundColor3 = self.Colors.Primary
+                                })
                                 self.OutlineColorTween:Play()
                                 delay(0.15, function()
                                     if setStateTime ~= self.LastSetStateTime then
@@ -9287,7 +10857,10 @@ local EmbeddedModules = {
                     else
                         if self.Style == 0 then
                             if anim then
-                                self.OutlineColorTween = service.TweenService:Create(self.GuiElems.Outline, ti(4 / 15, Enum.EasingStyle.Circular, Enum.EasingDirection.In), { BackgroundColor3 = self.Colors.Secondary })
+                                self.OutlineColorTween = service.TweenService:Create(self.GuiElems.Outline, ti(4 / 15,
+                                    Enum.EasingStyle.Circular, Enum.EasingDirection.In), {
+                                    BackgroundColor3 = self.Colors.Secondary
+                                })
                                 self.OutlineColorTween:Play()
                                 delay(0.15, function()
                                     if setStateTime ~= self.LastSetStateTime then
@@ -9310,7 +10883,9 @@ local EmbeddedModules = {
                     end
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
 
                 local function new(style)
                     local obj = setmetatable({
@@ -9324,8 +10899,8 @@ local EmbeddedModules = {
                             Secondary = c3(25, 25, 25),
                             Disabled = c3(64, 64, 64),
                             DisabledBackground = c3(52, 52, 52),
-                            DisabledCheck = c3(80, 80, 80),
-                        },
+                            DisabledCheck = c3(80, 80, 80)
+                        }
                     }, mt)
                     initGui(obj)
                     return obj
@@ -9340,14 +10915,17 @@ local EmbeddedModules = {
                             Primary = c3(49, 176, 230),
                             Secondary = c3(25, 25, 25),
                             Disabled = c3(64, 64, 64),
-                            DisabledBackground = c3(52, 52, 52),
-                        },
+                            DisabledBackground = c3(52, 52, 52)
+                        }
                     }, mt)
                     initGui(obj, frame)
                     return obj
                 end
 
-                return { new = new, fromFrame }
+                return {
+                    new = new,
+                    fromFrame
+                }
             end)()
 
             Lib.BrickColorPicker = (function()
@@ -9359,20 +10937,12 @@ local EmbeddedModules = {
                 local hexTriangleStart = 1
                 local hexTriangleSize = 8
 
-                local bottomColors = {
-                    Color3.fromRGB(17, 17, 17),
-                    Color3.fromRGB(99, 95, 98),
-                    Color3.fromRGB(163, 162, 165),
-                    Color3.fromRGB(205, 205, 205),
-                    Color3.fromRGB(223, 223, 222),
-                    Color3.fromRGB(237, 234, 234),
-                    Color3.fromRGB(27, 42, 53),
-                    Color3.fromRGB(91, 93, 105),
-                    Color3.fromRGB(159, 161, 172),
-                    Color3.fromRGB(202, 203, 209),
-                    Color3.fromRGB(231, 231, 236),
-                    Color3.fromRGB(248, 248, 248),
-                }
+                local bottomColors = {Color3.fromRGB(17, 17, 17), Color3.fromRGB(99, 95, 98),
+                                      Color3.fromRGB(163, 162, 165), Color3.fromRGB(205, 205, 205),
+                                      Color3.fromRGB(223, 223, 222), Color3.fromRGB(237, 234, 234),
+                                      Color3.fromRGB(27, 42, 53), Color3.fromRGB(91, 93, 105),
+                                      Color3.fromRGB(159, 161, 172), Color3.fromRGB(202, 203, 209),
+                                      Color3.fromRGB(231, 231, 236), Color3.fromRGB(248, 248, 248)}
 
                 local function isMouseInHexagon(hex, touchPos)
                     local relativeX = touchPos.X - hex.AbsolutePosition.X
@@ -9380,7 +10950,8 @@ local EmbeddedModules = {
                     if relativeX >= hexStartX and relativeX < hexStartX + hexSizeX then
                         relativeX = relativeX - 4
                         local relativeWidth = (13 - math.min(relativeX, 26 - relativeX)) / 13
-                        if relativeY >= hexTriangleStart + hexTriangleSize * relativeWidth and relativeY < hex.AbsoluteSize.Y - hexTriangleStart - hexTriangleSize * relativeWidth then
+                        if relativeY >= hexTriangleStart + hexTriangleSize * relativeWidth and relativeY <
+                            hex.AbsoluteSize.Y - hexTriangleStart - hexTriangleSize * relativeWidth then
                             return true
                         end
                     end
@@ -9389,7 +10960,8 @@ local EmbeddedModules = {
 
                 local function hexInput(self, hex, color)
                     hex.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             if isMouseInHexagon(hex, input.Position) then
                                 self.OnSelect:Fire(color)
                                 self:Close()
@@ -9398,7 +10970,8 @@ local EmbeddedModules = {
                     end)
 
                     hex.InputChanged:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             if isMouseInHexagon(hex, input.Position) then
                                 self.OnPreview:Fire(color)
                             end
@@ -9407,12 +10980,38 @@ local EmbeddedModules = {
                 end
 
                 local function createGui(self)
-                    local gui = create({
-                        { 1, "ScreenGui", { Name = "BrickColor" } },
-                        { 2, "Frame", { Active = true, BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935), Parent = { 1 }, Position = UDim2.new(0.40000000596046, 0, 0.40000000596046, 0), Size = UDim2.new(0, 337, 0, 380) } },
-                        { 3, "TextButton", { BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), BorderSizePixel = 0, Font = 3, Name = "MoreColors", Parent = { 2 }, Position = UDim2.new(0, 5, 1, -30), Size = UDim2.new(1, -10, 0, 25), Text = "More Colors", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-                        { 4, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Image = "rbxassetid://1281023007", ImageColor3 = Color3.new(0.33333334326744, 0.33333334326744, 0.49803924560547), Name = "Hex", Parent = { 2 }, Size = UDim2.new(0, 35, 0, 35), Visible = false } },
-                    })
+                    local gui = create({{1, "ScreenGui", {
+                        Name = "BrickColor"
+                    }}, {2, "Frame", {
+                        Active = true,
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935),
+                        Parent = {1},
+                        Position = UDim2.new(0.40000000596046, 0, 0.40000000596046, 0),
+                        Size = UDim2.new(0, 337, 0, 380)
+                    }}, {3, "TextButton", {
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "MoreColors",
+                        Parent = {2},
+                        Position = UDim2.new(0, 5, 1, -30),
+                        Size = UDim2.new(1, -10, 0, 25),
+                        Text = "More Colors",
+                        TextColor3 = Color3.new(1, 1, 1),
+                        TextSize = 14
+                    }}, {4, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Image = "rbxassetid://1281023007",
+                        ImageColor3 = Color3.new(0.33333334326744, 0.33333334326744, 0.49803924560547),
+                        Name = "Hex",
+                        Parent = {2},
+                        Size = UDim2.new(0, 35, 0, 35),
+                        Visible = false
+                    }}})
                     local colorFrame = gui.Frame
                     local hex = colorFrame.Hex
 
@@ -9421,7 +11020,8 @@ local EmbeddedModules = {
                         for column = 1, columns do
                             local nextColor = BrickColor.palette(paletteCount).Color
                             local newHex = hex:Clone()
-                            newHex.Position = UDim2.new(0, (column - 1) * 25 - (columns - 7) * 13 + 3 * 26 + 1, 0, (row - 1) * 23 + 4)
+                            newHex.Position = UDim2.new(0, (column - 1) * 25 - (columns - 7) * 13 + 3 * 26 + 1, 0,
+                                (row - 1) * 23 + 4)
                             newHex.ImageColor3 = nextColor
                             newHex.Visible = true
                             hexInput(self, newHex, nextColor)
@@ -9478,7 +11078,9 @@ local EmbeddedModules = {
                     end
 
                     self.CloseEvent = service.UserInputService.InputBegan:Connect(function(input)
-                        if not closable or (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) then
+                        if not closable or
+                            (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                                Enum.UserInputType.Touch) then
                             return
                         end
 
@@ -9504,7 +11106,9 @@ local EmbeddedModules = {
                     self.OnCancel:Fire()
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
 
                 local function new()
                     local obj = setmetatable({
@@ -9512,13 +11116,15 @@ local EmbeddedModules = {
                         OnSelect = Lib.Signal.new(),
                         OnCancel = Lib.Signal.new(),
                         OnMoreColors = Lib.Signal.new(),
-                        PrevColor = Color3.new(0, 0, 0),
+                        PrevColor = Color3.new(0, 0, 0)
                     }, mt)
                     createGui(obj)
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.ColorPicker = (function() -- TODO: Convert to newer class model
@@ -9531,113 +11137,827 @@ local EmbeddedModules = {
                     newMt.OnCancel = Lib.Signal.new()
                     newMt.OnPreview = Lib.Signal.new()
 
-                    local guiContents = create({
-                        { 1, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, ClipsDescendants = true, Name = "Content", Position = UDim2.new(0, 0, 0, 20), Size = UDim2.new(1, 0, 1, -20) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "BasicColors", Parent = { 1 }, Position = UDim2.new(0, 5, 0, 5), Size = UDim2.new(0, 180, 0, 200) } },
-                        { 3, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 2 }, Position = UDim2.new(0, 0, 0, -5), Size = UDim2.new(1, 0, 0, 26), Text = "Basic Colors", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Blue", Parent = { 1 }, Position = UDim2.new(1, -63, 0, 255), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 5, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 4 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 6, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 5 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 7, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 6 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 8, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 7 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 9, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 8 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 10, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 8 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 11, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 8 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 12, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 6 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 13, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 12 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 14, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 13 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 15, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 13 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 16, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 13 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 17, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 4 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Blue:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 18, "Frame", { BackgroundColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), BorderSizePixel = 0, ClipsDescendants = true, Name = "ColorSpaceFrame", Parent = { 1 }, Position = UDim2.new(1, -261, 0, 4), Size = UDim2.new(0, 222, 0, 202) } },
-                        { 19, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), BorderSizePixel = 0, Image = "rbxassetid://1072518406", Name = "ColorSpace", Parent = { 18 }, Position = UDim2.new(0, 1, 0, 1), Size = UDim2.new(0, 220, 0, 200) } },
-                        { 20, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "Scope", Parent = { 19 }, Position = UDim2.new(0, 210, 0, 190), Size = UDim2.new(0, 20, 0, 20) } },
-                        { 21, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Name = "Line", Parent = { 20 }, Position = UDim2.new(0, 9, 0, 0), Size = UDim2.new(0, 2, 0, 20) } },
-                        { 22, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Name = "Line", Parent = { 20 }, Position = UDim2.new(0, 0, 0, 9), Size = UDim2.new(0, 20, 0, 2) } },
-                        { 23, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "CustomColors", Parent = { 1 }, Position = UDim2.new(0, 5, 0, 210), Size = UDim2.new(0, 180, 0, 90) } },
-                        { 24, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 23 }, Size = UDim2.new(1, 0, 0, 20), Text = "Custom Colors (RC = Set)", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 25, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Green", Parent = { 1 }, Position = UDim2.new(1, -63, 0, 233), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 26, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 25 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 27, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 26 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 28, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 27 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 29, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 28 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 30, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 29 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 31, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 29 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 32, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 29 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 33, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 27 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 34, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 33 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 35, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 34 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 36, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 34 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 37, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 34 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 38, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 25 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Green:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 39, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Hue", Parent = { 1 }, Position = UDim2.new(1, -180, 0, 211), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 40, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 39 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 41, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 40 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 42, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 41 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 43, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 42 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 44, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 43 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 45, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 43 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 46, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 43 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 47, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 41 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 48, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 47 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 49, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 48 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 50, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 48 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 51, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 48 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 52, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 39 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Hue:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 53, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Name = "Preview", Parent = { 1 }, Position = UDim2.new(1, -260, 0, 211), Size = UDim2.new(0, 35, 1, -245) } },
-                        { 54, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Red", Parent = { 1 }, Position = UDim2.new(1, -63, 0, 211), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 55, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 54 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 56, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 55 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 57, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 56 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 58, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 57 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 59, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 58 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 60, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 58 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 61, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 58 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 62, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 56 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 63, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 62 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 64, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 63 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 65, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 63 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 66, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 63 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 67, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 54 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Red:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 68, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Sat", Parent = { 1 }, Position = UDim2.new(1, -180, 0, 233), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 69, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 68 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 70, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 69 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 71, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 70 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 72, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 71 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 73, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 72 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 74, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 72 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 75, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 72 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 76, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 70 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 77, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 76 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 78, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 77 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 79, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 77 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 80, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 77 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 81, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 68 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Sat:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 82, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Val", Parent = { 1 }, Position = UDim2.new(1, -180, 0, 255), Size = UDim2.new(0, 52, 0, 16) } },
-                        { 83, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Font = 3, Name = "Input", Parent = { 82 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 50, 0, 16), Text = "255", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 84, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 83 }, Position = UDim2.new(1, -16, 0, 0), Size = UDim2.new(0, 16, 1, 0) } },
-                        { 85, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Up", Parent = { 84 }, Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 86, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 85 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 87, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 86 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 88, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 86 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 89, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 86 }, Position = UDim2.new(0, 6, 0, 5), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 90, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "Down", Parent = { 84 }, Position = UDim2.new(0, 0, 0, 8), Size = UDim2.new(1, 0, 0, 8), Text = "", TextSize = 14 } },
-                        { 91, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 90 }, Size = UDim2.new(0, 16, 0, 8) } },
-                        { 92, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 91 }, Position = UDim2.new(0, 8, 0, 5), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 93, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 91 }, Position = UDim2.new(0, 7, 0, 4), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 94, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 91 }, Position = UDim2.new(0, 6, 0, 3), Size = UDim2.new(0, 5, 0, 1) } },
-                        { 95, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 82 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Val:", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 96, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Font = 3, Name = "Cancel", Parent = { 1 }, Position = UDim2.new(1, -105, 1, -28), Size = UDim2.new(0, 100, 0, 25), Text = "Cancel", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 97, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Font = 3, Name = "Ok", Parent = { 1 }, Position = UDim2.new(1, -210, 1, -28), Size = UDim2.new(0, 100, 0, 25), Text = "OK", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 98, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Image = "rbxassetid://1072518502", Name = "ColorStrip", Parent = { 1 }, Position = UDim2.new(1, -30, 0, 5), Size = UDim2.new(0, 13, 0, 200) } },
-                        { 99, "Frame", { BackgroundColor3 = Color3.new(0.3137255012989, 0.3137255012989, 0.3137255012989), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "ArrowFrame", Parent = { 1 }, Position = UDim2.new(1, -16, 0, 1), Size = UDim2.new(0, 5, 0, 208) } },
-                        { 100, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 99 }, Position = UDim2.new(0, -2, 0, -4), Size = UDim2.new(0, 8, 0, 16) } },
-                        { 101, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Parent = { 100 }, Position = UDim2.new(0, 2, 0, 8), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 102, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Parent = { 100 }, Position = UDim2.new(0, 3, 0, 7), Size = UDim2.new(0, 1, 0, 3) } },
-                        { 103, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Parent = { 100 }, Position = UDim2.new(0, 4, 0, 6), Size = UDim2.new(0, 1, 0, 5) } },
-                        { 104, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Parent = { 100 }, Position = UDim2.new(0, 5, 0, 5), Size = UDim2.new(0, 1, 0, 7) } },
-                        { 105, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BorderSizePixel = 0, Parent = { 100 }, Position = UDim2.new(0, 6, 0, 4), Size = UDim2.new(0, 1, 0, 9) } },
-                    })
+                    local guiContents = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0,
+                        ClipsDescendants = true,
+                        Name = "Content",
+                        Position = UDim2.new(0, 0, 0, 20),
+                        Size = UDim2.new(1, 0, 1, -20)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Name = "BasicColors",
+                        Parent = {1},
+                        Position = UDim2.new(0, 5, 0, 5),
+                        Size = UDim2.new(0, 180, 0, 200)
+                    }}, {3, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {2},
+                        Position = UDim2.new(0, 0, 0, -5),
+                        Size = UDim2.new(1, 0, 0, 26),
+                        Text = "Basic Colors",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Blue",
+                        Parent = {1},
+                        Position = UDim2.new(1, -63, 0, 255),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {5, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {4},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {6, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {5},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {7, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {6},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {8, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {7},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {9, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {8},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {10, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {8},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {11, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {8},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {12, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {6},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {13, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {12},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {14, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {13},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {15, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {13},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {16, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {13},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {17, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {4},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Blue:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {18, "Frame", {
+                        BackgroundColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        BorderSizePixel = 0,
+                        ClipsDescendants = true,
+                        Name = "ColorSpaceFrame",
+                        Parent = {1},
+                        Position = UDim2.new(1, -261, 0, 4),
+                        Size = UDim2.new(0, 222, 0, 202)
+                    }}, {19, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        BorderSizePixel = 0,
+                        Image = "rbxassetid://1072518406",
+                        Name = "ColorSpace",
+                        Parent = {18},
+                        Position = UDim2.new(0, 1, 0, 1),
+                        Size = UDim2.new(0, 220, 0, 200)
+                    }}, {20, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "Scope",
+                        Parent = {19},
+                        Position = UDim2.new(0, 210, 0, 190),
+                        Size = UDim2.new(0, 20, 0, 20)
+                    }}, {21, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {20},
+                        Position = UDim2.new(0, 9, 0, 0),
+                        Size = UDim2.new(0, 2, 0, 20)
+                    }}, {22, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Name = "Line",
+                        Parent = {20},
+                        Position = UDim2.new(0, 0, 0, 9),
+                        Size = UDim2.new(0, 20, 0, 2)
+                    }}, {23, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Name = "CustomColors",
+                        Parent = {1},
+                        Position = UDim2.new(0, 5, 0, 210),
+                        Size = UDim2.new(0, 180, 0, 90)
+                    }}, {24, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {23},
+                        Size = UDim2.new(1, 0, 0, 20),
+                        Text = "Custom Colors (RC = Set)",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {25, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Green",
+                        Parent = {1},
+                        Position = UDim2.new(1, -63, 0, 233),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {26, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {25},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {27, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {26},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {28, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {27},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {29, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {28},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {30, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {29},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {31, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {29},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {32, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {29},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {33, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {27},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {34, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {33},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {35, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {34},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {36, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {34},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {37, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {34},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {38, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {25},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Green:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {39, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Hue",
+                        Parent = {1},
+                        Position = UDim2.new(1, -180, 0, 211),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {40, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {39},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {41, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {40},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {42, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {41},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {43, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {42},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {44, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {43},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {45, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {43},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {46, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {43},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {47, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {41},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {48, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {47},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {49, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {48},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {50, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {48},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {51, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {48},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {52, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {39},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Hue:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {53, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Name = "Preview",
+                        Parent = {1},
+                        Position = UDim2.new(1, -260, 0, 211),
+                        Size = UDim2.new(0, 35, 1, -245)
+                    }}, {54, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Red",
+                        Parent = {1},
+                        Position = UDim2.new(1, -63, 0, 211),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {55, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {54},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {56, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {55},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {57, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {56},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {58, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {57},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {59, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {58},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {60, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {58},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {61, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {58},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {62, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {56},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {63, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {62},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {64, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {63},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {65, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {63},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {66, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {63},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {67, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {54},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Red:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {68, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Sat",
+                        Parent = {1},
+                        Position = UDim2.new(1, -180, 0, 233),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {69, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {68},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {70, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {69},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {71, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {70},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {72, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {71},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {73, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {72},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {74, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {72},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {75, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {72},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {76, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {70},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {77, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {76},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {78, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {77},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {79, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {77},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {80, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {77},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {81, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {68},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Sat:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {82, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Val",
+                        Parent = {1},
+                        Position = UDim2.new(1, -180, 0, 255),
+                        Size = UDim2.new(0, 52, 0, 16)
+                    }}, {83, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {82},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 50, 0, 16),
+                        Text = "255",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {84, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {83},
+                        Position = UDim2.new(1, -16, 0, 0),
+                        Size = UDim2.new(0, 16, 1, 0)
+                    }}, {85, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Up",
+                        Parent = {84},
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {86, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {85},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {87, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {86},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {88, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {86},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {89, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {86},
+                        Position = UDim2.new(0, 6, 0, 5),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {90, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Down",
+                        Parent = {84},
+                        Position = UDim2.new(0, 0, 0, 8),
+                        Size = UDim2.new(1, 0, 0, 8),
+                        Text = "",
+                        TextSize = 14
+                    }}, {91, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {90},
+                        Size = UDim2.new(0, 16, 0, 8)
+                    }}, {92, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {91},
+                        Position = UDim2.new(0, 8, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {93, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {91},
+                        Position = UDim2.new(0, 7, 0, 4),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {94, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {91},
+                        Position = UDim2.new(0, 6, 0, 3),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}, {95, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {82},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Val:",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {96, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Font = 3,
+                        Name = "Cancel",
+                        Parent = {1},
+                        Position = UDim2.new(1, -105, 1, -28),
+                        Size = UDim2.new(0, 100, 0, 25),
+                        Text = "Cancel",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {97, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Font = 3,
+                        Name = "Ok",
+                        Parent = {1},
+                        Position = UDim2.new(1, -210, 1, -28),
+                        Size = UDim2.new(0, 100, 0, 25),
+                        Text = "OK",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {98, "ImageLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Image = "rbxassetid://1072518502",
+                        Name = "ColorStrip",
+                        Parent = {1},
+                        Position = UDim2.new(1, -30, 0, 5),
+                        Size = UDim2.new(0, 13, 0, 200)
+                    }}, {99, "Frame", {
+                        BackgroundColor3 = Color3.new(0.3137255012989, 0.3137255012989, 0.3137255012989),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "ArrowFrame",
+                        Parent = {1},
+                        Position = UDim2.new(1, -16, 0, 1),
+                        Size = UDim2.new(0, 5, 0, 208)
+                    }}, {100, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {99},
+                        Position = UDim2.new(0, -2, 0, -4),
+                        Size = UDim2.new(0, 8, 0, 16)
+                    }}, {101, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Parent = {100},
+                        Position = UDim2.new(0, 2, 0, 8),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {102, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Parent = {100},
+                        Position = UDim2.new(0, 3, 0, 7),
+                        Size = UDim2.new(0, 1, 0, 3)
+                    }}, {103, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Parent = {100},
+                        Position = UDim2.new(0, 4, 0, 6),
+                        Size = UDim2.new(0, 1, 0, 5)
+                    }}, {104, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Parent = {100},
+                        Position = UDim2.new(0, 5, 0, 5),
+                        Size = UDim2.new(0, 1, 0, 7)
+                    }}, {105, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Parent = {100},
+                        Position = UDim2.new(0, 6, 0, 4),
+                        Size = UDim2.new(0, 1, 0, 9)
+                    }}})
                     local window = Lib.Window.new()
                     window.Resizable = false
                     window.Alignable = false
@@ -9678,7 +11998,41 @@ local EmbeddedModules = {
                     local red, green, blue = 1, 1, 1
                     local chosenColor = Color3.new(0, 0, 0)
 
-                    local basicColors = { Color3.new(0, 0, 0), Color3.new(0.66666668653488, 0, 0), Color3.new(0, 0.33333334326744, 0), Color3.new(0.66666668653488, 0.33333334326744, 0), Color3.new(0, 0.66666668653488, 0), Color3.new(0.66666668653488, 0.66666668653488, 0), Color3.new(0, 1, 0), Color3.new(0.66666668653488, 1, 0), Color3.new(0, 0, 0.49803924560547), Color3.new(0.66666668653488, 0, 0.49803924560547), Color3.new(0, 0.33333334326744, 0.49803924560547), Color3.new(0.66666668653488, 0.33333334326744, 0.49803924560547), Color3.new(0, 0.66666668653488, 0.49803924560547), Color3.new(0.66666668653488, 0.66666668653488, 0.49803924560547), Color3.new(0, 1, 0.49803924560547), Color3.new(0.66666668653488, 1, 0.49803924560547), Color3.new(0, 0, 1), Color3.new(0.66666668653488, 0, 1), Color3.new(0, 0.33333334326744, 1), Color3.new(0.66666668653488, 0.33333334326744, 1), Color3.new(0, 0.66666668653488, 1), Color3.new(0.66666668653488, 0.66666668653488, 1), Color3.new(0, 1, 1), Color3.new(0.66666668653488, 1, 1), Color3.new(0.33333334326744, 0, 0), Color3.new(1, 0, 0), Color3.new(0.33333334326744, 0.33333334326744, 0), Color3.new(1, 0.33333334326744, 0), Color3.new(0.33333334326744, 0.66666668653488, 0), Color3.new(1, 0.66666668653488, 0), Color3.new(0.33333334326744, 1, 0), Color3.new(1, 1, 0), Color3.new(0.33333334326744, 0, 0.49803924560547), Color3.new(1, 0, 0.49803924560547), Color3.new(0.33333334326744, 0.33333334326744, 0.49803924560547), Color3.new(1, 0.33333334326744, 0.49803924560547), Color3.new(0.33333334326744, 0.66666668653488, 0.49803924560547), Color3.new(1, 0.66666668653488, 0.49803924560547), Color3.new(0.33333334326744, 1, 0.49803924560547), Color3.new(1, 1, 0.49803924560547), Color3.new(0.33333334326744, 0, 1), Color3.new(1, 0, 1), Color3.new(0.33333334326744, 0.33333334326744, 1), Color3.new(1, 0.33333334326744, 1), Color3.new(0.33333334326744, 0.66666668653488, 1), Color3.new(1, 0.66666668653488, 1), Color3.new(0.33333334326744, 1, 1), Color3.new(1, 1, 1) }
+                    local basicColors = {Color3.new(0, 0, 0), Color3.new(0.66666668653488, 0, 0),
+                                         Color3.new(0, 0.33333334326744, 0),
+                                         Color3.new(0.66666668653488, 0.33333334326744, 0),
+                                         Color3.new(0, 0.66666668653488, 0),
+                                         Color3.new(0.66666668653488, 0.66666668653488, 0), Color3.new(0, 1, 0),
+                                         Color3.new(0.66666668653488, 1, 0), Color3.new(0, 0, 0.49803924560547),
+                                         Color3.new(0.66666668653488, 0, 0.49803924560547),
+                                         Color3.new(0, 0.33333334326744, 0.49803924560547),
+                                         Color3.new(0.66666668653488, 0.33333334326744, 0.49803924560547),
+                                         Color3.new(0, 0.66666668653488, 0.49803924560547),
+                                         Color3.new(0.66666668653488, 0.66666668653488, 0.49803924560547),
+                                         Color3.new(0, 1, 0.49803924560547),
+                                         Color3.new(0.66666668653488, 1, 0.49803924560547), Color3.new(0, 0, 1),
+                                         Color3.new(0.66666668653488, 0, 1), Color3.new(0, 0.33333334326744, 1),
+                                         Color3.new(0.66666668653488, 0.33333334326744, 1),
+                                         Color3.new(0, 0.66666668653488, 1),
+                                         Color3.new(0.66666668653488, 0.66666668653488, 1), Color3.new(0, 1, 1),
+                                         Color3.new(0.66666668653488, 1, 1), Color3.new(0.33333334326744, 0, 0),
+                                         Color3.new(1, 0, 0), Color3.new(0.33333334326744, 0.33333334326744, 0),
+                                         Color3.new(1, 0.33333334326744, 0),
+                                         Color3.new(0.33333334326744, 0.66666668653488, 0),
+                                         Color3.new(1, 0.66666668653488, 0), Color3.new(0.33333334326744, 1, 0),
+                                         Color3.new(1, 1, 0), Color3.new(0.33333334326744, 0, 0.49803924560547),
+                                         Color3.new(1, 0, 0.49803924560547),
+                                         Color3.new(0.33333334326744, 0.33333334326744, 0.49803924560547),
+                                         Color3.new(1, 0.33333334326744, 0.49803924560547),
+                                         Color3.new(0.33333334326744, 0.66666668653488, 0.49803924560547),
+                                         Color3.new(1, 0.66666668653488, 0.49803924560547),
+                                         Color3.new(0.33333334326744, 1, 0.49803924560547),
+                                         Color3.new(1, 1, 0.49803924560547), Color3.new(0.33333334326744, 0, 1),
+                                         Color3.new(1, 0, 1), Color3.new(0.33333334326744, 0.33333334326744, 1),
+                                         Color3.new(1, 0.33333334326744, 1),
+                                         Color3.new(0.33333334326744, 0.66666668653488, 1),
+                                         Color3.new(1, 0.66666668653488, 1), Color3.new(0.33333334326744, 1, 1),
+                                         Color3.new(1, 1, 1)}
                     local customColors = {}
 
                     local function updateColor(noupdate)
@@ -9707,7 +12061,8 @@ local EmbeddedModules = {
                     end
 
                     local function handleInputBegan(input, updateFunc)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             while user:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
                                 updateFunc()
                                 task.wait()
@@ -9763,7 +12118,8 @@ local EmbeddedModules = {
 
                     local function hookButtons(frame, func)
                         frame.ArrowFrame.Up.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local releaseEvent, runEvent
                                 local startTime = tick()
                                 local pressing = true
@@ -9774,7 +12130,8 @@ local EmbeddedModules = {
                                 end
 
                                 releaseEvent = user.InputEnded:Connect(function(endInput)
-                                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
+                                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 or
+                                        endInput.UserInputType == Enum.UserInputType.Touch then
                                         releaseEvent:Disconnect()
                                         pressing = false
                                     end
@@ -9794,7 +12151,8 @@ local EmbeddedModules = {
                         end)
 
                         frame.ArrowFrame.Down.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local releaseEvent, runEvent
                                 local startTime = tick()
                                 local pressing = true
@@ -9805,7 +12163,8 @@ local EmbeddedModules = {
                                 end
 
                                 releaseEvent = user.InputEnded:Connect(function(endInput)
-                                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
+                                    if endInput.UserInputType == Enum.UserInputType.MouseButton1 or
+                                        endInput.UserInputType == Enum.UserInputType.Touch then
                                         releaseEvent:Disconnect()
                                         pressing = false
                                     end
@@ -9990,12 +12349,14 @@ local EmbeddedModules = {
                         window:Close()
                     end)
                     okButton.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             okButton.BackgroundTransparency = 0.4
                         end
                     end)
                     okButton.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             okButton.BackgroundTransparency = 0
                         end
                     end)
@@ -10005,12 +12366,14 @@ local EmbeddedModules = {
                         window:Close()
                     end)
                     cancelButton.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             cancelButton.BackgroundTransparency = 0.4
                         end
                     end)
                     cancelButton.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             cancelButton.BackgroundTransparency = 0
                         end
                     end)
@@ -10030,7 +12393,9 @@ local EmbeddedModules = {
                     return newMt
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.NumberSequenceEditor = (function()
@@ -10040,23 +12405,164 @@ local EmbeddedModules = {
                     newMt.OnCancel = Lib.Signal.new()
                     newMt.OnPreview = Lib.Signal.new()
 
-                    local guiContents = create({
-                        { 1, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, ClipsDescendants = true, Name = "Content", Position = UDim2.new(0, 0, 0, 20), Size = UDim2.new(1, 0, 1, -20) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Time", Parent = { 1 }, Position = UDim2.new(0, 40, 0, 210), Size = UDim2.new(0, 60, 0, 20) } },
-                        { 3, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), ClipsDescendants = true, Font = 3, Name = "Input", Parent = { 2 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 58, 0, 20), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 4, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 2 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Time", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 5, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Font = 3, Name = "Close", Parent = { 1 }, Position = UDim2.new(1, -90, 0, 210), Size = UDim2.new(0, 80, 0, 20), Text = "Close", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 6, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Font = 3, Name = "Reset", Parent = { 1 }, Position = UDim2.new(1, -180, 0, 210), Size = UDim2.new(0, 80, 0, 20), Text = "Reset", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 7, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Font = 3, Name = "Delete", Parent = { 1 }, Position = UDim2.new(0, 380, 0, 210), Size = UDim2.new(0, 80, 0, 20), Text = "Delete", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 8, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Name = "NumberLineOutlines", Parent = { 1 }, Position = UDim2.new(0, 10, 0, 20), Size = UDim2.new(1, -20, 0, 170) } },
-                        { 9, "Frame", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), Name = "NumberLine", Parent = { 1 }, Position = UDim2.new(0, 10, 0, 20), Size = UDim2.new(1, -20, 0, 170) } },
-                        { 10, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Value", Parent = { 1 }, Position = UDim2.new(0, 170, 0, 210), Size = UDim2.new(0, 60, 0, 20) } },
-                        { 11, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 10 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Value", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 12, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), ClipsDescendants = true, Font = 3, Name = "Input", Parent = { 10 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 58, 0, 20), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 13, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Envelope", Parent = { 1 }, Position = UDim2.new(0, 300, 0, 210), Size = UDim2.new(0, 60, 0, 20) } },
-                        { 14, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), ClipsDescendants = true, Font = 3, Name = "Input", Parent = { 13 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 58, 0, 20), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 15, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 13 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Envelope", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                    })
+                    local guiContents = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0,
+                        ClipsDescendants = true,
+                        Name = "Content",
+                        Position = UDim2.new(0, 0, 0, 20),
+                        Size = UDim2.new(1, 0, 1, -20)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Time",
+                        Parent = {1},
+                        Position = UDim2.new(0, 40, 0, 210),
+                        Size = UDim2.new(0, 60, 0, 20)
+                    }}, {3, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        ClipsDescendants = true,
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {2},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 58, 0, 20),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {4, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {2},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Time",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {5, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Font = 3,
+                        Name = "Close",
+                        Parent = {1},
+                        Position = UDim2.new(1, -90, 0, 210),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Close",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {6, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Font = 3,
+                        Name = "Reset",
+                        Parent = {1},
+                        Position = UDim2.new(1, -180, 0, 210),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Reset",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {7, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Font = 3,
+                        Name = "Delete",
+                        Parent = {1},
+                        Position = UDim2.new(0, 380, 0, 210),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Delete",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {8, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Name = "NumberLineOutlines",
+                        Parent = {1},
+                        Position = UDim2.new(0, 10, 0, 20),
+                        Size = UDim2.new(1, -20, 0, 170)
+                    }}, {9, "Frame", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        Name = "NumberLine",
+                        Parent = {1},
+                        Position = UDim2.new(0, 10, 0, 20),
+                        Size = UDim2.new(1, -20, 0, 170)
+                    }}, {10, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Value",
+                        Parent = {1},
+                        Position = UDim2.new(0, 170, 0, 210),
+                        Size = UDim2.new(0, 60, 0, 20)
+                    }}, {11, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {10},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Value",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {12, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        ClipsDescendants = true,
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {10},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 58, 0, 20),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {13, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Envelope",
+                        Parent = {1},
+                        Position = UDim2.new(0, 300, 0, 210),
+                        Size = UDim2.new(0, 60, 0, 20)
+                    }}, {14, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        ClipsDescendants = true,
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {13},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 58, 0, 20),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {15, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {13},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Envelope",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}})
                     local window = Lib.Window.new()
                     window.Resizable = false
                     window:Resize(680, 265)
@@ -10080,7 +12586,7 @@ local EmbeddedModules = {
                     local closeButton = pickerFrame.Close
                     local topClose = pickerTopBar.Close
 
-                    local points = { { 1, 0, 3 }, { 8, 0.05, 1 }, { 5, 0.6, 2 }, { 4, 0.7, 4 }, { 6, 1, 4 } }
+                    local points = {{1, 0, 3}, {8, 0.05, 1}, {5, 0.6, 2}, {4, 0.7, 4}, {6, 1, 4}}
                     local lines = {}
                     local eLines = {}
                     local beginPoint = points[1]
@@ -10178,19 +12684,24 @@ local EmbeddedModules = {
                             currentPoint = point
                             local rawT, rawV, rawE = point[2], point[1], point[3]
                             timeBox.Text = round(rawT, (rawT < 0.01 and 5) or (rawT < 0.1 and 4) or 3)
-                            valueBox.Text = round(rawV, (rawV < 0.01 and 5) or (rawV < 0.1 and 4) or (rawV < 1 and 3) or 2)
-                            envelopeBox.Text = round(rawE, (rawE < 0.01 and 5) or (rawE < 0.1 and 4) or (rawV < 1 and 3) or 2)
+                            valueBox.Text = round(rawV,
+                                (rawV < 0.01 and 5) or (rawV < 0.1 and 4) or (rawV < 1 and 3) or 2)
+                            envelopeBox.Text = round(rawE,
+                                (rawE < 0.01 and 5) or (rawE < 0.1 and 4) or (rawV < 1 and 3) or 2)
 
                             local envelopeDistance = numberLine.AbsoluteSize.Y * (point[3] / 10)
-                            envelopeDragTop.Position = UDim2.new(0, point[4].Position.X.Offset - 1, 0, point[4].Position.Y.Offset - envelopeDistance - 17)
+                            envelopeDragTop.Position = UDim2.new(0, point[4].Position.X.Offset - 1, 0,
+                                point[4].Position.Y.Offset - envelopeDistance - 17)
                             envelopeDragTop.Visible = true
-                            envelopeDragBottom.Position = UDim2.new(0, point[4].Position.X.Offset - 1, 0, point[4].Position.Y.Offset + envelopeDistance + 2)
+                            envelopeDragBottom.Position = UDim2.new(0, point[4].Position.X.Offset - 1, 0,
+                                point[4].Position.Y.Offset + envelopeDistance + 2)
                             envelopeDragBottom.Visible = true
                         end
                     end
 
                     envelopeDragTop.InputBegan:Connect(function(input)
-                        if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then
+                        if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                            Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then
                             return
                         end
 
@@ -10202,7 +12713,8 @@ local EmbeddedModules = {
                         envelopeDragTop.Line.Size = UDim2.new(0, 3, 0, 20)
 
                         releaseEvent = user.InputEnded:Connect(function(input)
-                            if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                            if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                                Enum.UserInputType.Touch then
                                 return
                             end
                             mouseEvent:Disconnect()
@@ -10212,7 +12724,8 @@ local EmbeddedModules = {
                         end)
 
                         mouseEvent = user.InputChanged:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 local topDiff = (currentPoint[4].AbsolutePosition.Y + 2) - (mouse.Y - mouseDelta) - 19
                                 local newEnvelope = 10 * (math.max(topDiff, 0) / maxSize)
                                 local maxEnvelope = math.min(currentPoint[1], 10 - currentPoint[1])
@@ -10225,7 +12738,8 @@ local EmbeddedModules = {
                     end)
 
                     envelopeDragBottom.InputBegan:Connect(function(input)
-                        if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then
+                        if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                            Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then
                             return
                         end
 
@@ -10237,7 +12751,8 @@ local EmbeddedModules = {
                         envelopeDragBottom.Line.Size = UDim2.new(0, 3, 0, 20)
 
                         releaseEvent = user.InputEnded:Connect(function(input)
-                            if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                            if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                                Enum.UserInputType.Touch then
                                 return
                             end
                             mouseEvent:Disconnect()
@@ -10247,8 +12762,10 @@ local EmbeddedModules = {
                         end)
 
                         mouseEvent = user.InputChanged:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                                local bottomDiff = (mouse.Y + (20 - mouseDelta)) - (currentPoint[4].AbsolutePosition.Y + 2) - 19
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
+                                local bottomDiff = (mouse.Y + (20 - mouseDelta)) -
+                                                       (currentPoint[4].AbsolutePosition.Y + 2) - 19
                                 local newEnvelope = 10 * (math.max(bottomDiff, 0) / maxSize)
                                 local maxEnvelope = math.min(currentPoint[1], 10 - currentPoint[1])
                                 currentPoint[3] = math.min(newEnvelope, maxEnvelope)
@@ -10264,7 +12781,8 @@ local EmbeddedModules = {
                         newPoint.Name = "Point"
                         newPoint.BorderSizePixel = 0
                         newPoint.Size = UDim2.new(0, 5, 0, 5)
-                        newPoint.Position = UDim2.new(0, math.floor((numberLine.AbsoluteSize.X - 1) * point[2]) - 2, 0, numberLine.AbsoluteSize.Y * (10 - point[1]) / 10 - 2)
+                        newPoint.Position = UDim2.new(0, math.floor((numberLine.AbsoluteSize.X - 1) * point[2]) - 2, 0,
+                            numberLine.AbsoluteSize.Y * (10 - point[1]) / 10 - 2)
                         newPoint.BackgroundColor3 = Color3.new(0, 0, 0)
 
                         local newSelect = Instance.new("Frame")
@@ -10278,7 +12796,8 @@ local EmbeddedModules = {
                         newPoint.Parent = numberLine
 
                         newSelect.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 for i, v in pairs(points) do
                                     v[4].Select.BackgroundTransparency = 1
                                 end
@@ -10287,7 +12806,8 @@ local EmbeddedModules = {
                                 updateInputs(point)
                             end
 
-                            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not currentlySelected then
+                            if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch) and not currentlySelected then
                                 currentPoint = point
                                 local mouseEvent, releaseEvent
                                 currentlySelected = true
@@ -10296,7 +12816,8 @@ local EmbeddedModules = {
                                 local oldEnvelope = point[3]
 
                                 releaseEvent = user.InputEnded:Connect(function(input)
-                                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                                        Enum.UserInputType.Touch then
                                         return
                                     end
 
@@ -10307,7 +12828,8 @@ local EmbeddedModules = {
                                 end)
 
                                 mouseEvent = user.InputChanged:Connect(function(input)
-                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         local maxX = numberLine.AbsoluteSize.X - 1
                                         local relativeX = (input.Position.X - numberLine.AbsolutePosition.X)
                                         if relativeX < 0 then
@@ -10362,7 +12884,8 @@ local EmbeddedModules = {
                             return a[2] < b[2]
                         end)
                         for i, v in pairs(points) do
-                            v[4].Position = UDim2.new(0, math.floor((numberLineSize.X - 1) * v[2]) - 2, 0, (numberLineSize.Y - 1) * (10 - v[1]) / 10 - 2)
+                            v[4].Position = UDim2.new(0, math.floor((numberLineSize.X - 1) * v[2]) - 2, 0,
+                                (numberLineSize.Y - 1) * (10 - v[1]) / 10 - 2)
                         end
                         lines[1].Size = UDim2.new(0, 1, 0, 0)
                         for i = 1, #points - 1 do
@@ -10379,7 +12902,8 @@ local EmbeddedModules = {
                             local totalRise = 0
                             local maxRise = math.abs(toPoint[4].Position.Y.Offset - fromPoint[4].Position.Y.Offset)
 
-                            for lineCount = math.min(fromPoint[4].Position.X.Offset + 1, toPoint[4].Position.X.Offset), toPoint[4].Position.X.Offset do
+                            for lineCount = math.min(fromPoint[4].Position.X.Offset + 1, toPoint[4].Position.X.Offset), toPoint[4]
+                                .Position.X.Offset do
                                 if deltaX == 0 and deltaY == 0 then
                                     return
                                 end
@@ -10390,22 +12914,26 @@ local EmbeddedModules = {
                                         riseNow = maxRise - totalRise
                                     end
                                     if math.sign(slope) == -1 then
-                                        line.Position = UDim2.new(0, lineCount + 2, 0, fromPoint[4].Position.Y.Offset + -(totalRise + riseNow) + 2)
+                                        line.Position = UDim2.new(0, lineCount + 2, 0, fromPoint[4].Position.Y.Offset +
+                                            -(totalRise + riseNow) + 2)
                                     else
-                                        line.Position = UDim2.new(0, lineCount + 2, 0, fromPoint[4].Position.Y.Offset + totalRise + 2)
+                                        line.Position = UDim2.new(0, lineCount + 2, 0,
+                                            fromPoint[4].Position.Y.Offset + totalRise + 2)
                                     end
                                     line.Size = UDim2.new(0, 1, 0, math.max(riseNow, 1))
                                 end
                                 totalRise = totalRise + riseNow
                                 currentRise = currentRise - riseNow + math.abs(slope)
 
-                                local envPercent = (lineCount - fromPoint[4].Position.X.Offset) / (toPoint[4].Position.X.Offset - fromPoint[4].Position.X.Offset)
+                                local envPercent = (lineCount - fromPoint[4].Position.X.Offset) /
+                                                       (toPoint[4].Position.X.Offset - fromPoint[4].Position.X.Offset)
                                 local envLerp = fromEnvelope + (nextEnvelope - fromEnvelope) * envPercent
                                 local relativeSize = (envLerp / 10) * numberLineSize.Y
 
                                 local line = eLines[lineCount + 3]
                                 if line then
-                                    line.Position = UDim2.new(0, lineCount + 2, 0, lines[lineCount + 3].Position.Y.Offset - math.floor(relativeSize))
+                                    line.Position = UDim2.new(0, lineCount + 2, 0, lines[lineCount + 3].Position.Y
+                                        .Offset - math.floor(relativeSize))
                                     line.Size = UDim2.new(0, 1, 0, math.floor(relativeSize * 2))
                                 end
                             end
@@ -10423,7 +12951,7 @@ local EmbeddedModules = {
                         points = {}
                         for i, v in pairs(seq.Keypoints) do
                             local maxEnvelope = math.min(v.Value, 10 - v.Value)
-                            local newPoint = { v.Value, v.Time, math.min(v.Envelope, maxEnvelope) }
+                            local newPoint = {v.Value, v.Time, math.min(v.Envelope, maxEnvelope)}
                             newPoint[4] = placePoint(newPoint)
                             table.insert(points, newPoint)
                         end
@@ -10478,19 +13006,22 @@ local EmbeddedModules = {
 
                     local function buttonAnimations(button, inverse)
                         button.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 button.BackgroundTransparency = (inverse and 0.5 or 0.4)
                             end
                         end)
                         button.InputEnded:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 button.BackgroundTransparency = (inverse and 1 or 0)
                             end
                         end)
                     end
 
                     numberLine.InputBegan:Connect(function(input)
-                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #points < 20 then
+                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch) and #points < 20 then
                             if Lib.CheckMouseInGui(envelopeDragTop) or Lib.CheckMouseInGui(envelopeDragBottom) then
                                 return
                             end
@@ -10520,7 +13051,7 @@ local EmbeddedModules = {
                             end
 
                             local raw = relativeX / maxX
-                            local newPoint = { 10 - (relativeY / maxY) * 10, raw, 0 }
+                            local newPoint = {10 - (relativeY / maxY) * 10, raw, 0}
                             newPoint[4] = placePoint(newPoint)
                             table.insert(points, newPoint)
                             redraw()
@@ -10569,7 +13100,9 @@ local EmbeddedModules = {
                     return newMt
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.ColorSequenceEditor = (function() -- TODO: Convert to newer class model
@@ -10580,28 +13113,172 @@ local EmbeddedModules = {
                     newMt.OnPreview = Lib.Signal.new()
                     newMt.OnPickColor = Lib.Signal.new()
 
-                    local guiContents = create({
-                        { 1, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, ClipsDescendants = true, Name = "Content", Position = UDim2.new(0, 0, 0, 20), Size = UDim2.new(1, 0, 1, -20) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Name = "ColorLine", Parent = { 1 }, Position = UDim2.new(0, 10, 0, 5), Size = UDim2.new(1, -20, 0, 70) } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderSizePixel = 0, Name = "Gradient", Parent = { 2 }, Size = UDim2.new(1, 0, 1, 0) } },
-                        { 4, "UIGradient", { Parent = { 3 } } },
-                        { 5, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Name = "Arrows", Parent = { 1 }, Position = UDim2.new(0, 1, 0, 73), Size = UDim2.new(1, -2, 0, 16) } },
-                        { 6, "Frame", { BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.5, BorderSizePixel = 0, Name = "Cursor", Parent = { 1 }, Position = UDim2.new(0, 10, 0, 0), Size = UDim2.new(0, 1, 0, 80) } },
-                        { 7, "Frame", { BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204), BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979), Name = "Time", Parent = { 1 }, Position = UDim2.new(0, 40, 0, 95), Size = UDim2.new(0, 100, 0, 20) } },
-                        { 8, "TextBox", { BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054), ClipsDescendants = true, Font = 3, Name = "Input", Parent = { 7 }, Position = UDim2.new(0, 2, 0, 0), Size = UDim2.new(0, 98, 0, 20), Text = "0", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 0 } },
-                        { 9, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 7 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Time", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 10, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), Name = "ColorBox", Parent = { 1 }, Position = UDim2.new(0, 220, 0, 95), Size = UDim2.new(0, 20, 0, 20) } },
-                        { 11, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Title", Parent = { 10 }, Position = UDim2.new(0, -40, 0, 0), Size = UDim2.new(0, 34, 1, 0), Text = "Color", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14, TextXAlignment = 1 } },
-                        { 12, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), BorderSizePixel = 0, Font = 3, Name = "Close", Parent = { 1 }, Position = UDim2.new(1, -90, 0, 95), Size = UDim2.new(0, 80, 0, 20), Text = "Close", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 13, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), BorderSizePixel = 0, Font = 3, Name = "Reset", Parent = { 1 }, Position = UDim2.new(1, -180, 0, 95), Size = UDim2.new(0, 80, 0, 20), Text = "Reset", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 14, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506), BorderSizePixel = 0, Font = 3, Name = "Delete", Parent = { 1 }, Position = UDim2.new(0, 280, 0, 95), Size = UDim2.new(0, 80, 0, 20), Text = "Delete", TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489), TextSize = 14 } },
-                        { 15, "Frame", { BackgroundTransparency = 1, Name = "Arrow", Parent = { 1 }, Size = UDim2.new(0, 16, 0, 16), Visible = false } },
-                        { 16, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 15 }, Position = UDim2.new(0, 8, 0, 3), Size = UDim2.new(0, 1, 0, 2) } },
-                        { 17, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 15 }, Position = UDim2.new(0, 7, 0, 5), Size = UDim2.new(0, 3, 0, 2) } },
-                        { 18, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 15 }, Position = UDim2.new(0, 6, 0, 7), Size = UDim2.new(0, 5, 0, 2) } },
-                        { 19, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 15 }, Position = UDim2.new(0, 5, 0, 9), Size = UDim2.new(0, 7, 0, 2) } },
-                        { 20, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 15 }, Position = UDim2.new(0, 4, 0, 11), Size = UDim2.new(0, 9, 0, 2) } },
-                    })
+                    local guiContents = create({{1, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderSizePixel = 0,
+                        ClipsDescendants = true,
+                        Name = "Content",
+                        Position = UDim2.new(0, 0, 0, 20),
+                        Size = UDim2.new(1, 0, 1, -20)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Name = "ColorLine",
+                        Parent = {1},
+                        Position = UDim2.new(0, 10, 0, 5),
+                        Size = UDim2.new(1, -20, 0, 70)
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderSizePixel = 0,
+                        Name = "Gradient",
+                        Parent = {2},
+                        Size = UDim2.new(1, 0, 1, 0)
+                    }}, {4, "UIGradient", {
+                        Parent = {3}
+                    }}, {5, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        BorderSizePixel = 0,
+                        Name = "Arrows",
+                        Parent = {1},
+                        Position = UDim2.new(0, 1, 0, 73),
+                        Size = UDim2.new(1, -2, 0, 16)
+                    }}, {6, "Frame", {
+                        BackgroundColor3 = Color3.new(0, 0, 0),
+                        BackgroundTransparency = 0.5,
+                        BorderSizePixel = 0,
+                        Name = "Cursor",
+                        Parent = {1},
+                        Position = UDim2.new(0, 10, 0, 0),
+                        Size = UDim2.new(0, 1, 0, 80)
+                    }}, {7, "Frame", {
+                        BackgroundColor3 = Color3.new(0.14901961386204, 0.14901961386204, 0.14901961386204),
+                        BorderColor3 = Color3.new(0.12549020349979, 0.12549020349979, 0.12549020349979),
+                        Name = "Time",
+                        Parent = {1},
+                        Position = UDim2.new(0, 40, 0, 95),
+                        Size = UDim2.new(0, 100, 0, 20)
+                    }}, {8, "TextBox", {
+                        BackgroundColor3 = Color3.new(0.25098040699959, 0.25098040699959, 0.25098040699959),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.new(0.37647062540054, 0.37647062540054, 0.37647062540054),
+                        ClipsDescendants = true,
+                        Font = 3,
+                        Name = "Input",
+                        Parent = {7},
+                        Position = UDim2.new(0, 2, 0, 0),
+                        Size = UDim2.new(0, 98, 0, 20),
+                        Text = "0",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 0
+                    }}, {9, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {7},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Time",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {10, "Frame", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        Name = "ColorBox",
+                        Parent = {1},
+                        Position = UDim2.new(0, 220, 0, 95),
+                        Size = UDim2.new(0, 20, 0, 20)
+                    }}, {11, "TextLabel", {
+                        BackgroundColor3 = Color3.new(1, 1, 1),
+                        BackgroundTransparency = 1,
+                        Font = 3,
+                        Name = "Title",
+                        Parent = {10},
+                        Position = UDim2.new(0, -40, 0, 0),
+                        Size = UDim2.new(0, 34, 1, 0),
+                        Text = "Color",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14,
+                        TextXAlignment = 1
+                    }}, {12, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Close",
+                        Parent = {1},
+                        Position = UDim2.new(1, -90, 0, 95),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Close",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {13, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Reset",
+                        Parent = {1},
+                        Position = UDim2.new(1, -180, 0, 95),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Reset",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {14, "TextButton", {
+                        AutoButtonColor = false,
+                        BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+                        BorderColor3 = Color3.new(0.21568627655506, 0.21568627655506, 0.21568627655506),
+                        BorderSizePixel = 0,
+                        Font = 3,
+                        Name = "Delete",
+                        Parent = {1},
+                        Position = UDim2.new(0, 280, 0, 95),
+                        Size = UDim2.new(0, 80, 0, 20),
+                        Text = "Delete",
+                        TextColor3 = Color3.new(0.86274516582489, 0.86274516582489, 0.86274516582489),
+                        TextSize = 14
+                    }}, {15, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "Arrow",
+                        Parent = {1},
+                        Size = UDim2.new(0, 16, 0, 16),
+                        Visible = false
+                    }}, {16, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {15},
+                        Position = UDim2.new(0, 8, 0, 3),
+                        Size = UDim2.new(0, 1, 0, 2)
+                    }}, {17, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {15},
+                        Position = UDim2.new(0, 7, 0, 5),
+                        Size = UDim2.new(0, 3, 0, 2)
+                    }}, {18, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {15},
+                        Position = UDim2.new(0, 6, 0, 7),
+                        Size = UDim2.new(0, 5, 0, 2)
+                    }}, {19, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {15},
+                        Position = UDim2.new(0, 5, 0, 9),
+                        Size = UDim2.new(0, 7, 0, 2)
+                    }}, {20, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {15},
+                        Position = UDim2.new(0, 4, 0, 11),
+                        Size = UDim2.new(0, 9, 0, 2)
+                    }}})
                     local window = Lib.Window.new()
                     window.Resizable = false
                     window:Resize(650, 150)
@@ -10630,7 +13307,8 @@ local EmbeddedModules = {
                     local user = service.UserInputService
                     local mouse = service.Players.LocalPlayer:GetMouse()
 
-                    local colors = { { Color3.new(1, 0, 1), 0 }, { Color3.new(0.2, 0.9, 0.2), 0.2 }, { Color3.new(0.4, 0.5, 0.9), 0.7 }, { Color3.new(0.6, 1, 1), 1 } }
+                    local colors = {{Color3.new(1, 0, 1), 0}, {Color3.new(0.2, 0.9, 0.2), 0.2},
+                                    {Color3.new(0.4, 0.5, 0.9), 0.7}, {Color3.new(0.6, 1, 1), 1}}
                     local resetSequence = nil
 
                     local beginPoint = colors[1]
@@ -10679,12 +13357,14 @@ local EmbeddedModules = {
                         newArrow.Parent = arrowFrame
 
                         newArrow.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 cursor.Visible = true
                                 cursor.Position = UDim2.new(0, 9 + newArrow.Position.X.Offset, 0, 0)
                             end
 
-                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 updateInputs(point)
                                 if point == beginPoint or point == endPoint or currentlySelected then
                                     return
@@ -10694,7 +13374,8 @@ local EmbeddedModules = {
                                 currentlySelected = true
 
                                 releaseEvent = user.InputEnded:Connect(function(input)
-                                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then
+                                    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~=
+                                        Enum.UserInputType.Touch then
                                         return
                                     end
                                     mouseEvent:Disconnect()
@@ -10704,7 +13385,8 @@ local EmbeddedModules = {
                                 end)
 
                                 mouseEvent = user.InputChanged:Connect(function(input)
-                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                        Enum.UserInputType.Touch then
                                         local maxSize = colorLine.AbsoluteSize.X - 1
                                         local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
                                         if relativeX < 0 then
@@ -10726,7 +13408,8 @@ local EmbeddedModules = {
                         end)
 
                         newArrow.InputEnded:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 cursor.Visible = false
                             end
                         end)
@@ -10761,7 +13444,7 @@ local EmbeddedModules = {
                         colors = {}
                         currentlySelected = nil
                         for i, v in pairs(seq.Keypoints) do
-                            local newPoint = { v.Value, v.Time }
+                            local newPoint = {v.Value, v.Time}
                             newPoint[3] = placeArrow(v.Time, newPoint)
                             table.insert(colors, newPoint)
                         end
@@ -10776,19 +13459,22 @@ local EmbeddedModules = {
 
                     local function buttonAnimations(button, inverse)
                         button.InputBegan:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 button.BackgroundTransparency = (inverse and 0.5 or 0.4)
                             end
                         end)
                         button.InputEnded:Connect(function(input)
-                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                                Enum.UserInputType.Touch then
                                 button.BackgroundTransparency = (inverse and 1 or 0)
                             end
                         end)
                     end
 
                     colorLine.InputBegan:Connect(function(input)
-                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #colors < 20 then
+                        if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch) and #colors < 20 then
                             local maxSize = colorLine.AbsoluteSize.X - 1
                             local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
                             if relativeX < 0 then
@@ -10808,8 +13494,9 @@ local EmbeddedModules = {
                                     break
                                 end
                             end
-                            local lerpColor = fromColor[1]:lerp(toColor[1], (raw - fromColor[2]) / (toColor[2] - fromColor[2]))
-                            local newPoint = { lerpColor, raw }
+                            local lerpColor = fromColor[1]:lerp(toColor[1],
+                                (raw - fromColor[2]) / (toColor[2] - fromColor[2]))
+                            local newPoint = {lerpColor, raw}
                             newPoint[3] = placeArrow(newPoint[2], newPoint)
                             table.insert(colors, newPoint)
                             updateInputs(newPoint)
@@ -10819,7 +13506,8 @@ local EmbeddedModules = {
                     end)
 
                     colorLine.InputChanged:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             local maxSize = colorLine.AbsoluteSize.X - 1
                             local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
                             if relativeX < 0 then
@@ -10834,7 +13522,8 @@ local EmbeddedModules = {
                     end)
 
                     colorLine.InputEnded:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             local inArrow = false
                             for i, v in pairs(colors) do
                                 if Lib.CheckMouseInGui(v[3]) then
@@ -10860,7 +13549,8 @@ local EmbeddedModules = {
                     end)
 
                     colorBox.InputBegan:Connect(function(input)
-                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                            Enum.UserInputType.Touch then
                             local editor = newMt.ColorPicker
                             if not editor then
                                 editor = Lib.ColorPicker.new()
@@ -10925,7 +13615,9 @@ local EmbeddedModules = {
                     return newMt
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.ViewportTextBox = (function()
@@ -10936,7 +13628,7 @@ local EmbeddedModules = {
                     TextBox = PH,
                     CursorPos = -1,
                     Gui = PH,
-                    View = PH,
+                    View = PH
                 }
                 local funcs = {}
                 funcs.Update = function(self)
@@ -10955,8 +13647,10 @@ local EmbeddedModules = {
                     local leftEnd = -self.TextBox.Position.X.Offset
                     local rightEnd = leftEnd + self.View.AbsoluteSize.X
 
-                    local totalTextSize = textService:GetTextSize(text, self.TextBox.TextSize, self.TextBox.Font, Vector2.new(999999999, 100)).X
-                    local cursorTextSize = textService:GetTextSize(cursorText, self.TextBox.TextSize, self.TextBox.Font, Vector2.new(999999999, 100)).X
+                    local totalTextSize = textService:GetTextSize(text, self.TextBox.TextSize, self.TextBox.Font,
+                                              Vector2.new(999999999, 100)).X
+                    local cursorTextSize = textService:GetTextSize(cursorText, self.TextBox.TextSize, self.TextBox.Font,
+                                               Vector2.new(999999999, 100)).X
 
                     if cursorTextSize > rightEnd then
                         pos = math.max(-1, cursorTextSize - self.View.AbsoluteSize.X + 2)
@@ -11035,7 +13729,10 @@ local EmbeddedModules = {
                     return convert(textBox)
                 end
 
-                return { new = new, convert = convert }
+                return {
+                    new = new,
+                    convert = convert
+                }
             end)()
 
             Lib.Label = (function()
@@ -11054,12 +13751,14 @@ local EmbeddedModules = {
                     label.TextSize = 14
 
                     local obj = setmetatable({
-                        Gui = label,
+                        Gui = label
                     }, mt)
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.Frame = (function()
@@ -11074,12 +13773,14 @@ local EmbeddedModules = {
                     fr.Size = UDim2.new(0, 50, 0, 50)
 
                     local obj = setmetatable({
-                        Gui = fr,
+                        Gui = fr
                     }, mt)
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.Button = (function()
@@ -11090,7 +13791,7 @@ local EmbeddedModules = {
                     OnClick = SIGNAL,
                     OnDown = SIGNAL,
                     OnUp = SIGNAL,
-                    AllowedButtons = { 1 },
+                    AllowedButtons = {1}
                 }
                 local funcs = {}
                 local tableFind = table.find
@@ -11128,7 +13829,13 @@ local EmbeddedModules = {
 
                     local obj = initObj(props, mt)
                     obj.Gui = b
-                    obj.Anim = Lib.ButtonAnim(b, { Mode = 2, StartColor = Settings.Theme.Button, HoverColor = Settings.Theme.ButtonHover, PressColor = Settings.Theme.ButtonPress, OutlineColor = Settings.Theme.Outline2 })
+                    obj.Anim = Lib.ButtonAnim(b, {
+                        Mode = 2,
+                        StartColor = Settings.Theme.Button,
+                        HoverColor = Settings.Theme.ButtonHover,
+                        PressColor = Settings.Theme.ButtonPress,
+                        OutlineColor = Settings.Theme.Outline2
+                    })
 
                     b.MouseButton1Click:Connect(function()
                         obj:Trigger("Click", 1)
@@ -11153,7 +13860,9 @@ local EmbeddedModules = {
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.DropDown = (function()
@@ -11166,7 +13875,7 @@ local EmbeddedModules = {
                     CanBeEmpty = true,
                     Options = {},
                     GuiElems = {},
-                    OnSelect = SIGNAL,
+                    OnSelect = SIGNAL
                 }
                 local funcs = {}
 
@@ -11217,12 +13926,15 @@ local EmbeddedModules = {
                                 self.Selected = nil
                                 self.OnSelect:Fire(nil)
                                 self:Update()
-                            end,
+                            end
                         })
                     end
 
                     for i = 1, #options do
-                        context:Add({ Name = options[i], OnClick = onClick })
+                        context:Add({
+                            Name = options[i],
+                            OnClick = onClick
+                        })
                     end
 
                     self:Update()
@@ -11248,22 +13960,47 @@ local EmbeddedModules = {
                     label.Size = UDim2.new(1, -22, 1, 0)
                     label.TextTruncate = Enum.TextTruncate.AtEnd
                     label.Parent = f
-                    local arrow = create({
-                        { 1, "Frame", { BackgroundTransparency = 1, Name = "EnumArrow", Position = UDim2.new(1, -16, 0, 2), Size = UDim2.new(0, 16, 0, 16) } },
-                        { 2, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, 8, 0, 9), Size = UDim2.new(0, 1, 0, 1) } },
-                        { 3, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, 7, 0, 8), Size = UDim2.new(0, 3, 0, 1) } },
-                        { 4, "Frame", { BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025), BorderSizePixel = 0, Parent = { 1 }, Position = UDim2.new(0, 6, 0, 7), Size = UDim2.new(0, 5, 0, 1) } },
-                    })
+                    local arrow = create({{1, "Frame", {
+                        BackgroundTransparency = 1,
+                        Name = "EnumArrow",
+                        Position = UDim2.new(1, -16, 0, 2),
+                        Size = UDim2.new(0, 16, 0, 16)
+                    }}, {2, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, 8, 0, 9),
+                        Size = UDim2.new(0, 1, 0, 1)
+                    }}, {3, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, 7, 0, 8),
+                        Size = UDim2.new(0, 3, 0, 1)
+                    }}, {4, "Frame", {
+                        BackgroundColor3 = Color3.new(0.86274510622025, 0.86274510622025, 0.86274510622025),
+                        BorderSizePixel = 0,
+                        Parent = {1},
+                        Position = UDim2.new(0, 6, 0, 7),
+                        Size = UDim2.new(0, 5, 0, 1)
+                    }}})
                     arrow.Parent = f
 
                     local obj = initObj(props, mt)
                     obj.Gui = f
-                    obj.Anim = Lib.ButtonAnim(f, { Mode = 2, StartColor = Settings.Theme.TextBox, LerpTo = Settings.Theme.Button, LerpDelta = 0.15 })
+                    obj.Anim = Lib.ButtonAnim(f, {
+                        Mode = 2,
+                        StartColor = Settings.Theme.TextBox,
+                        LerpTo = Settings.Theme.Button,
+                        LerpDelta = 0.15
+                    })
                     obj.Context = Lib.ContextMenu.new()
                     obj.Context.Iconless = true
                     obj.Context.MaxHeight = 200
                     obj.Selected = nil
-                    obj.GuiElems = { Label = label }
+                    obj.GuiElems = {
+                        Label = label
+                    }
                     f.MouseButton1Down:Connect(function()
                         obj:ShowOptions()
                     end)
@@ -11271,7 +14008,9 @@ local EmbeddedModules = {
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             Lib.ClickSystem = (function()
@@ -11279,14 +14018,14 @@ local EmbeddedModules = {
                     LastItem = PH,
                     OnDown = SIGNAL,
                     OnRelease = SIGNAL,
-                    AllowedButtons = { 1 },
+                    AllowedButtons = {1},
                     Combo = 0,
                     MaxCombo = 2,
                     ComboTime = 0.5,
                     Items = {},
                     ItemCons = {},
                     ClickId = -1,
-                    LastButton = "",
+                    LastButton = ""
                 }
                 local funcs = {}
                 local tostring = tostring
@@ -11300,7 +14039,8 @@ local EmbeddedModules = {
 
                 funcs.Trigger = function(self, item, button, X, Y)
                     if table.find(self.AllowedButtons, button) then
-                        if self.LastButton ~= button or self.LastItem ~= item or self.Combo == self.MaxCombo or tick() - self.ClickId > self.ComboTime then
+                        if self.LastButton ~= button or self.LastItem ~= item or self.Combo == self.MaxCombo or tick() -
+                            self.ClickId > self.ComboTime then
                             self.Combo = 0
                             self.LastButton = button
                             self.LastItem = item
@@ -11374,7 +14114,9 @@ local EmbeddedModules = {
                     table.remove(self.Items, ind)
                 end
 
-                local mt = { __index = funcs }
+                local mt = {
+                    __index = funcs
+                }
 
                 local function new()
                     local obj = initObj(props, mt)
@@ -11382,14 +14124,20 @@ local EmbeddedModules = {
                     return obj
                 end
 
-                return { new = new }
+                return {
+                    new = new
+                }
             end)()
 
             return Lib
         end
 
-        return { InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main }
-    end,
+        return {
+            InitDeps = initDeps,
+            InitAfterMain = initAfterMain,
+            Main = main
+        }
+    end
 }
 
 -- Main vars
@@ -11409,7 +14157,7 @@ DefaultSettings = (function()
             AutoUpdateMode = 0, -- 0 Default, 1 no tree update, 2 no descendant events, 3 frozen
             PartSelectionBox = true,
             GuiSelectionBox = true,
-            CopyPathUseGetChildren = true,
+            CopyPathUseGetChildren = true
         },
         Properties = {
             _Recurse = true,
@@ -11421,7 +14169,7 @@ DefaultSettings = (function()
             NumberRounding = 3,
             ShowAttributes = false,
             MaxAttributes = 50,
-            ScaleType = 1, -- 0 Full Name Shown, 1 Equal Halves
+            ScaleType = 1 -- 0 Full Name Shown, 1 Equal Halves
         },
         Theme = {
             _Recurse = true,
@@ -11465,9 +14213,9 @@ DefaultSettings = (function()
                 Local = rgb(248, 109, 124),
                 Self = rgb(248, 109, 124),
                 FunctionName = rgb(253, 251, 172),
-                Bracket = rgb(204, 204, 204),
-            },
-        },
+                Bracket = rgb(204, 204, 204)
+            }
+        }
     }
 end)()
 
@@ -11508,7 +14256,7 @@ end
 Main = (function()
     local Main = {}
 
-    Main.ModuleList = { "Explorer", "Properties", "ScriptViewer" }
+    Main.ModuleList = {"Explorer", "Properties", "ScriptViewer"}
     Main.Elevated = false
     Main.MissingEnv = {}
     Main.Version = "" -- Beta 1.0.0
@@ -11521,7 +14269,7 @@ Main = (function()
         SideWindow = 8,
         Window = 10,
         Menu = 100000,
-        Core = 101000,
+        Core = 101000
     }
 
     Main.GetInitDeps = function()
@@ -11537,7 +14285,7 @@ Main = (function()
             service = service,
             plr = plr,
             create = create,
-            createSimple = createSimple,
+            createSimple = createSimple
         }
     end
 
@@ -11601,7 +14349,7 @@ Main = (function()
             Explorer = Explorer,
             Properties = Properties,
             ScriptViewer = ScriptViewer,
-            Notebook = Notebook,
+            Notebook = Notebook
         }
 
         Main.AppControls.Lib.InitAfterMain(appTable)
@@ -11621,7 +14369,7 @@ Main = (function()
                     return
                 end
                 rawset(self, name, func)
-            end,
+            end
         })
 
         -- file
@@ -11643,19 +14391,21 @@ Main = (function()
         env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
         env.islclosure = islclosure or is_l_closure or is_lclosure
         env.checkcaller = checkcaller
-        --env.getreg = getreg
+        -- env.getreg = getreg
         env.getgc = getgc or get_gc_objects
-        --env.base64encode = crypt and crypt.base64 and crypt.base64.encode
+        -- env.base64encode = crypt and crypt.base64 and crypt.base64.encode
         env.getscriptbytecode = getscriptbytecode
 
         -- other
-        --env.setfflag = setfflag
-        env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+        -- env.setfflag = setfflag
+        env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or
+                          request
         -- hmm yes sanity check hmm fake decompile good
         env.safeDecompile = type(decompile) == "function" and decompile
         env.decompile = env.safeDecompile or (env.getscriptbytecode and env.request and (function()
             local success, err = pcall(function()
-                loadstring(oldgame:HttpGet("https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/konstant.lua"))()
+                loadstring(oldgame:HttpGet(
+                    "https://raw.githubusercontent.com/infyiff/backup/refs/heads/main/konstant.lua"))()
             end)
 
             return (success and decompile) or nil
@@ -11787,13 +14537,19 @@ Main = (function()
                     newMember.Parameters = {}
                     newMember.ReturnType = member.ReturnType.Name
                     for c, param in pairs(member.Parameters) do
-                        table.insert(newMember.Parameters, { Name = param.Name, Type = param.Type.Name })
+                        table.insert(newMember.Parameters, {
+                            Name = param.Name,
+                            Type = param.Type.Name
+                        })
                     end
                     table.insert(newClass.Functions, newMember)
                 elseif mType == "Event" then
                     newMember.Parameters = {}
                     for c, param in pairs(member.Parameters) do
-                        table.insert(newMember.Parameters, { Name = param.Name, Type = param.Type.Name })
+                        table.insert(newMember.Parameters, {
+                            Name = param.Name,
+                            Type = param.Type.Name
+                        })
                     end
                     table.insert(newClass.Events, newMember)
                 end
@@ -11869,7 +14625,7 @@ Main = (function()
             Classes = classes,
             Enums = enums,
             CategoryOrder = categoryOrderMap,
-            GetMember = getMember,
+            GetMember = getMember
         }
     end
 
@@ -11884,7 +14640,8 @@ Main = (function()
                     Main.DepsVersionData[1] = ""
                 end
             end
-            rawXML = rawXML or oldgame:HttpGet("https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/DexUtils/ReflectionMetadata.xml")
+            rawXML = rawXML or oldgame:HttpGet(
+                "https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/DexUtils/ReflectionMetadata.xml")
         else
             if script:FindFirstChild("RMD") then
                 rawXML = require(script.RMD)
@@ -11903,7 +14660,10 @@ Main = (function()
             local className = ""
             for _, child in pairs(class.children) do
                 if child.tag == "Properties" then
-                    local data = { Properties = {}, Functions = {} }
+                    local data = {
+                        Properties = {},
+                        Functions = {}
+                    }
                     local props = child.children
                     for _, prop in pairs(props) do
                         local name = prop.attrs.name
@@ -11964,7 +14724,9 @@ Main = (function()
             local enumName = ""
             for _, child in pairs(enum.children) do
                 if child.tag == "Properties" then
-                    local data = { Items = {} }
+                    local data = {
+                        Items = {}
+                    }
                     local props = child.children
                     for _, prop in pairs(props) do
                         local name = prop.attrs.name
@@ -11988,7 +14750,11 @@ Main = (function()
             end
         end
 
-        return { Classes = classes, Enums = enums, PropertyOrders = propertyOrders }
+        return {
+            Classes = classes,
+            Enums = enums,
+            PropertyOrders = propertyOrders
+        }
     end
 
     Main.ShowGui = function(gui)
@@ -12003,25 +14769,136 @@ Main = (function()
     end
 
     Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
-        local gui = create({
-            { 1, "ScreenGui", { Name = "Intro" } },
-            { 2, "Frame", { Active = true, BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "Main", Parent = { 1 }, Position = UDim2.new(0.5, -175, 0.5, -100), Size = UDim2.new(0, 350, 0, 200) } },
-            { 3, "Frame", { BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, ClipsDescendants = true, Name = "Holder", Parent = { 2 }, Size = UDim2.new(1, 0, 1, 0) } },
-            { 4, "UIGradient", { Parent = { 3 }, Rotation = 30, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0) }) } },
-            { 5, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 4, Name = "Title", Parent = { 3 }, Position = UDim2.new(0, -190, 0, 15), Size = UDim2.new(0, 100, 0, 50), Text = "Dex", TextColor3 = Color3.new(1, 1, 1), TextSize = 50, TextTransparency = 1 } },
-            { 6, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Desc", Parent = { 3 }, Position = UDim2.new(0, -230, 0, 60), Size = UDim2.new(0, 180, 0, 25), Text = "Ultimate Debugging Suite", TextColor3 = Color3.new(1, 1, 1), TextSize = 18, TextTransparency = 1 } },
-            { 7, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "StatusText", Parent = { 3 }, Position = UDim2.new(0, 20, 0, 110), Size = UDim2.new(0, 180, 0, 25), Text = "Fetching API", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 1 } },
-            { 8, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "ProgressBar", Parent = { 3 }, Position = UDim2.new(0, 110, 0, 145), Size = UDim2.new(0, 0, 0, 4) } },
-            { 9, "Frame", { BackgroundColor3 = Color3.new(0.2392156869173, 0.56078433990479, 0.86274510622025), BorderSizePixel = 0, Name = "Bar", Parent = { 8 }, Size = UDim2.new(0, 0, 1, 0) } },
-            { 10, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://2764171053", ImageColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), Parent = { 8 }, ScaleType = 1, Size = UDim2.new(1, 0, 1, 0), SliceCenter = Rect.new(2, 2, 254, 254) } },
-            { 11, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Creator", Parent = { 2 }, Position = UDim2.new(1, -110, 1, -20), Size = UDim2.new(0, 105, 0, 20), Text = "Developed by diddy", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 1 } },
-            { 12, "UIGradient", { Parent = { 11 }, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0) }) } },
-            { 13, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Version", Parent = { 2 }, Position = UDim2.new(1, -110, 1, -35), Size = UDim2.new(0, 105, 0, 20), Text = Main.Version, TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextXAlignment = 1 } },
-            { 14, "UIGradient", { Parent = { 13 }, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0) }) } },
-            { 15, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Image = "rbxassetid://1427967925", Name = "Outlines", Parent = { 2 }, Position = UDim2.new(0, -5, 0, -5), ScaleType = 1, Size = UDim2.new(1, 10, 1, 10), SliceCenter = Rect.new(6, 6, 25, 25), TileSize = UDim2.new(0, 20, 0, 20) } },
-            { 16, "UIGradient", { Parent = { 15 }, Rotation = -30, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0) }) } },
-            { 17, "UIGradient", { Parent = { 2 }, Rotation = -30, Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0) }) } },
-        })
+        local gui = create({{1, "ScreenGui", {
+            Name = "Intro"
+        }}, {2, "Frame", {
+            Active = true,
+            BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+            BorderSizePixel = 0,
+            Name = "Main",
+            Parent = {1},
+            Position = UDim2.new(0.5, -175, 0.5, -100),
+            Size = UDim2.new(0, 350, 0, 200)
+        }}, {3, "Frame", {
+            BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+            BorderSizePixel = 0,
+            ClipsDescendants = true,
+            Name = "Holder",
+            Parent = {2},
+            Size = UDim2.new(1, 0, 1, 0)
+        }}, {4, "UIGradient", {
+            Parent = {3},
+            Rotation = 30,
+            Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0)})
+        }}, {5, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 4,
+            Name = "Title",
+            Parent = {3},
+            Position = UDim2.new(0, -190, 0, 15),
+            Size = UDim2.new(0, 100, 0, 50),
+            Text = "Dex",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 50,
+            TextTransparency = 1
+        }}, {6, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "Desc",
+            Parent = {3},
+            Position = UDim2.new(0, -230, 0, 60),
+            Size = UDim2.new(0, 180, 0, 25),
+            Text = "Ultimate Debugging Suite",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 18,
+            TextTransparency = 1
+        }}, {7, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "StatusText",
+            Parent = {3},
+            Position = UDim2.new(0, 20, 0, 110),
+            Size = UDim2.new(0, 180, 0, 25),
+            Text = "Fetching API",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14,
+            TextTransparency = 1
+        }}, {8, "Frame", {
+            BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+            BorderSizePixel = 0,
+            Name = "ProgressBar",
+            Parent = {3},
+            Position = UDim2.new(0, 110, 0, 145),
+            Size = UDim2.new(0, 0, 0, 4)
+        }}, {9, "Frame", {
+            BackgroundColor3 = Color3.new(0.2392156869173, 0.56078433990479, 0.86274510622025),
+            BorderSizePixel = 0,
+            Name = "Bar",
+            Parent = {8},
+            Size = UDim2.new(0, 0, 1, 0)
+        }}, {10, "ImageLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://2764171053",
+            ImageColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+            Parent = {8},
+            ScaleType = 1,
+            Size = UDim2.new(1, 0, 1, 0),
+            SliceCenter = Rect.new(2, 2, 254, 254)
+        }}, {11, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "Creator",
+            Parent = {2},
+            Position = UDim2.new(1, -110, 1, -20),
+            Size = UDim2.new(0, 105, 0, 20),
+            Text = "Developed by diddy",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14,
+            TextXAlignment = 1
+        }}, {12, "UIGradient", {
+            Parent = {11},
+            Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0)})
+        }}, {13, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "Version",
+            Parent = {2},
+            Position = UDim2.new(1, -110, 1, -35),
+            Size = UDim2.new(0, 105, 0, 20),
+            Text = Main.Version,
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14,
+            TextXAlignment = 1
+        }}, {14, "UIGradient", {
+            Parent = {13},
+            Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0)})
+        }}, {15, "ImageLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Image = "rbxassetid://1427967925",
+            Name = "Outlines",
+            Parent = {2},
+            Position = UDim2.new(0, -5, 0, -5),
+            ScaleType = 1,
+            Size = UDim2.new(1, 10, 1, 10),
+            SliceCenter = Rect.new(6, 6, 25, 25),
+            TileSize = UDim2.new(0, 20, 0, 20)
+        }}, {16, "UIGradient", {
+            Parent = {15},
+            Rotation = -30,
+            Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0)})
+        }}, {17, "UIGradient", {
+            Parent = {2},
+            Rotation = -30,
+            Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0, 1, 0), NumberSequenceKeypoint.new(1, 1, 0)})
+        }}})
         Main.ShowGui(gui)
         local backGradient = gui.Main.UIGradient
         local outlinesGradient = gui.Main.Outlines.UIGradient
@@ -12054,7 +14931,9 @@ Main = (function()
             local tweenVal = Instance.new("IntValue")
             tweenVal.Value = 0
             tweenVal.Changed:Connect(func)
-            local tween = tweenS:Create(tweenVal, ti, { Value = n })
+            local tween = tweenS:Create(tweenVal, ti, {
+                Value = n
+            })
             tween:Play()
             tween.Completed:Connect(function()
                 tweenVal:Destroy()
@@ -12076,8 +14955,8 @@ Main = (function()
                 b2 = b1
             end
             local goal = NumberSequenceKeypoint.new(1, 0)
-            backGradient.Transparency = NumberSequence.new({ start, a1, a2, b2, b1, goal })
-            outlinesGradient.Transparency = NumberSequence.new({ start, a1, a2, b2, b1, goal })
+            backGradient.Transparency = NumberSequence.new({start, a1, a2, b2, b1, goal})
+            outlinesGradient.Transparency = NumberSequence.new({start, a1, a2, b2, b1, goal})
         end)
 
         fastwait(0.4)
@@ -12088,11 +14967,17 @@ Main = (function()
             local a1 = NumberSequenceKeypoint.new(val, 0)
             local a2 = NumberSequenceKeypoint.new(val + 0.01, 1)
             local goal = NumberSequenceKeypoint.new(1, 1)
-            holderGradient.Transparency = NumberSequence.new({ start, a1, a2, goal })
+            holderGradient.Transparency = NumberSequence.new({start, a1, a2, goal})
         end)
 
-        tweenS:Create(titleText, ti, { Position = UDim2.new(0, 60, 0, 15), TextTransparency = 0 }):Play()
-        tweenS:Create(descText, ti, { Position = UDim2.new(0, 20, 0, 60), TextTransparency = 0 }):Play()
+        tweenS:Create(titleText, ti, {
+            Position = UDim2.new(0, 60, 0, 15),
+            TextTransparency = 0
+        }):Play()
+        tweenS:Create(descText, ti, {
+            Position = UDim2.new(0, 20, 0, 60),
+            TextTransparency = 0
+        }):Play()
 
         local function rightTextTransparency(obj)
             tweenNumber(100, ti, function(val)
@@ -12104,7 +14989,7 @@ Main = (function()
                 end
                 local start = NumberSequenceKeypoint.new(0, a1 == a2 and 0 or 1)
                 local goal = NumberSequenceKeypoint.new(1, 0)
-                obj.Transparency = NumberSequence.new({ start, a2, a1, goal })
+                obj.Transparency = NumberSequence.new({start, a2, a1, goal})
             end)
         end
         rightTextTransparency(versionGradient)
@@ -12114,25 +14999,49 @@ Main = (function()
 
         local progressTI = TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
-        tweenS:Create(statusText, progressTI, { Position = UDim2.new(0, 20, 0, 120), TextTransparency = 0 }):Play()
-        tweenS:Create(progressBar, progressTI, { Position = UDim2.new(0, 60, 0, 145), Size = UDim2.new(0, 100, 0, 4) }):Play()
+        tweenS:Create(statusText, progressTI, {
+            Position = UDim2.new(0, 20, 0, 120),
+            TextTransparency = 0
+        }):Play()
+        tweenS:Create(progressBar, progressTI, {
+            Position = UDim2.new(0, 60, 0, 145),
+            Size = UDim2.new(0, 100, 0, 4)
+        }):Play()
 
         fastwait(0.25)
 
         local function setProgress(text, n)
             statusText.Text = text
-            tweenS:Create(progressBar.Bar, progressTI, { Size = UDim2.new(n, 0, 1, 0) }):Play()
+            tweenS:Create(progressBar.Bar, progressTI, {
+                Size = UDim2.new(n, 0, 1, 0)
+            }):Play()
         end
 
         local function close()
-            tweenS:Create(titleText, progressTI, { TextTransparency = 1 }):Play()
-            tweenS:Create(descText, progressTI, { TextTransparency = 1 }):Play()
-            tweenS:Create(versionText, progressTI, { TextTransparency = 1 }):Play()
-            tweenS:Create(creatorText, progressTI, { TextTransparency = 1 }):Play()
-            tweenS:Create(statusText, progressTI, { TextTransparency = 1 }):Play()
-            tweenS:Create(progressBar, progressTI, { BackgroundTransparency = 1 }):Play()
-            tweenS:Create(progressBar.Bar, progressTI, { BackgroundTransparency = 1 }):Play()
-            tweenS:Create(progressBar.ImageLabel, progressTI, { ImageTransparency = 1 }):Play()
+            tweenS:Create(titleText, progressTI, {
+                TextTransparency = 1
+            }):Play()
+            tweenS:Create(descText, progressTI, {
+                TextTransparency = 1
+            }):Play()
+            tweenS:Create(versionText, progressTI, {
+                TextTransparency = 1
+            }):Play()
+            tweenS:Create(creatorText, progressTI, {
+                TextTransparency = 1
+            }):Play()
+            tweenS:Create(statusText, progressTI, {
+                TextTransparency = 1
+            }):Play()
+            tweenS:Create(progressBar, progressTI, {
+                BackgroundTransparency = 1
+            }):Play()
+            tweenS:Create(progressBar.Bar, progressTI, {
+                BackgroundTransparency = 1
+            }):Play()
+            tweenS:Create(progressBar.ImageLabel, progressTI, {
+                ImageTransparency = 1
+            }):Play()
 
             tweenNumber(100, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), function(val)
                 val = val / 250
@@ -12143,7 +15052,7 @@ Main = (function()
                     a2 = a1
                 end
                 local goal = NumberSequenceKeypoint.new(1, a1 == a2 and 0 or 1)
-                holderGradient.Transparency = NumberSequence.new({ start, a1, a2, goal })
+                holderGradient.Transparency = NumberSequence.new({start, a1, a2, goal})
             end)
 
             fastwait(0.5)
@@ -12159,15 +15068,18 @@ Main = (function()
                     a2 = a1
                 end
                 local goal = NumberSequenceKeypoint.new(1, a1 == a2 and 1 or 0)
-                outlinesGradient.Transparency = NumberSequence.new({ start, a1, a2, goal })
-                holderGradient.Transparency = NumberSequence.new({ start, a1, a2, goal })
+                outlinesGradient.Transparency = NumberSequence.new({start, a1, a2, goal})
+                holderGradient.Transparency = NumberSequence.new({start, a1, a2, goal})
             end)
 
             fastwait(0.45)
             gui:Destroy()
         end
 
-        return { SetProgress = setProgress, Close = close }
+        return {
+            SetProgress = setProgress,
+            Close = close
+        }
     end
 
     Main.CreateApp = function(data)
@@ -12235,14 +15147,16 @@ Main = (function()
         app.Main.AppName.Text = data.Name
 
         app.Main.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                Enum.UserInputType.Touch then
                 app.Main.BackgroundTransparency = 0
                 app.Main.BackgroundColor3 = Settings.Theme.ButtonHover
             end
         end)
 
         app.Main.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                Enum.UserInputType.Touch then
                 app.Main.BackgroundTransparency = data.Open and 0 or 1
                 app.Main.BackgroundColor3 = Settings.Theme.Button
             end
@@ -12283,9 +15197,13 @@ Main = (function()
         if val then
             Main.MainGui.OpenButton.MainFrame.Visible = true
         end
-        Main.MainGui.OpenButton.MainFrame:TweenSize(val and UDim2.new(0, 224, 0, 200) or UDim2.new(0, 0, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
-        --Main.MainGui.OpenButton.BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
-        service.TweenService:Create(Main.MainGui.OpenButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2) }):Play()
+        Main.MainGui.OpenButton.MainFrame:TweenSize(val and UDim2.new(0, 224, 0, 200) or UDim2.new(0, 0, 0, 0),
+            Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
+        -- Main.MainGui.OpenButton.BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
+        service.TweenService:Create(Main.MainGui.OpenButton,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
+            }):Play()
 
         if Main.MainGuiMouseEvent then
             Main.MainGuiMouseEvent:Disconnect()
@@ -12302,7 +15220,9 @@ Main = (function()
             end)()
         else
             Main.MainGuiMouseEvent = service.UserInputService.InputBegan:Connect(function(input)
-                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not Lib.CheckMouseInGui(Main.MainGui.OpenButton) and not Lib.CheckMouseInGui(Main.MainGui.OpenButton.MainFrame) then
+                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                    Enum.UserInputType.Touch) and not Lib.CheckMouseInGui(Main.MainGui.OpenButton) and
+                    not Lib.CheckMouseInGui(Main.MainGui.OpenButton.MainFrame) then
                     Main.SetMainGuiOpen(false)
                 end
             end)
@@ -12310,29 +15230,175 @@ Main = (function()
     end
 
     Main.CreateMainGui = function()
-        local gui = create({
-            { 1, "ScreenGui", { IgnoreGuiInset = true, Name = "MainMenu" } },
-            { 2, "TextButton", { AnchorPoint = Vector2.new(0.5, 0), AutoButtonColor = false, BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), BorderSizePixel = 0, Font = 4, Name = "OpenButton", Parent = { 1 }, Position = UDim2.new(0.5, 0, 0, 2), Size = UDim2.new(0, 32, 0, 32), Text = "Dex", TextColor3 = Color3.new(1, 1, 1), TextSize = 16, TextTransparency = 0.20000000298023 } },
-            { 3, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 2 } } },
-            { 4, "Frame", { AnchorPoint = Vector2.new(0.5, 0), BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799), ClipsDescendants = true, Name = "MainFrame", Parent = { 2 }, Position = UDim2.new(0.5, 0, 1, -4), Size = UDim2.new(0, 224, 0, 200) } },
-            { 5, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 4 } } },
-            { 6, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), Name = "BottomFrame", Parent = { 4 }, Position = UDim2.new(0, 0, 1, -24), Size = UDim2.new(1, 0, 0, 24) } },
-            { 7, "UICorner", { CornerRadius = UDim.new(0, 4), Parent = { 6 } } },
-            { 8, "Frame", { BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394), BorderSizePixel = 0, Name = "CoverFrame", Parent = { 6 }, Size = UDim2.new(1, 0, 0, 4) } },
-            { 9, "Frame", { BackgroundColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935), BorderSizePixel = 0, Name = "Line", Parent = { 8 }, Position = UDim2.new(0, 0, 0, -1), Size = UDim2.new(1, 0, 0, 1) } },
-            { 10, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Settings", Parent = { 6 }, Position = UDim2.new(1, -48, 0, 0), Size = UDim2.new(0, 24, 1, 0), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-            { 11, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://6578871732", ImageTransparency = 0.20000000298023, Name = "Icon", Parent = { 10 }, Position = UDim2.new(0, 4, 0, 4), Size = UDim2.new(0, 16, 0, 16) } },
-            { 12, "TextButton", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Font = 3, Name = "Information", Parent = { 6 }, Position = UDim2.new(1, -24, 0, 0), Size = UDim2.new(0, 24, 1, 0), Text = "", TextColor3 = Color3.new(1, 1, 1), TextSize = 14 } },
-            { 13, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://6578933307", ImageTransparency = 0.20000000298023, Name = "Icon", Parent = { 12 }, Position = UDim2.new(0, 4, 0, 4), Size = UDim2.new(0, 16, 0, 16) } },
-            { 14, "ScrollingFrame", { Active = true, AnchorPoint = Vector2.new(0.5, 0), BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935), BorderSizePixel = 0, Name = "AppsFrame", Parent = { 4 }, Position = UDim2.new(0.5, 0, 0, 0), ScrollBarImageColor3 = Color3.new(0, 0, 0), ScrollBarThickness = 4, Size = UDim2.new(0, 222, 1, -25) } },
-            { 15, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "Container", Parent = { 14 }, Position = UDim2.new(0, 7, 0, 8), Size = UDim2.new(1, -14, 0, 2) } },
-            { 16, "UIGridLayout", { CellSize = UDim2.new(0, 66, 0, 74), Parent = { 15 }, SortOrder = 2 } },
-            { 17, "Frame", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Name = "App", Parent = { 1 }, Size = UDim2.new(0, 100, 0, 100), Visible = false } },
-            { 18, "TextButton", { AutoButtonColor = false, BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236), BorderSizePixel = 0, Font = 3, Name = "Main", Parent = { 17 }, Size = UDim2.new(1, 0, 0, 60), Text = "", TextColor3 = Color3.new(0, 0, 0), TextSize = 14 } },
-            { 19, "ImageLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, Image = "rbxassetid://6579106223", ImageRectSize = Vector2.new(32, 32), Name = "Icon", Parent = { 18 }, Position = UDim2.new(0.5, -16, 0, 4), ScaleType = 4, Size = UDim2.new(0, 32, 0, 32) } },
-            { 20, "TextLabel", { BackgroundColor3 = Color3.new(1, 1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Font = 3, Name = "AppName", Parent = { 18 }, Position = UDim2.new(0, 2, 0, 38), Size = UDim2.new(1, -4, 1, -40), Text = "Explorer", TextColor3 = Color3.new(1, 1, 1), TextSize = 14, TextTransparency = 0.10000000149012, TextTruncate = 1, TextWrapped = true, TextYAlignment = 0 } },
-            { 21, "Frame", { BackgroundColor3 = Color3.new(0, 0.66666668653488, 1), BorderSizePixel = 0, Name = "Highlight", Parent = { 18 }, Position = UDim2.new(0, 0, 1, -2), Size = UDim2.new(1, 0, 0, 2) } },
-        })
+        local gui = create({{1, "ScreenGui", {
+            IgnoreGuiInset = true,
+            Name = "MainMenu"
+        }}, {2, "TextButton", {
+            AnchorPoint = Vector2.new(0.5, 0),
+            AutoButtonColor = false,
+            BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+            BorderSizePixel = 0,
+            Font = 4,
+            Name = "OpenButton",
+            Parent = {1},
+            Position = UDim2.new(0.5, 0, 0, 2),
+            Size = UDim2.new(0, 32, 0, 32),
+            Text = "Dex",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 16,
+            TextTransparency = 0.20000000298023
+        }}, {3, "UICorner", {
+            CornerRadius = UDim.new(0, 4),
+            Parent = {2}
+        }}, {4, "Frame", {
+            AnchorPoint = Vector2.new(0.5, 0),
+            BackgroundColor3 = Color3.new(0.17647059261799, 0.17647059261799, 0.17647059261799),
+            ClipsDescendants = true,
+            Name = "MainFrame",
+            Parent = {2},
+            Position = UDim2.new(0.5, 0, 1, -4),
+            Size = UDim2.new(0, 224, 0, 200)
+        }}, {5, "UICorner", {
+            CornerRadius = UDim.new(0, 4),
+            Parent = {4}
+        }}, {6, "Frame", {
+            BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+            Name = "BottomFrame",
+            Parent = {4},
+            Position = UDim2.new(0, 0, 1, -24),
+            Size = UDim2.new(1, 0, 0, 24)
+        }}, {7, "UICorner", {
+            CornerRadius = UDim.new(0, 4),
+            Parent = {6}
+        }}, {8, "Frame", {
+            BackgroundColor3 = Color3.new(0.20392157137394, 0.20392157137394, 0.20392157137394),
+            BorderSizePixel = 0,
+            Name = "CoverFrame",
+            Parent = {6},
+            Size = UDim2.new(1, 0, 0, 4)
+        }}, {9, "Frame", {
+            BackgroundColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935),
+            BorderSizePixel = 0,
+            Name = "Line",
+            Parent = {8},
+            Position = UDim2.new(0, 0, 0, -1),
+            Size = UDim2.new(1, 0, 0, 1)
+        }}, {10, "TextButton", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "Settings",
+            Parent = {6},
+            Position = UDim2.new(1, -48, 0, 0),
+            Size = UDim2.new(0, 24, 1, 0),
+            Text = "",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14
+        }}, {11, "ImageLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://6578871732",
+            ImageTransparency = 0.20000000298023,
+            Name = "Icon",
+            Parent = {10},
+            Position = UDim2.new(0, 4, 0, 4),
+            Size = UDim2.new(0, 16, 0, 16)
+        }}, {12, "TextButton", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Font = 3,
+            Name = "Information",
+            Parent = {6},
+            Position = UDim2.new(1, -24, 0, 0),
+            Size = UDim2.new(0, 24, 1, 0),
+            Text = "",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14
+        }}, {13, "ImageLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://6578933307",
+            ImageTransparency = 0.20000000298023,
+            Name = "Icon",
+            Parent = {12},
+            Position = UDim2.new(0, 4, 0, 4),
+            Size = UDim2.new(0, 16, 0, 16)
+        }}, {14, "ScrollingFrame", {
+            Active = true,
+            AnchorPoint = Vector2.new(0.5, 0),
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            BorderColor3 = Color3.new(0.1294117718935, 0.1294117718935, 0.1294117718935),
+            BorderSizePixel = 0,
+            Name = "AppsFrame",
+            Parent = {4},
+            Position = UDim2.new(0.5, 0, 0, 0),
+            ScrollBarImageColor3 = Color3.new(0, 0, 0),
+            ScrollBarThickness = 4,
+            Size = UDim2.new(0, 222, 1, -25)
+        }}, {15, "Frame", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Name = "Container",
+            Parent = {14},
+            Position = UDim2.new(0, 7, 0, 8),
+            Size = UDim2.new(1, -14, 0, 2)
+        }}, {16, "UIGridLayout", {
+            CellSize = UDim2.new(0, 66, 0, 74),
+            Parent = {15},
+            SortOrder = 2
+        }}, {17, "Frame", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Name = "App",
+            Parent = {1},
+            Size = UDim2.new(0, 100, 0, 100),
+            Visible = false
+        }}, {18, "TextButton", {
+            AutoButtonColor = false,
+            BackgroundColor3 = Color3.new(0.2352941185236, 0.2352941185236, 0.2352941185236),
+            BorderSizePixel = 0,
+            Font = 3,
+            Name = "Main",
+            Parent = {17},
+            Size = UDim2.new(1, 0, 0, 60),
+            Text = "",
+            TextColor3 = Color3.new(0, 0, 0),
+            TextSize = 14
+        }}, {19, "ImageLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            Image = "rbxassetid://6579106223",
+            ImageRectSize = Vector2.new(32, 32),
+            Name = "Icon",
+            Parent = {18},
+            Position = UDim2.new(0.5, -16, 0, 4),
+            ScaleType = 4,
+            Size = UDim2.new(0, 32, 0, 32)
+        }}, {20, "TextLabel", {
+            BackgroundColor3 = Color3.new(1, 1, 1),
+            BackgroundTransparency = 1,
+            BorderSizePixel = 0,
+            Font = 3,
+            Name = "AppName",
+            Parent = {18},
+            Position = UDim2.new(0, 2, 0, 38),
+            Size = UDim2.new(1, -4, 1, -40),
+            Text = "Explorer",
+            TextColor3 = Color3.new(1, 1, 1),
+            TextSize = 14,
+            TextTransparency = 0.10000000149012,
+            TextTruncate = 1,
+            TextWrapped = true,
+            TextYAlignment = 0
+        }}, {21, "Frame", {
+            BackgroundColor3 = Color3.new(0, 0.66666668653488, 1),
+            BorderSizePixel = 0,
+            Name = "Highlight",
+            Parent = {18},
+            Position = UDim2.new(0, 0, 1, -2),
+            Size = UDim2.new(1, 0, 0, 2)
+        }}})
         Main.MainGui = gui
         Main.AppsFrame = gui.OpenButton.MainFrame.AppsFrame
         Main.AppsContainer = Main.AppsFrame.Container
@@ -12349,23 +15415,48 @@ Main = (function()
         end)
 
         openButton.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                service.TweenService:Create(Main.MainGui.OpenButton, TweenInfo.new(0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 0 }):Play()
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                Enum.UserInputType.Touch then
+                service.TweenService:Create(Main.MainGui.OpenButton,
+                    TweenInfo.new(0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        BackgroundTransparency = 0
+                    }):Play()
             end
         end)
 
         openButton.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-                service.TweenService:Create(Main.MainGui.OpenButton, TweenInfo.new(0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = Main.MainGuiOpen and 0 or 0.2 }):Play()
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                Enum.UserInputType.Touch then
+                service.TweenService:Create(Main.MainGui.OpenButton,
+                    TweenInfo.new(0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        BackgroundTransparency = Main.MainGuiOpen and 0 or 0.2
+                    }):Play()
             end
         end)
 
         -- Create Main Apps
-        Main.CreateApp({ Name = "Explorer", IconMap = Main.LargeIcons, Icon = "Explorer", Open = true, Window = Explorer.Window })
+        Main.CreateApp({
+            Name = "Explorer",
+            IconMap = Main.LargeIcons,
+            Icon = "Explorer",
+            Open = true,
+            Window = Explorer.Window
+        })
 
-        Main.CreateApp({ Name = "Properties", IconMap = Main.LargeIcons, Icon = "Properties", Open = true, Window = Properties.Window })
+        Main.CreateApp({
+            Name = "Properties",
+            IconMap = Main.LargeIcons,
+            Icon = "Properties",
+            Open = true,
+            Window = Properties.Window
+        })
 
-        Main.CreateApp({ Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window })
+        Main.CreateApp({
+            Name = "Script Viewer",
+            IconMap = Main.LargeIcons,
+            Icon = "Script_Viewer",
+            Window = ScriptViewer.Window
+        })
 
         local cptsOnMouseClick = nil
         Main.CreateApp({
@@ -12390,7 +15481,7 @@ Main = (function()
                         cptsOnMouseClick = nil
                     end
                 end
-            end,
+            end
         })
 
         Lib.ShowGui(gui)
@@ -12426,7 +15517,7 @@ Main = (function()
         Lib.FastWait()
 
         -- Init other stuff
-        --Main.IncompatibleTest()
+        -- Main.IncompatibleTest()
 
         -- Init icons
         Main.MiscIcons = Lib.IconMap.new("http://www.roblox.com/asset/?id=6511490623", 256, 256, 16, 16) -- 6579106223
@@ -12470,13 +15561,13 @@ Main = (function()
             ["LocalScript_Disabled"] = 35,
             ["Play"] = 36,
             ["Pause"] = 37,
-            ["Rename_Disabled"] = 38,
+            ["Rename_Disabled"] = 38
         })
         Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223", 256, 256, 32, 32)
         Main.LargeIcons:SetDict({
             Explorer = 0,
             Properties = 1,
-            Script_Viewer = 2,
+            Script_Viewer = 2
         })
 
         -- Fetch version if needed
@@ -12531,8 +15622,18 @@ Main = (function()
         -- Init window system, create main menu, show explorer and properties
         Lib.Window.Init()
         Main.CreateMainGui()
-        Explorer.Window:Show({ Align = "right", Pos = 1, Size = 0.5, Silent = true })
-        Properties.Window:Show({ Align = "right", Pos = 2, Size = 0.5, Silent = true })
+        Explorer.Window:Show({
+            Align = "right",
+            Pos = 1,
+            Size = 0.5,
+            Silent = true
+        })
+        Properties.Window:Show({
+            Align = "right",
+            Pos = 2,
+            Size = 0.5,
+            Silent = true
+        })
         Lib.DeferFunc(function()
             Lib.Window.ToggleSide("right")
         end)

@@ -53,7 +53,7 @@ local Sent2 = true
 
 -- General functions --
 
-function ColoredPrint(Text: string, color: Color3, Icon: table)
+function ColoredPrint(Text, color, Icon)
     task.spawn(function()
         local TextFinder = "‎" .. Text .. (string.sub(game:GetService("HttpService"):GenerateGUID(false), 1, 10))
         print(TextFinder)
@@ -687,28 +687,41 @@ function serverhop(Notification)
         local url = format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100", game.PlaceId, order)
         local starting = tick()
         repeat
-            local good, result = pcall(function()
+            local success, response = pcall(function()
                 return game:HttpGet(url)
             end)
-            if not good then
-                wait(2)
-                continue
-            end
-            local decoded = game:GetService("HttpService"):JSONDecode(result)
-            if #decoded.data ~= 0 then
-                Servers = decoded.data
-                for i, v in pairs(Servers) do
-                    if v.maxPlayers and v.playing and v.maxPlayers - 1 > v.playing and v.id ~= game.JobId then
-                        Server = v
+
+            if success then
+                local decodedSuccess, decoded = pcall(function()
+                    return HttpService:JSONDecode(response)
+                end)
+
+                if decodedSuccess and decoded and decoded.data then
+                    Servers = decoded.data
+
+                    for _, v in pairs(Servers) do
+                        if v.maxPlayers and v.playing and v.maxPlayers - 1 > v.playing and v.id ~= game.JobId then
+                            Server = v
+                            break
+                        end
+                    end
+
+                    if Server then
                         break
                     end
+
+                    if decoded.nextPageCursor then
+                        url = string.format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100&cursor=%s", game.PlaceId, order, decoded.nextPageCursor)
+                    else
+                        break
+                    end
+                else
+                    wait(2)
                 end
-                if Server then
-                    break
-                end
+            else
+                wait(2)
             end
-            url = format("https://games.roblox.com/v1/games/%s/servers/Public?sortOrder=%s&limit=100&cursor=%s", game.PlaceId, order, decoded.nextPageCursor)
-        until tick() - starting >= 600
+        until false
         if not Server or #Servers == 0 then
             return
         end

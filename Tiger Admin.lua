@@ -1,17 +1,28 @@
 if not getconnections or not hookmetamethod or not getnamecallmethod or not ((getgenv and getgenv()) or _G) then
-    game:GetService("StarterGui"):SetCore("SendNotification", { Title = "Tiger Admin", Text = "Executor is not supported!", Duration = 10 })
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Tiger Admin",
+        Text = "Executor is not supported!",
+        Duration = 10
+    })
 end
-if not workspace:FindFirstChild("Criminals Spawn") or not workspace:FindFirstChild("Criminals Spawn"):FindFirstChild("SpawnLocation") then
-    game:GetService("StarterGui"):SetCore("SendNotification", { Title = "Tiger Admin", Text = "Criminals spawn not found! Please rejoin.", Duration = 10 })
+if not workspace:FindFirstChild("Criminals Spawn") or
+    not workspace:FindFirstChild("Criminals Spawn"):FindFirstChild("SpawnLocation") then
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "Tiger Admin",
+        Text = "Criminals spawn not found! Please rejoin.",
+        Duration = 10
+    })
 end
 game:GetService("Players").LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 if game:FindFirstChild("Tiger_revamp_loaded") then
     ((getgenv and getgenv()) or _G).NotifTiger("Tiger admin is already executed!", false)
     return warn("Already loaded")
 end
-local Player, plr, Folder = game:GetService("Players").LocalPlayer, game:GetService("Players").LocalPlayer, Instance.new("Folder", game)
+local Player, plr, Folder = game:GetService("Players").LocalPlayer, game:GetService("Players").LocalPlayer,
+    Instance.new("Folder", game)
 local OldHook, hookmetamethod, getnamecallmethod = nil, hookmetamethod, getnamecallmethod
-local HasGamepass, UserInputService = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(Player.UserId, 96651), game:GetService("UserInputService")
+local HasGamepass, UserInputService = game:GetService("MarketplaceService"):UserOwnsGamePassAsync(Player.UserId, 96651),
+    game:GetService("UserInputService")
 local GlobalVar = ((getgenv and getgenv()) or _G)
 local Unloaded = false
 local CriminalCFRAME = workspace["Criminals Spawn"].SpawnLocation.CFrame
@@ -223,7 +234,7 @@ TEMP_CMD.BackgroundColor3 = Color3.fromRGB(62, 62, 62)
 TEMP_CMD.BackgroundTransparency = 0.750
 TEMP_CMD.Size = UDim2.new(0, 455, 0, 14)
 TEMP_CMD.Font = Enum.Font.SourceSans
-TEMP_CMD.Text = "sex" --//yes
+TEMP_CMD.Text = "sex" -- //yes
 TEMP_CMD.TextColor3 = Color3.fromRGB(255, 255, 255)
 TEMP_CMD.TextSize = 14.000
 SavedCmdsPosition = Commands.Position
@@ -241,11 +252,8 @@ SearchBar.TextSize = 14.000
 Folder.Parent = game
 
 do
-    --Load guis
-    game:GetService("ContentProvider"):PreloadAsync({
-        Commands,
-        Out,
-    })
+    -- Load guis
+    game:GetService("ContentProvider"):PreloadAsync({Commands, Out})
 end
 
 for i, v in pairs(ScreenGui:GetDescendants()) do
@@ -315,7 +323,7 @@ function API:Tween(Obj, Prop, New, Time)
     local TweenService = game:GetService("TweenService")
     local info = TweenInfo.new(Time, Enum.EasingStyle.Quart, Enum.EasingDirection.Out, 0, false, 0)
     local propertyTable = {
-        [Prop] = New,
+        [Prop] = New
     }
 
     TweenService:Create(Obj, info, propertyTable):Play()
@@ -361,7 +369,7 @@ end
 local States = {}
 local Settings = {
     Prefix = "!",
-    ValidCommands = {},
+    ValidCommands = {}
 }
 local OrginMenuPos = Player.PlayerGui.Home.hud.MenuButton.Position
 local OrginGunPos = Player.PlayerGui.Home.hud.GunFrame.Position
@@ -414,12 +422,9 @@ if writefile and makefolder and readfile and isfile then
     if isfile("Tiger Admin") == false or isfile("Tiger_Admin/Invite.json") == false then
         makefolder("Tiger_Admin")
         if isfile("Tiger_Admin/Invite.json") == false then
-            writefile(
-                "Tiger_Admin/Invite.json",
-                game:GetService("HttpService"):JSONEncode({
-                    Invite_To_Server = true,
-                })
-            )
+            writefile("Tiger_Admin/Invite.json", game:GetService("HttpService"):JSONEncode({
+                Invite_To_Server = true
+            }))
         end
         if isfile("Tiger_Admin/SavedAdmins.json") == false then
             writefile("Tiger_Admin/SavedAdmins.json", game:GetService("HttpService"):JSONEncode({}))
@@ -443,13 +448,15 @@ task.spawn(function()
                 Method = "POST",
                 Headers = {
                     ["Content-Type"] = "application/json",
-                    Origin = "https://discord.com",
+                    Origin = "https://discord.com"
                 },
                 Body = game:GetService("HttpService"):JSONEncode({
                     cmd = "INVITE_BROWSER",
                     nonce = game:GetService("HttpService"):GenerateGUID(false),
-                    args = { code = "zj5xRp3ZKn" },
-                }),
+                    args = {
+                        code = "zj5xRp3ZKn"
+                    }
+                })
             })
         end
     end
@@ -460,16 +467,18 @@ function API:CreateBulletTable(Amount, Hit, IsTrue)
     for i = 1, tonumber(Amount) do
         if IsTrue then
             Args[#Args + 1] = {
-                ["RayObject"] = Ray.new(Vector3.new(990.272583, 101.489975, 2362.74878), Vector3.new(-799.978333, 0.23157759, -5.88794518)),
+                ["RayObject"] = Ray.new(Vector3.new(990.272583, 101.489975, 2362.74878),
+                    Vector3.new(-799.978333, 0.23157759, -5.88794518)),
                 ["Distance"] = 198.9905242919922,
-                ["Cframe"] = CFrame.new(894.362549, 101.288307, 2362.53491, -0.0123058055, 0.00259522465, -0.999920964, 3.63797837e-12, 0.999996722, 0.00259542116, 0.999924302, 3.19387436e-05, -0.0123057645),
+                ["Cframe"] = CFrame.new(894.362549, 101.288307, 2362.53491, -0.0123058055, 0.00259522465, -0.999920964,
+                    3.63797837e-12, 0.999996722, 0.00259542116, 0.999924302, 3.19387436e-05, -0.0123057645)
             }
         else
             Args[#Args + 1] = {
                 ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                 ["Distance"] = 0,
                 ["Cframe"] = CFrame.new(),
-                ["Hit"] = Hit,
+                ["Hit"] = Hit
             }
         end
     end
@@ -490,13 +499,17 @@ function DragifyGui(Frame, Is)
                 end
             end
             local Delta = input.Position - dragStart
-            local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale, startPos.Y.Offset + Delta.Y)
-            game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.30), { Position = Position }):Play()
+            local Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + Delta.X, startPos.Y.Scale,
+                startPos.Y.Offset + Delta.Y)
+            game:GetService("TweenService"):Create(Frame, TweenInfo.new(0.30), {
+                Position = Position
+            }):Play()
         end
         Frame.InputBegan:Connect(function(input)
             if not Is then
                 if States.DraggableGuis then
-                    if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and game:GetService("UserInputService"):GetFocusedTextBox() == nil then
+                    if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType ==
+                        Enum.UserInputType.Touch) and game:GetService("UserInputService"):GetFocusedTextBox() == nil then
                         dragToggle = true
                         dragStart = input.Position
                         startPos = Frame.Position
@@ -511,7 +524,8 @@ function DragifyGui(Frame, Is)
         end)
         Frame.InputChanged:Connect(function(input)
             if States.DraggableGuis then
-                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType ==
+                    Enum.UserInputType.Touch then
                     dragInput = input
                 end
             end
@@ -537,7 +551,9 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
     if table.find(Temp.Admins, Target.Name) then
         BringingFromAdmin = true
     end
-    if not IsBringing and Target and Target.Character:FindFirstChildOfClass("Humanoid") and Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and Target.Character:FindFirstChildOfClass("Humanoid").Sit == false then
+    if not IsBringing and Target and Target.Character:FindFirstChildOfClass("Humanoid") and
+        Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and
+        Target.Character:FindFirstChildOfClass("Humanoid").Sit == false then
         if not TeleportTo then
             TeleportTo = API:GetPosition()
         end
@@ -547,7 +563,9 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
         local Seat = nil
         local Failed = false
         local CheckForBreak = function()
-            if not Target or not Target.Character:FindFirstChildOfClass("Humanoid") or Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 or Player.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
+            if not Target or not Target.Character:FindFirstChildOfClass("Humanoid") or
+                Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 or
+                Player.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
                 Failed = true
                 return true
             else
@@ -572,7 +590,8 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
                 wait()
                 game:GetService("Players").LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(-524, 55, 1777))
                 task.spawn(function()
-                    workspace.Remote.ItemHandler:InvokeServer(game:GetService("Workspace").Prison_ITEMS.buttons:GetChildren()[7]["Car Spawner"])
+                    workspace.Remote.ItemHandler:InvokeServer(
+                        game:GetService("Workspace").Prison_ITEMS.buttons:GetChildren()[7]["Car Spawner"])
                 end)
                 if CheckForBreak() then
                     break
@@ -586,10 +605,11 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
             wait()
             Seat:Sit(Player.Character:FindFirstChildOfClass("Humanoid"))
         until Player.Character:FindFirstChildOfClass("Humanoid").Sit == true
-        wait() --// so it doesnt break
+        wait() -- // so it doesnt break
         repeat
             API:swait()
-            if CheckForBreak() or not Player.Character:FindFirstChildOfClass("Humanoid") or Player.Character:FindFirstChildOfClass("Humanoid").Sit == false then
+            if CheckForBreak() or not Player.Character:FindFirstChildOfClass("Humanoid") or
+                Player.Character:FindFirstChildOfClass("Humanoid").Sit == false then
                 break
             end
             car.PrimaryPart = car.Body.VehicleSeat
@@ -604,7 +624,8 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
             if BringingFromAdmin then
                 local ohString1 = "/w " .. Target.Name .. " " .. "ADMIN: Bring has failed! Try again later."
                 local ohString2 = "All"
-                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1,
+                    ohString2)
             end
             return
         end
@@ -638,7 +659,8 @@ function API:bring(Target, TeleportTo, MoreTP, DontBreakCar)
         if BringingFromAdmin then
             local ohString1 = "/w " .. Target.Name .. " " .. "ADMIN: Bring has failed! Try again later."
             local ohString2 = "All"
-            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+            game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1,
+                ohString2)
         end
         API:Notif("Player has died or is sitting or an unknown error.")
     end
@@ -687,15 +709,13 @@ function API:Loop(Times, calling)
     end
 end
 function PublicOutput(CODE)
-    local Args = {
-        {
-            RayObject = Ray.new(),
-            Distance = 0,
-            Cframe = CFrame.new(1, 1, 20000),
-            MSG = CODE,
-            PLA = Player.UserId,
-        },
-    }
+    local Args = {{
+        RayObject = Ray.new(),
+        Distance = 0,
+        Cframe = CFrame.new(1, 1, 20000),
+        MSG = CODE,
+        PLA = Player.UserId
+    }}
     repeat
         task.wait()
         API:GetGun("M9")
@@ -711,7 +731,8 @@ end
 function API:MoveTo(Cframe)
     Cframe = API:ConvertPosition(Cframe)
     local Amount = 5
-    if Player.PlayerGui["Home"]["hud"]["Topbar"]["titleBar"].Title.Text:lower() == "lights out" or Player.PlayerGui.Home.hud.Topbar.titleBar.Title.Text:lower() == "lightsout" then
+    if Player.PlayerGui["Home"]["hud"]["Topbar"]["titleBar"].Title.Text:lower() == "lights out" or
+        Player.PlayerGui.Home.hud.Topbar.titleBar.Title.Text:lower() == "lightsout" then
         Amount = 11
     end
     for i = 1, Amount do
@@ -773,8 +794,10 @@ function API:ChangeTeam(TeamPath, NoForce, Pos)
         repeat
             API:swait()
             if firetouchinterest then
-                firetouchinterest(plr.Character:FindFirstChildOfClass("Part"), game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1], 0)
-                firetouchinterest(plr.Character:FindFirstChildOfClass("Part"), game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1], 1)
+                firetouchinterest(plr.Character:FindFirstChildOfClass("Part"),
+                    game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1], 0)
+                firetouchinterest(plr.Character:FindFirstChildOfClass("Part"),
+                    game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1], 1)
             end
             game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1].Transparency = 1
             game:GetService("Workspace")["Criminals Spawn"]:GetChildren()[1].CanCollide = false
@@ -809,8 +832,10 @@ function API:UnSit()
     game:GetService("Players").LocalPlayer.Character:WaitForChild("Humanoid").Sit = false
 end
 function API:KillPlayer(Target, Failed, DoChange)
-    local Bullets = API:CreateBulletTable(20, (Target.Character:FindFirstChild("Head") or Target.Character:FindFirstChildOfClass("Part")))
-    if not Target or not Target.Character or not Target.Character:FindFirstChildOfClass("Humanoid") or Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
+    local Bullets = API:CreateBulletTable(20, (Target.Character:FindFirstChild("Head") or
+        Target.Character:FindFirstChildOfClass("Part")))
+    if not Target or not Target.Character or not Target.Character:FindFirstChildOfClass("Humanoid") or
+        Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
         return
     end
     repeat
@@ -854,7 +879,7 @@ function API:GetGun(Item, Ignore)
     task.spawn(function()
         workspace:FindFirstChild("Remote")["ItemHandler"]:InvokeServer({
             Position = Player.Character.Head.Position,
-            Parent = workspace.Prison_ITEMS:FindFirstChild(Item, true),
+            Parent = workspace.Prison_ITEMS:FindFirstChild(Item, true)
         })
     end)
 end
@@ -890,7 +915,10 @@ function API:MKILL(target, STOP, P)
     if not STOP then
         STOP = 1
     end
-    if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") or target.Character:FindFirstChildOfClass("ForceField") or target.Character:FindFirstChild("Humanoid").Health < 1 or not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid") or not plr.Character:FindFirstChild("HumanoidRootPart") then
+    if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") or
+        target.Character:FindFirstChildOfClass("ForceField") or target.Character:FindFirstChild("Humanoid").Health < 1 or
+        not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid") or
+        not plr.Character:FindFirstChild("HumanoidRootPart") then
         return
     end
     API:UnSit()
@@ -900,7 +928,8 @@ function API:MKILL(target, STOP, P)
     else
         saved = P
     end
-    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character:FindFirstChild("Head").CFrame
+    game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame =
+        target.Character:FindFirstChild("Head").CFrame
     wait(0.2)
     for i = 1, 10 do
         task.spawn(function()
@@ -908,7 +937,8 @@ function API:MKILL(target, STOP, P)
         end)
     end
     wait(0.1)
-    if target and target.Character and target.Character:FindFirstChild("Humanoid") and target.Character:FindFirstChild("Humanoid").Health > 1 and STOP ~= 3 then
+    if target and target.Character and target.Character:FindFirstChild("Humanoid") and
+        target.Character:FindFirstChild("Humanoid").Health > 1 and STOP ~= 3 then
         API:MKILL(target, STOP + 1, P)
         return
     end
@@ -929,11 +959,12 @@ function API:killall(TeamToKill)
         until Gun
 
         for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-            if v and v ~= Player and v.Team == game.Teams.Inmates or v.Team == game.Teams.Guards and not table.find(API.Whitelisted, v) then
+            if v and v ~= Player and v.Team == game.Teams.Inmates or v.Team == game.Teams.Guards and
+                not table.find(API.Whitelisted, v) then
                 for i = 1, 15 do
                     BulletTable[#BulletTable + 1] = {
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
-                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part"),
+                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part")
                     }
                 end
             end
@@ -953,7 +984,7 @@ function API:killall(TeamToKill)
                 for i = 1, 15 do
                     BulletTable[#BulletTable + 1] = {
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
-                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part"),
+                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part")
                     }
                 end
             end
@@ -980,7 +1011,7 @@ function API:killall(TeamToKill)
                 for i = 1, 15 do
                     BulletTable[#BulletTable + 1] = {
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
-                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part"),
+                        ["Hit"] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part")
                     }
                 end
             end
@@ -1045,8 +1076,10 @@ function AntiPunchC(v2)
         v2.Character:FindFirstChildOfClass("Humanoid").AnimationPlayed:Connect(function(animationTrack)
             pcall(function()
                 if not Unloaded and States.antipunch then
-                    if animationTrack.Animation.AnimationId == "rbxassetid://484200742" or animationTrack.Animation.AnimationId == "rbxassetid://484926359" then
-                        if (plr.Character.HumanoidRootPart.Position - v2.Character.HumanoidRootPart.Position).magnitude < 3.5 and States.antipunch and not table.find(API.Whitelisted, v2) then
+                    if animationTrack.Animation.AnimationId == "rbxassetid://484200742" or
+                        animationTrack.Animation.AnimationId == "rbxassetid://484926359" then
+                        if (plr.Character.HumanoidRootPart.Position - v2.Character.HumanoidRootPart.Position).magnitude <
+                            3.5 and States.antipunch and not table.find(API.Whitelisted, v2) then
                             for i = 1, 13 do
                                 task.spawn(function()
                                     game.ReplicatedStorage["meleeEvent"]:FireServer(v2)
@@ -1062,7 +1095,8 @@ end
 local Flying = false
 function API:Fly(speed)
     Flying = true
-    local Controler = require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule"))
+    local Controler = require(game:GetService("Players").LocalPlayer.PlayerScripts:WaitForChild("PlayerModule")
+        :WaitForChild("ControlModule"))
     local BodyA, BodyB = Instance.new("BodyVelocity"), Instance.new("BodyGyro")
     BodyA.Parent = game:GetService("Players").LocalPlayer.Character.HumanoidRootPart
     BodyA.MaxForce = Vector3.new(0, 0, 0)
@@ -1075,7 +1109,9 @@ function API:Fly(speed)
     Temp.FlyB = BodyB
     local camera = game.Workspace.CurrentCamera
     Temp.FlyConnection = game:GetService("RunService").RenderStepped:Connect(function()
-        if game:GetService("Players").LocalPlayer.Character and game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health > 0 and BodyA and BodyB then
+        if game:GetService("Players").LocalPlayer.Character and
+            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Health > 0 and BodyA and
+            BodyB then
             local direction = Controler:GetMoveVector()
             BodyA.MaxForce = Vector3.new(4 ^ 234, 4 ^ 234, 4 ^ 234)
             BodyB.MaxTorque = Vector3.new(4 ^ 234, 4 ^ 234, 4 ^ 234)
@@ -1116,11 +1152,12 @@ function API:lag()
     repeat
         task.wait()
     until Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9")
-    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9"))
+    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+        Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9"))
     for i = 1, 40 do
         local Gun = Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9")
         if not Gun or not API:GetHumanoid() or API:GetHumanoid() and API:GetHumanoid().Health < 1 then
-            task.wait(4) --//Ping cool down
+            task.wait(4) -- //Ping cool down
             API:lag()
             break
         end
@@ -1147,7 +1184,8 @@ function API:CrashServer()
     repeat
         task.wait()
     until Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9")
-    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9"))
+    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+        Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9"))
     local Gun = Player.Backpack:FindFirstChild("M9") or Player.Character:FindFirstChild("M9")
     task.spawn(function()
         for i = 1, 5000 do
@@ -1156,7 +1194,7 @@ function API:CrashServer()
     end)
     while wait() do
         if not Gun or not API:GetHumanoid() or API:GetHumanoid() and API:GetHumanoid().Health < 1 then
-            task.wait(5) --//Ping cool down
+            task.wait(5) -- //Ping cool down
             API:CrashServer()
             break
         end
@@ -1248,8 +1286,11 @@ plr:GetMouse().Button1Up:Connect(function()
         return
     end
     if States.ClickArrest or States.ClickKill then
-        if Target and Target.Parent and Target.Parent:FindFirstChildOfClass("Humanoid") and game:GetService("Players"):FindFirstChild(Target.Parent.Name) or game:GetService("Players"):FindFirstChild(Target.Parent.Parent.Name) then
-            local TargetModelPlr = game:GetService("Players"):FindFirstChild(Target.Parent.Name) or game:GetService("Players"):FindFirstChild(Target.Parent.Parent.Name)
+        if Target and Target.Parent and Target.Parent:FindFirstChildOfClass("Humanoid") and
+            game:GetService("Players"):FindFirstChild(Target.Parent.Name) or
+            game:GetService("Players"):FindFirstChild(Target.Parent.Parent.Name) then
+            local TargetModelPlr = game:GetService("Players"):FindFirstChild(Target.Parent.Name) or
+                                       game:GetService("Players"):FindFirstChild(Target.Parent.Parent.Name)
             if States.ClickArrest then
                 if TargetModelPlr.Team ~= game:GetService("Teams").Guards then
                     local ohInstance1 = Target
@@ -1291,7 +1332,8 @@ do
                     until Player.Character:FindFirstChildOfClass("Humanoid").Health > 1
 
                     local car = v
-                    if car:FindFirstChild("RWD") and car:FindFirstChild("Body") and car:FindFirstChild("Body"):FindFirstChild("VehicleSeat").Occupant == nil then
+                    if car:FindFirstChild("RWD") and car:FindFirstChild("Body") and
+                        car:FindFirstChild("Body"):FindFirstChild("VehicleSeat").Occupant == nil then
                         local Seat = car.Body.VehicleSeat
                         car.PrimaryPart = car.RWD
                         repeat
@@ -1369,7 +1411,7 @@ do
                         wait()
                         workspace.Remote.ItemHandler:InvokeServer({
                             Position = player.Character.Head.Position,
-                            Parent = workspace.Prison_ITEMS.single["Crude Knife"],
+                            Parent = workspace.Prison_ITEMS.single["Crude Knife"]
                         })
                     until player.Backpack:FindFirstChild("Crude Knife")
                     local crude = player.Backpack:WaitForChild("Crude Knife")
@@ -1422,7 +1464,8 @@ do
                     while true do
                         task.wait()
                         pcall(function()
-                            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+                            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                                :SetStateEnabled(Enum.HumanoidStateType.Seated, true)
                             player.Character.Humanoid.WalkSpeed = 25
                             local target = findNearestPlayer(player.Character.HumanoidRootPart.Position)
                             if target ~= nil then
@@ -1512,15 +1555,18 @@ do
             task.spawn(function()
                 workspace.Remote.ItemHandler:InvokeServer({
                     Position = game:GetService("Players").LocalPlayer.Character.Head.Position,
-                    Parent = workspace.Prison_ITEMS.single["Crude Knife"],
+                    Parent = workspace.Prison_ITEMS.single["Crude Knife"]
                 })
                 repeat
                     task.wait()
                 until game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife")
-                game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife").Parent = game:GetService("Players").LocalPlayer.Character
+                game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife").Parent = game:GetService(
+                                                                                                           "Players").LocalPlayer
+                                                                                                           .Character
                 local Player = game:GetService("Players").LocalPlayer
                 local Character = Player.Character
-                local Crude = Player.Backpack:FindFirstChild("Crude Knife") or Player.Character:FindFirstChild("Crude Knife")
+                local Crude = Player.Backpack:FindFirstChild("Crude Knife") or
+                                  Player.Character:FindFirstChild("Crude Knife")
                 local OldPosition = Crude.Grip
                 local PlayingAnimations = {}
                 local Target = nil
@@ -1530,13 +1576,15 @@ do
                     wait(0.7)
                     workspace.Remote.ItemHandler:InvokeServer({
                         Position = game:GetService("Players").LocalPlayer.Character.Head.Position,
-                        Parent = workspace.Prison_ITEMS.single["Crude Knife"],
+                        Parent = workspace.Prison_ITEMS.single["Crude Knife"]
                     })
                     repeat
                         task.wait()
                     until game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife")
-                    game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife").Parent = game:GetService("Players").LocalPlayer.Character
-                    Crude = Player.Backpack:FindFirstChild("Crude Knife") or Player.Character:FindFirstChild("Crude Knife")
+                    game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Crude Knife").Parent =
+                        game:GetService("Players").LocalPlayer.Character
+                    Crude = Player.Backpack:FindFirstChild("Crude Knife") or
+                                Player.Character:FindFirstChild("Crude Knife")
                     Crude.Equipped:connect(function()
                         task.wait(0.4)
                         for _, Animation in pairs(Character.Humanoid:GetPlayingAnimationTracks()) do
@@ -1557,7 +1605,7 @@ do
                 local function SetPos(New, New2, IsSlashing)
                     Crude.Parent = Player.Backpack
                     Crude.Grip = New2
-                    Crude.Grip *= New
+                    Crude.Grip = Crude.Grip * New
                     Crude.Parent = Player.Character
                     if IsSlashing then
                         task.spawn(function()
@@ -1648,7 +1696,9 @@ do
                     if not Target then
                         for i, v in pairs(game:GetService("Players"):GetPlayers()) do
                             if v and v ~= Player then
-                                if (Character:GetPrimaryPartCFrame().Position - v.Character:GetPrimaryPartCFrame().Position).Magnitude < 10 and v.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
+                                if (Character:GetPrimaryPartCFrame().Position -
+                                    v.Character:GetPrimaryPartCFrame().Position).Magnitude < 10 and
+                                    v.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
                                     if not Target then
                                         Target = v
                                         Holding()
@@ -1660,7 +1710,8 @@ do
                     end
                 end)
                 game:GetService("RunService").Stepped:Connect(function()
-                    if Target and Target.Character:FindFirstChildOfClass("Humanoid") and Target.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
+                    if Target and Target.Character:FindFirstChildOfClass("Humanoid") and
+                        Target.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
                         Character:SetPrimaryPartCFrame(Target.Character:GetPrimaryPartCFrame() * CFrame.new(0, 0, 1.1))
                     end
                 end)
@@ -1680,9 +1731,11 @@ do
             if Target then
                 if not table.find(Temp.Admins, Target.Name) then
                     table.insert(Temp.Admins, Target.Name)
-                    local ohString1 = "/w " .. Target.Name .. " " .. "ADMIN: You have been admined! if you are ready to get started using commands type [!cmds] in chat."
+                    local ohString1 = "/w " .. Target.Name .. " " ..
+                                          "ADMIN: You have been admined! if you are ready to get started using commands type [!cmds] in chat."
                     local ohString2 = "All"
-                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                        ohString1, ohString2)
                 else
                     API:Notif("This player is already an admin!", false)
                 end
@@ -1700,7 +1753,7 @@ do
         API:CreateCmd("crashserver", "Crashes the server", function(args)
             API:CrashServer()
         end, nil, nil, true)
-        --5
+        -- 5
         API:CreateCmd("oneshot", "Makes a gun oneshot", function(args)
             ChangeState(args[2], "OneShot")
         end, nil, "[ON/OFF]", true)
@@ -1828,7 +1881,8 @@ do
                                 wait(Temp.DelatSpam or 1.5)
                                 local ohString1 = r
                                 local ohString2 = "All"
-                                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+                                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                                    ohString1, ohString2)
                             until not Temp.spamming
                         end)
                     end
@@ -1837,23 +1891,21 @@ do
         end, nil, "[MSG,STOP, SET (seconds delay) ex: !spam set 3]", true)
         API:CreateCmd("roast", "spams a message in game", function(args)
             local Target = API:FindPlayer(args[2])
-            local Roasts = {
-                "plr3's belt size is 'equator',",
-                "plr3 is so dumb that not even Dora can explore her,",
-                "plr3 is so bad, that it took 2 buses & 1 train to get plr3 to the good side,",
-                "plr3 stepped onto a scale, and it said 'TO BE CONTINUED'.",
-                "I swerved to miss plr3 in my car and ran out of gas,",
-                "When plr3 wears high heels, plr3 strikes oil.",
-                "Did you know that plr3 gets group insurance,",
-                "When plr3 skips a meal, the stock market drops,",
-                "When plr3 goes camping, the bears hide their food.",
-            }
+            local Roasts = {"plr3's belt size is 'equator',", "plr3 is so dumb that not even Dora can explore her,",
+                            "plr3 is so bad, that it took 2 buses & 1 train to get plr3 to the good side,",
+                            "plr3 stepped onto a scale, and it said 'TO BE CONTINUED'.",
+                            "I swerved to miss plr3 in my car and ran out of gas,",
+                            "When plr3 wears high heels, plr3 strikes oil.",
+                            "Did you know that plr3 gets group insurance,",
+                            "When plr3 skips a meal, the stock market drops,",
+                            "When plr3 goes camping, the bears hide their food."}
             if Target then
                 local Compiled = Roasts[math.random(1, #Roasts)]
                 Compiled = Compiled:gsub("plr3", Target.DisplayName)
                 local ohString1 = Compiled
                 local ohString2 = "All"
-                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+                game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1,
+                    ohString2)
             end
         end, nil, "[TARGET]", true)
         API:CreateCmd("joinlogs", "tells you who is leaving and joining", function(args)
@@ -1864,7 +1916,7 @@ do
                         Text = "[JOIN LOGS]: " .. a.Name .. " has joined the game!",
                         Color = Color3.fromRGB(16, 243, 255),
                         Font = Enum.Font.SourceSansBold,
-                        FontSize = Enum.FontSize.Size24,
+                        FontSize = Enum.FontSize.Size24
                     })
                 end)
                 Temp.joinning2 = game:GetService("Players").PlayerRemoving:Connect(function(a)
@@ -1872,7 +1924,7 @@ do
                         Text = "[JOIN LOGS]: " .. a.Name .. " has left the game!",
                         Color = Color3.fromRGB(50, 14, 255),
                         Font = Enum.Font.SourceSansBold,
-                        FontSize = Enum.FontSize.Size24,
+                        FontSize = Enum.FontSize.Size24
                     })
                 end)
             else
@@ -1896,7 +1948,11 @@ do
                 if not STOP then
                     STOP = 1
                 end
-                if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") or target.Character:FindFirstChildOfClass("ForceField") or target.Character:FindFirstChild("Humanoid").Health < 1 or not plr.Character or not plr.Character:FindFirstChildOfClass("Humanoid") or not plr.Character:FindFirstChild("HumanoidRootPart") then
+                if not target or not target.Character or not target.Character:FindFirstChild("Humanoid") or
+                    target.Character:FindFirstChildOfClass("ForceField") or
+                    target.Character:FindFirstChild("Humanoid").Health < 1 or not plr.Character or
+                    not plr.Character:FindFirstChildOfClass("Humanoid") or
+                    not plr.Character:FindFirstChild("HumanoidRootPart") then
                     return
                 end
                 API:UnSit()
@@ -1906,7 +1962,8 @@ do
                 else
                     saved = P
                 end
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = target.Character:FindFirstChild("Head").CFrame
+                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame =
+                    target.Character:FindFirstChild("Head").CFrame
                 wait(0.2)
                 for i = 1, 10 do
                     task.spawn(function()
@@ -1914,7 +1971,8 @@ do
                     end)
                 end
                 wait(0.1)
-                if target and target.Character and target.Character:FindFirstChild("Humanoid") and target.Character:FindFirstChild("Humanoid").Health > 1 and STOP ~= 3 then
+                if target and target.Character and target.Character:FindFirstChild("Humanoid") and
+                    target.Character:FindFirstChild("Humanoid").Health > 1 and STOP ~= 3 then
                     MKILL(target, STOP + 1, P)
                     return
                 end
@@ -1967,7 +2025,7 @@ do
         API:CreateCmd("superknife", "One shot knife", function(args)
             workspace.Remote.ItemHandler:InvokeServer({
                 Position = game:GetService("Players").LocalPlayer.Character.Head.Position,
-                Parent = workspace.Prison_ITEMS.single["Crude Knife"],
+                Parent = workspace.Prison_ITEMS.single["Crude Knife"]
             })
             wait(0.6)
             local tool = plr.Backpack:WaitForChild("Crude Knife")
@@ -1980,7 +2038,9 @@ do
                         end
                         if inp.UserInputType == Enum.UserInputType.MouseButton1 then
                             for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-                                if v and v ~= plr and (v.Character:GetPrimaryPartCFrame().Position - API:GetPosition() * CFrame.new(0, 0, 0.4).Position).Magnitude < 3.6 then
+                                if v and v ~= plr and
+                                    (v.Character:GetPrimaryPartCFrame().Position - API:GetPosition() *
+                                        CFrame.new(0, 0, 0.4).Position).Magnitude < 3.6 then
                                     for i = 1, 20 do
                                         task.spawn(function()
                                             game:GetService("ReplicatedStorage").meleeEvent:FireServer(v)
@@ -2006,9 +2066,11 @@ do
                 end
                 table.Insert(New, Target.Name)
                 if not Found then
-                    local ohString1 = "/w " .. Target.Name .. " " .. "ADMIN: You have been Autoadmined type [!cmds] in chat to get started!"
+                    local ohString1 = "/w " .. Target.Name .. " " ..
+                                          "ADMIN: You have been Autoadmined type [!cmds] in chat to get started!"
                     local ohString2 = "All"
-                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(ohString1, ohString2)
+                    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+                        ohString1, ohString2)
                     writefile("Tiger_Admin/SavedAdmins.json", game:GetService("HttpService"):JSONEncode(New))
                     API:Notif("Player has been autoadmined")
                 end
@@ -2052,7 +2114,7 @@ do
             end
         end, nil, "[ON/OFF]", true)
     end
-    --//end of premium
+    -- //end of premium
     API:CreateCmd("drag", "Enables draggable mode for all tiger guis", function(args)
         local Value = ChangeState(args[2], "DraggableGuis")
     end, nil, "- ENABLES DRAGGABLE GUIS")
@@ -2110,7 +2172,8 @@ do
         elseif args[2] == "random" then
             local random = nil
             while true do
-                random = game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
+                random =
+                    game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
                 task.wait()
                 if random.Team ~= game.Teams.Criminals and random ~= game:GetService("Players").LocalPlayer then
                     break
@@ -2129,7 +2192,9 @@ do
         if args[2] and args[2] == "all" then
             local LastPosition = API:GetPosition()
             for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-                if v and v ~= game:GetService("Players").LocalPlayer and v.Team == game.Teams.Criminals or (API:BadArea(v) and v.Team == game.Teams.Inmates) and v.Character.PrimaryPart and v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
+                if v and v ~= game:GetService("Players").LocalPlayer and v.Team == game.Teams.Criminals or
+                    (API:BadArea(v) and v.Team == game.Teams.Inmates) and v.Character.PrimaryPart and
+                    v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
                     repeat
                         API:swait()
                         API:MoveTo(v.Character:GetPrimaryPartCFrame() * CFrame.new(0, 0, -4.5))
@@ -2299,14 +2364,16 @@ do
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                         ["Distance"] = -1,
                         ["Cframe"] = CFrame.new(),
-                        ["Hit"] = v.Character.Head,
+                        ["Hit"] = v.Character.Head
                     })
                 end
             end
-            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
+            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or
+                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
             game:GetService("ReplicatedStorage").ShootEvent:FireServer(ohTable1, ohInstance2)
             task.spawn(function()
-                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                    game:GetService("Players").LocalPlayer.Backpack.Taser)
             end)
             wait(0.7)
             API:ChangeTeam(Oldt)
@@ -2324,14 +2391,16 @@ do
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                         ["Distance"] = -1,
                         ["Cframe"] = CFrame.new(),
-                        ["Hit"] = v.Character.Head,
+                        ["Hit"] = v.Character.Head
                     })
                 end
             end
-            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
+            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or
+                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
             game:GetService("ReplicatedStorage").ShootEvent:FireServer(ohTable1, ohInstance2)
             task.spawn(function()
-                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                    game:GetService("Players").LocalPlayer.Backpack.Taser)
             end)
             wait(0.7)
             API:ChangeTeam(Oldt)
@@ -2349,14 +2418,16 @@ do
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                         ["Distance"] = -1,
                         ["Cframe"] = CFrame.new(),
-                        ["Hit"] = v.Character.Head,
+                        ["Hit"] = v.Character.Head
                     })
                 end
             end
-            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
+            local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Taser") or
+                                    game:GetService("Players").LocalPlayer.Character:FindFirstChild("Taser")
             game:GetService("ReplicatedStorage").ShootEvent:FireServer(ohTable1, ohInstance2)
             task.spawn(function()
-                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                    game:GetService("Players").LocalPlayer.Backpack.Taser)
             end)
             wait(0.7)
             API:ChangeTeam(Oldt)
@@ -2374,14 +2445,15 @@ do
                         ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                         ["Distance"] = 0,
                         ["Cframe"] = CFrame.new(),
-                        ["Hit"] = Target.Character.Head,
-                    },
+                        ["Hit"] = Target.Character.Head
+                    }
                 }
                 local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack.Taser
 
                 game:GetService("ReplicatedStorage").ShootEvent:FireServer(ohTable1, ohInstance2)
                 task.spawn(function()
-                    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                    game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                        game:GetService("Players").LocalPlayer.Backpack.Taser)
                 end)
                 wait(0.1)
                 API:ChangeTeam(Oldt)
@@ -2434,7 +2506,8 @@ do
                         workspace.CurrentCamera.CameraSubject = Player.Character:FindFirstChildOfClass("Humanoid")
                     end)
                     if not Player or not Temp.ViewingPlayer or Unloaded then
-                        workspace.CurrentCamera.CameraSubject = game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+                        workspace.CurrentCamera.CameraSubject =
+                            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
                         break
                     end
                 end
@@ -2445,7 +2518,8 @@ do
         if args[2] == "random" then
             local random = nil
             while true do
-                random = game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
+                random =
+                    game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
                 task.wait()
                 if random.Team ~= game.Teams.Criminals and random ~= game:GetService("Players").LocalPlayer then
                     break
@@ -2465,21 +2539,28 @@ do
     end, nil, "[PLAYER]")
     API:CreateCmd("addnuke", "Player dies everyone dies", function(args)
         local Target = API:FindPlayer(args[2])
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("!!!A NUKE HAS BEEN PLACED ON " .. Target.Name .. " KILLING HIM WILL GET EVERYONE DEAD!!!", "ALL")
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(
+            "!!!A NUKE HAS BEEN PLACED ON " .. Target.Name .. " KILLING HIM WILL GET EVERYONE DEAD!!!", "ALL")
         repeat
             task.wait()
-            if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
+            if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and
+                Target.Character:FindFirstChildOfClass("Humanoid").Health < 1 then
                 break
             end
         until not game
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Target.Name .. " IS DEAD NUKE LAUNCHING!!!", "ALL")
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(Target.Name ..
+                                                                                                          " IS DEAD NUKE LAUNCHING!!!",
+            "ALL")
         wait(1.5)
-        --//This is what I call perfect work
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 3", "ALL")
+        -- //This is what I call perfect work
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 3",
+            "ALL")
         wait(1.5)
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 2", "ALL")
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 2",
+            "ALL")
         wait(1.5)
-        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 1", "ALL")
+        game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer("LAUNCHING IN 1",
+            "ALL")
         wait(1)
         API:killall()
         API:Notif("Nuke from player has been removed.")
@@ -2593,7 +2674,8 @@ do
     API:CreateCmd("antisit", "Prevents you from sitting", function(args)
         local value = ChangeState(args[2], "AntiSit")
         if not value then
-            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Seated, true)
+            game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(
+                Enum.HumanoidStateType.Seated, true)
         end
     end, nil, "[on/off]")
     API:CreateCmd("antitouch", "Kills anyone who touches you", function(args)
@@ -2623,7 +2705,9 @@ do
     end, nil, "[on/off]")
     API:CreateCmd("noinvite", "disables discord invite", function(args)
         if writefile and readfile then
-            writefile("Tiger_Admin/Invite.json", game:GetService("HttpService"):JSONEncode({ Invite_To_Server = false }))
+            writefile("Tiger_Admin/Invite.json", game:GetService("HttpService"):JSONEncode({
+                Invite_To_Server = false
+            }))
             API:Notif("Discord invite has been disabled!")
         else
             API:Notif("executor not supported.")
@@ -2691,7 +2775,8 @@ do
         if args[2] == "random" then
             local random = nil
             while true do
-                random = game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
+                random =
+                    game:GetService("Players"):GetPlayers()[math.random(1, #game:GetService("Players"):GetPlayers())]
                 task.wait()
                 if random.Team ~= game.Teams.Criminals and random ~= game:GetService("Players").LocalPlayer then
                     break
@@ -2701,7 +2786,8 @@ do
             if Target.Team == game:GetService("Teams").Inmates then
                 API:bring(Target, CFrame.new() * CFrame.new(0, 2, 0))
             elseif Target.Team == game:GetService("Teams").Guards then
-                API:bring(Target, CFrame.new(-920.510803, 92.2271957, 2138.27002, 0, 0, -1, 0, 1, 0, 1, 0, 0) * CFrame.new(-4.5, 2, -3), true)
+                API:bring(Target, CFrame.new(-920.510803, 92.2271957, 2138.27002, 0, 0, -1, 0, 1, 0, 1, 0, 0) *
+                    CFrame.new(-4.5, 2, -3), true)
             end
         else
             if args[2] then
@@ -2714,7 +2800,8 @@ do
                     if Target.Team == game:GetService("Teams").Inmates then
                         API:bring(Target, CFrame.new() * CFrame.new(0, 2, 0))
                     elseif Target.Team == game:GetService("Teams").Guards then
-                        API:bring(Target, CFrame.new(-920.510803, 92.2271957, 2138.27002, 0, 0, -1, 0, 1, 0, 1, 0, 0) * CFrame.new(-4.5, 2, -3), true)
+                        API:bring(Target, CFrame.new(-920.510803, 92.2271957, 2138.27002, 0, 0, -1, 0, 1, 0, 1, 0, 0) *
+                            CFrame.new(-4.5, 2, -3), true)
                     end
                 end
             else
@@ -2743,7 +2830,8 @@ do
             until car
             repeat
                 task.wait()
-            until car:FindFirstChild("RWD") and car:FindFirstChild("Body") and car:FindFirstChild("Body"):FindFirstChild("VehicleSeat")
+            until car:FindFirstChild("RWD") and car:FindFirstChild("Body") and
+                car:FindFirstChild("Body"):FindFirstChild("VehicleSeat")
             car.PrimaryPart = car.RWD
             game:GetService("Players").LocalPlayer.Character:SetPrimaryPartCFrame(OldPos)
             wait(1)
@@ -2752,8 +2840,11 @@ do
             repeat
                 game:GetService("RunService").RenderStepped:Wait()
                 car:SetPrimaryPartCFrame(OldPos)
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(car.Body.VehicleSeat.Position)
-                car.Body.VehicleSeat:Sit(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"))
+                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(car.Body
+                                                                                                          .VehicleSeat
+                                                                                                          .Position)
+                car.Body.VehicleSeat:Sit(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass(
+                    "Humanoid"))
                 if game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit == true then
                     Done = true
                 end
@@ -2762,7 +2853,8 @@ do
     end)
     API:CreateCmd("opengate", "Opens the main prison gate", function(args)
         local OldPos = game:GetService("Players").LocalPlayer.Character:GetPrimaryPartCFrame()
-        API:MoveTo(CFrame.new(503.998993, 102.039917, 2242.79907, 0.99996537, -1.0554821e-08, -0.00832392555, 1.00791926e-08, 1, -5.71817864e-08, 0.00832392555, 5.70959067e-08, 0.99996537))
+        API:MoveTo(CFrame.new(503.998993, 102.039917, 2242.79907, 0.99996537, -1.0554821e-08, -0.00832392555,
+            1.00791926e-08, 1, -5.71817864e-08, 0.00832392555, 5.70959067e-08, 0.99996537))
         wait(0.1)
         workspace.Remote.ItemHandler:InvokeServer(workspace.Prison_ITEMS.buttons["Prison Gate"]["Prison Gate"])
         API:MoveTo(OldPos)
@@ -2814,7 +2906,8 @@ do
                 local a = pcall(function()
                     local Key = workspace.Prison_ITEMS.single["Key card"].ITEMPICKUP
                     game.Workspace.Remote["ItemHandler"]:InvokeServer(Key)
-                    API:MoveTo(CFrame.new(workspace.Prison_ITEMS.single["Key card"].ITEMPICKUP.Position + Vector3.new(0, 3, 0)))
+                    API:MoveTo(CFrame.new(workspace.Prison_ITEMS.single["Key card"].ITEMPICKUP.Position +
+                                              Vector3.new(0, 3, 0)))
                 end)
             until plr.Backpack:FindFirstChild("Key card")
         end
@@ -2838,7 +2931,9 @@ do
         if args[2] then
             local Target = API:FindPlayer(args[2])
             if Target then
-                API:bring(Target, CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
+                API:bring(Target,
+                    CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082,
+                        -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
             end
         else
             API:MoveTo(CFrame.new(918.77, 100, 2379.07))
@@ -2848,7 +2943,9 @@ do
         if args[2] then
             local Target = API:FindPlayer(args[2])
             if Target then
-                API:bring(Target, CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
+                API:bring(Target,
+                    CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082,
+                        -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
             end
         else
             API:MoveTo(CFrame.new(918.77, 100, 2379.07))
@@ -2869,13 +2966,13 @@ do
     API:CreateCmd("knife", "Gets a knife", function(args)
         workspace.Remote.ItemHandler:InvokeServer({
             Position = game:GetService("Players").LocalPlayer.Character.Head.Position,
-            Parent = workspace.Prison_ITEMS.single["Crude Knife"],
+            Parent = workspace.Prison_ITEMS.single["Crude Knife"]
         })
     end)
     API:CreateCmd("hammer", "Gets a hammer", function(args)
         workspace.Remote.ItemHandler:InvokeServer({
             Position = game:GetService("Players").LocalPlayer.Character.Head.Position,
-            Parent = workspace.Prison_ITEMS.single["Hammer"],
+            Parent = workspace.Prison_ITEMS.single["Hammer"]
         })
     end)
     API:CreateCmd("yard", "Teleports to location", function(args)
@@ -2994,7 +3091,8 @@ do
             game:GetService("Players").LocalPlayer:Kick("Please wait.")
             game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
         else
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game:GetService("Players").LocalPlayer)
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId,
+                game:GetService("Players").LocalPlayer)
         end
     end)
     API:CreateCmd("rj", "rejoins the same server (UNLOADS SCRIPT)", function(args)
@@ -3003,7 +3101,8 @@ do
             game:GetService("Players").LocalPlayer:Kick("Please wait.")
             game:GetService("TeleportService"):Teleport(game.PlaceId, game:GetService("Players").LocalPlayer)
         else
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game:GetService("Players").LocalPlayer)
+            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId,
+                game:GetService("Players").LocalPlayer)
         end
     end, true)
     API:CreateCmd("re", "refreshes your character", function(args)
@@ -3015,7 +3114,8 @@ do
 
     API:CreateCmd("serverhop", "Joins a different server", function(args)
         local Ids = {}
-        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+        for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync(
+            "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
             if typeof(v) == "table" and v["maxPlayers"] > v["playing"] and v["id"] ~= game["JobId"] then
                 table.insert(Ids, v.id)
             end
@@ -3171,14 +3271,16 @@ end
 --
 local cdv = false
 coroutine.wrap(function()
-    while wait() do --// fast loop
+    while wait() do -- // fast loop
         if Unloaded then
             return
         end
         for i, v in pairs(Temp.Viruses) do
             for _, a in pairs(game:GetService("Players"):GetPlayers()) do
                 if a and a ~= v and a ~= Player then
-                    if a and a.Character and a.Character:FindFirstChild("HumanoidRootPart") and (a.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude < 4.5 and a.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, a) then
+                    if a and a.Character and a.Character:FindFirstChild("HumanoidRootPart") and
+                        (a.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude < 4.5 and
+                        a.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, a) then
                         if not cdv then
                             cdv = true
                             API:KillPlayer(a)
@@ -3194,10 +3296,12 @@ coroutine.wrap(function()
             if States.AntiArrest == true and Unloaded == false then
                 for i, v in pairs(game.Players:GetPlayers()) do
                     if v ~= Player then
-                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
-                            if v.Character:FindFirstChildOfClass("Tool") and v.Character:FindFirstChild("Handcuffs") and not v.Character:FindFirstChild("Handcuffs"):FindFirstChild("ISWHITELISTED") then
+                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <
+                            30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
+                            if v.Character:FindFirstChildOfClass("Tool") and v.Character:FindFirstChild("Handcuffs") and
+                                not v.Character:FindFirstChild("Handcuffs"):FindFirstChild("ISWHITELISTED") then
                                 local args = {
-                                    [1] = v,
+                                    [1] = v
                                 }
                                 for i = 1, 3 do
                                     task.spawn(function()
@@ -3214,9 +3318,10 @@ coroutine.wrap(function()
             if States.AntiTouch == true and Unloaded == false then
                 for i, v in pairs(game.Players:GetPlayers()) do
                     if v ~= Player then
-                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 2.3 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
+                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <
+                            2.3 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
                             local args = {
-                                [1] = v,
+                                [1] = v
                             }
                             for i = 1, 8 do
                                 task.spawn(function()
@@ -3233,9 +3338,10 @@ coroutine.wrap(function()
             if States.ArrestAura == true and Unloaded == false then
                 for i, v in pairs(game.Players:GetPlayers()) do
                     if v ~= Player and v.Team ~= game.Teams.Guards then
-                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
+                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <
+                            30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
                             local args = {
-                                [1] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part"),
+                                [1] = v.Character:FindFirstChild("Head") or v.Character:FindFirstChildOfClass("Part")
                             }
                             if v.Team == game.Teams.Criminals or (v.Team == game.Teams.Inmates and API:BadArea(v)) then
                                 workspace.Remote.arrest:InvokeServer(unpack(args))
@@ -3249,9 +3355,10 @@ coroutine.wrap(function()
             if States.killaura == true and Unloaded == false then
                 for i, v in pairs(game.Players:GetPlayers()) do
                     if v ~= Player and not table.find(API.Whitelisted, v) then
-                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude < 30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
+                        if (v.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude <
+                            30 and v.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, v) then
                             local args = {
-                                [1] = v,
+                                [1] = v
                             }
                             for i = 1, 3 do
                                 task.spawn(function()
@@ -3312,7 +3419,7 @@ UserInputService.InputBegan:connect(function(UserInput, Typing)
         if UserInput.KeyCode == Enum.KeyCode.LeftShift then
             Running = true
         end
-        if UserInput.KeyCode == Enum.KeyCode.F and States.OnePunch and not Running then --//Onepunch nothing advanced just to support weak exploits
+        if UserInput.KeyCode == Enum.KeyCode.F and States.OnePunch and not Running then -- //Onepunch nothing advanced just to support weak exploits
             local a = API:GetPosition() * CFrame.new(0, 0, -1)
             local Part = Instance.new("Part", workspace)
             local p = nil
@@ -3361,7 +3468,7 @@ local FindFirstChild = game.FindFirstChild
 local Vector2_new = Vector2.new
 local Mouse = LocalPlayer.GetMouse(LocalPlayer)
 local function NotObstructing(Destination, Ancestor)
-    local ObstructingParts = Camera.GetPartsObscuringTarget(Camera, { Destination }, { Ancestor, LocalPlayer.Character })
+    local ObstructingParts = Camera.GetPartsObscuringTarget(Camera, {Destination}, {Ancestor, LocalPlayer.Character})
 
     for i, v in ipairs(ObstructingParts) do
         pcall(function()
@@ -3377,38 +3484,39 @@ local function NotObstructing(Destination, Ancestor)
     local RaycastParameters = RaycastParams.new()
     RaycastParameters.IgnoreWater = true
     RaycastParameters.FilterType = Enum.RaycastFilterType.Blacklist
-    RaycastParameters.FilterDescendantsInstances = { LocalPlayer.Character }
+    RaycastParameters.FilterDescendantsInstances = {LocalPlayer.Character}
 
-    RaycastParameters.FilterDescendantsInstances = { LocalPlayer.Character }
+    RaycastParameters.FilterDescendantsInstances = {LocalPlayer.Character}
 
     local Origin = Camera.CFrame.Position
     local Direction = (Destination - Origin).Unit * 500
     local RayResult = workspace.Raycast(workspace, Origin, Direction, RaycastParameters) or {
         Instance = nil,
         Position = Origin + Direction,
-        Material = Enum.Material.Air,
+        Material = Enum.Material.Air
     }
 
-    if RayResult.Instance and (RayResult.Instance.IsDescendantOf(RayResult.Instance, Ancestor) or RayResult.Instance == Ancestor) then
+    if RayResult.Instance and
+        (RayResult.Instance.IsDescendantOf(RayResult.Instance, Ancestor) or RayResult.Instance == Ancestor) then
         return true
     end
     return false
 end
 function ClosestChar()
-    local Max, Close = 170
+    local Close
+    local Max = 170
     for I, V in pairs(GetPlayers(Players)) do
         if V ~= LocalPlayer and V.Team ~= LocalPlayer.Team and V.Character then
             local Head = FindFirstChild(V.Character, "Head")
             if Head then
-                if NotObstructing(V.Character.PrimaryPart.Position, V.Character) == false then
-                    continue
-                end
-                local Pos, OnScreen = WTSP(Camera, Head.Position)
-                if OnScreen then
-                    local Dist = (Vector2_new(Pos.X, Pos.Y) - Vector2_new(Mouse.X, Mouse.Y)).Magnitude
-                    if Dist < Max then
-                        Max = Dist
-                        Close = V.Character
+                if NotObstructing(V.Character.PrimaryPart.Position, V.Character) == true then
+                    local Pos, OnScreen = WTSP(Camera, Head.Position)
+                    if OnScreen then
+                        local Dist = (Vector2_new(Pos.X, Pos.Y) - Vector2_new(Mouse.X, Mouse.Y)).Magnitude
+                        if Dist < Max then
+                            Max = Dist
+                            Close = V.Character
+                        end
                     end
                 end
             end
@@ -3454,34 +3562,40 @@ MT.__namecall = newcclosure(function(self, ...)
         end
     end
     if States.SilentAim then
-        if not Unloaded and Method == "FindPartOnRay" and not checkcaller() and tostring(getfenv(0).script) == "GunInterface" then
+        if not Unloaded and Method == "FindPartOnRay" and not checkcaller() and tostring(getfenv(0).script) ==
+            "GunInterface" then
             local Character = ClosestChar()
             if Character then
-                return Character.Torso, Character.Torso.Position + Vector3.new(Random.new():NextNumber(-1, 1), Random.new():NextNumber(0.1, 0.8), Random.new():NextNumber(-0.5, 0.5))
+                return Character.Torso, Character.Torso.Position +
+                    Vector3.new(Random.new():NextNumber(-1, 1), Random.new():NextNumber(0.1, 0.8),
+                        Random.new():NextNumber(-0.5, 0.5))
             end
         end
     end
     return __namecall(self, ...)
 end)
 setreadonly(MT, true)
-plr.PlayerGui.Home.fadeFrame.Visible = false --//black bar
+plr.PlayerGui.Home.fadeFrame.Visible = false -- //black bar
 plr:GetMouse().Button1Up:Connect(function()
     local target = plr:GetMouse().Target
-    if not Unloaded and PremiumActivated and target and target.Parent:FindFirstChildOfClass("Humanoid") and game:GetService("Players"):FindFirstChild(target.Parent.Name) and States.OneShot then
+    if not Unloaded and PremiumActivated and target and target.Parent:FindFirstChildOfClass("Humanoid") and
+        game:GetService("Players"):FindFirstChild(target.Parent.Name) and States.OneShot then
         local Vic = game:GetService("Players"):FindFirstChild(target.Parent.Name)
         local Gun = plr.Character:FindFirstChildOfClass("Tool")
         if Gun and Gun:FindFirstChildOfClass("ModuleScript") and Vic and Vic.Team ~= plr.Team then
-            local Bullets = API:CreateBulletTable(20, (Vic.Character:FindFirstChild("Head") or Vic.Character:FindFirstChildOfClass("Part")))
+            local Bullets = API:CreateBulletTable(20, (Vic.Character:FindFirstChild("Head") or
+                Vic.Character:FindFirstChildOfClass("Part")))
             game:GetService("ReplicatedStorage").ShootEvent:FireServer(Bullets, Gun)
         end
     end
 end)
---//LOOPS
+-- //LOOPS
 coroutine.wrap(function()
-    while task.wait() do --//Faster loop
+    while task.wait() do -- //Faster loop
         if not Unloaded then
             if States.AntiSit then
-                game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(Enum.HumanoidStateType.Seated, false)
+                game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):SetStateEnabled(
+                    Enum.HumanoidStateType.Seated, false)
             end
         else
             break
@@ -3507,7 +3621,7 @@ end)()
 
 Temp.KIllaurCD = false
 coroutine.wrap(function()
-    while wait(0.58) do --//slow loop
+    while wait(0.58) do -- //slow loop
         if Unloaded then
             return
         end
@@ -3515,7 +3629,9 @@ coroutine.wrap(function()
         for i, v in pairs(Temp.KillAuras) do
             for _, a in pairs(game:GetService("Players"):GetPlayers()) do
                 if a and a ~= v and a ~= Player then
-                    if a and a.Character and a.Character:FindFirstChild("HumanoidRootPart") and (a.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude < 25 and a.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, a) then
+                    if a and a.Character and a.Character:FindFirstChild("HumanoidRootPart") and
+                        (a.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude < 25 and
+                        a.Character.Humanoid.Health > 0 and not table.find(API.Whitelisted, a) then
                         if not Temp.KIllaurCD then
                             Temp.KIllaurCD = true
                             API:KillPlayer(a, nil, true)
@@ -3528,7 +3644,8 @@ coroutine.wrap(function()
         end
         if States.AntiShield then
             for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-                if v and v.Character and v:FindFirstChild("Torso") and v:FindFirstChild("Torso"):FindFirstChild("ShieldFolder") then
+                if v and v.Character and v:FindFirstChild("Torso") and
+                    v:FindFirstChild("Torso"):FindFirstChild("ShieldFolder") then
                     v.Torso:FindFirstChild("ShieldFolder"):Destroy()
                 end
             end
@@ -3540,7 +3657,7 @@ coroutine.wrap(function()
         end
         if States.AutoInfAmmo then
             coroutine.wrap(function()
-                for i, v in pairs({ unpack(Player.Backpack:GetChildren()), unpack(Player.Character:GetChildren()) }) do
+                for i, v in pairs({unpack(Player.Backpack:GetChildren()), unpack(Player.Character:GetChildren())}) do
                     if v and v:IsA("Tool") and not table.find(Reload_Guns, v) then
                         local cc = require(v.GunStates)
                         cc["MaxAmmo"] = math.huge
@@ -3587,7 +3704,9 @@ coroutine.wrap(function()
             for i, v in pairs(Temp.Loopkilling) do
                 if v and game:GetService("Players"):FindFirstChild(v) then
                     local Target = game:GetService("Players"):FindFirstChild(v)
-                    if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and not Target.Character:FindFirstChildOfClass("ForceField") then
+                    if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and
+                        Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and
+                        not Target.Character:FindFirstChildOfClass("ForceField") then
                         if Player.Team == Target.Team and Player.Team == game.Teams.Guards then
                             if Target.Team ~= game.Teams.Inmates then
                                 API:ChangeTeam(game.Teams.Inmates)
@@ -3602,7 +3721,9 @@ coroutine.wrap(function()
             for i, v in pairs(Temp.LoopmKilling) do
                 if v and game:GetService("Players"):FindFirstChild(v) then
                     local Target = game:GetService("Players"):FindFirstChild(v)
-                    if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and not Target.Character:FindFirstChildOfClass("ForceField") then
+                    if Target.Character and Target.Character:FindFirstChildOfClass("Humanoid") and
+                        Target.Character:FindFirstChildOfClass("Humanoid").Health > 0 and
+                        not Target.Character:FindFirstChildOfClass("ForceField") then
                         API:KillMPlayer(Target)
                     end
                 end
@@ -3626,8 +3747,12 @@ function MostClose(Position)
     for i, v in pairs(game:GetService("Players"):GetPlayers()) do
         if v.Character then
             if v.Character:FindFirstChildOfClass("Tool") or v.Backpack:FindFirstChildOfClass("Tool") then
-                local ShootPart = (v.Character:FindFirstChildOfClass("Tool") or v.Backpack:FindFirstChildOfClass("Tool")):FindFirstChild("Muzzle")
-                if v.Character.PrimaryPart and (v.Character:FindFirstChildOfClass("Tool") or v.Backpack:FindFirstChildOfClass("Tool")):FindFirstChild("Muzzle") then
+                local ShootPart =
+                    (v.Character:FindFirstChildOfClass("Tool") or v.Backpack:FindFirstChildOfClass("Tool")):FindFirstChild(
+                        "Muzzle")
+                if v.Character.PrimaryPart and
+                    (v.Character:FindFirstChildOfClass("Tool") or v.Backpack:FindFirstChildOfClass("Tool")):FindFirstChild(
+                        "Muzzle") then
                     local Distance = (ShootPart.Position - Position).Magnitude
                     if Distance < Max then
                         Max = Distance
@@ -3677,7 +3802,8 @@ local function ReplicationEventFunction(Table)
                         if Worked and WhoShot and PlayerHit and not Unloaded then
                             if States.ShootBack and not ShootbackCooldown then
                                 if PlayerHit then
-                                    if PlayerHit and Player.Character:IsAncestorOf(PlayerHit) and ShootbackCooldown == false and WhoShot.Team ~= plr.Team then
+                                    if PlayerHit and Player.Character:IsAncestorOf(PlayerHit) and ShootbackCooldown ==
+                                        false and WhoShot.Team ~= plr.Team then
                                         ShootbackCooldown = true
                                         API:KillPlayer(WhoShot)
                                         wait(1)
@@ -3696,52 +3822,54 @@ end
 coroutine.wrap(function()
     game:GetService("ReplicatedStorage"):WaitForChild("ReplicateEvent").OnClientEvent:Connect(ReplicationEventFunction)
 end)()
---ClientGunReplicator
+-- ClientGunReplicator
 if PremiumActivated then
     local BulletCoolDown = false
-    Temp.GunHandler = game:GetService("ReplicatedStorage"):WaitForChild("ReplicateEvent").OnClientEvent:connect(function(Amount, Value)
-        if not States.anticrash then
-            return
-        end
-        if #Amount < 70 and not BulletCoolDown then
-            BulletCoolDown = true
-            for i = 1, #Amount do
-                local Bullet = Instance.new("Part", workspace.CurrentCamera)
-                Bullet.Name = "RayPart"
-                Bullet.Material = Enum.Material.Neon
-                Bullet.Anchored = true
-                Bullet.CanCollide = false
-                Bullet.Transparency = 0.5
-                Bullet.formFactor = Enum.FormFactor.Custom
-                Bullet.Size = Vector3.new(0.2, 0.2, Amount[i].Distance)
-                Bullet.CFrame = Amount[i].Cframe
-                game.Debris:AddItem(Bullet, 0.05)
-                Instance.new("BlockMesh", Bullet).Scale = Vector3.new(0.5, 0.5, 1)
-                if Value then
-                    Bullet.BrickColor = BrickColor.new("Cyan")
-                    local Light = Instance.new("SurfaceLight", Bullet)
-                    Light.Color = Color3.new(0, 0.9176470588235294, 1)
-                    Light.Range = 5
-                    Light.Face = "Bottom"
-                    Light.Brightness = 10
-                    Light.Angle = 180
-                    task.spawn(function()
-                        for v7 = 1, 10 do
-                            Bullet.Transparency = Bullet.Transparency + 0.1
-                            Light.Brightness = Light.Brightness - 1
-                            wait()
-                        end
-                    end)
-                else
-                    Bullet.BrickColor = BrickColor.Yellow()
-                end
+    Temp.GunHandler = game:GetService("ReplicatedStorage"):WaitForChild("ReplicateEvent").OnClientEvent:connect(
+        function(Amount, Value)
+            if not States.anticrash then
+                return
             end
-            wait(0.01)
-            BulletCoolDown = false
-        end
-    end)
+            if #Amount < 70 and not BulletCoolDown then
+                BulletCoolDown = true
+                for i = 1, #Amount do
+                    local Bullet = Instance.new("Part", workspace.CurrentCamera)
+                    Bullet.Name = "RayPart"
+                    Bullet.Material = Enum.Material.Neon
+                    Bullet.Anchored = true
+                    Bullet.CanCollide = false
+                    Bullet.Transparency = 0.5
+                    Bullet.formFactor = Enum.FormFactor.Custom
+                    Bullet.Size = Vector3.new(0.2, 0.2, Amount[i].Distance)
+                    Bullet.CFrame = Amount[i].Cframe
+                    game.Debris:AddItem(Bullet, 0.05)
+                    Instance.new("BlockMesh", Bullet).Scale = Vector3.new(0.5, 0.5, 1)
+                    if Value then
+                        Bullet.BrickColor = BrickColor.new("Cyan")
+                        local Light = Instance.new("SurfaceLight", Bullet)
+                        Light.Color = Color3.new(0, 0.9176470588235294, 1)
+                        Light.Range = 5
+                        Light.Face = "Bottom"
+                        Light.Brightness = 10
+                        Light.Angle = 180
+                        task.spawn(function()
+                            for v7 = 1, 10 do
+                                Bullet.Transparency = Bullet.Transparency + 0.1
+                                Light.Brightness = Light.Brightness - 1
+                                wait()
+                            end
+                        end)
+                    else
+                        Bullet.BrickColor = BrickColor.Yellow()
+                    end
+                end
+                wait(0.01)
+                BulletCoolDown = false
+            end
+        end)
     local CoolDown = false
-    Temp.SoundHandler = game:GetService("ReplicatedStorage"):WaitForChild("SoundEvent").OnClientEvent:connect(function(Sound1, p4)
+    Temp.SoundHandler = game:GetService("ReplicatedStorage"):WaitForChild("SoundEvent").OnClientEvent:connect(function(
+        Sound1, p4)
         if not States.anticrash then
             return
         end
@@ -3758,16 +3886,19 @@ if PremiumActivated then
             CoolDown = false
         end
     end)
-    Temp.WarnHandler = game:GetService("ReplicatedStorage"):WaitForChild("WarnEvent").OnClientEvent:connect(function(Text)
+    Temp.WarnHandler = game:GetService("ReplicatedStorage"):WaitForChild("WarnEvent").OnClientEvent:connect(function(
+        Text)
         if not States.anticrash then
             return
         end
         local WarnGui = game:GetService("ReplicatedStorage").gooeys.WarnGui:Clone()
         WarnGui.Parent = plr.PlayerGui
         if Text == 1 then
-            WarnGui.Frame.desc.Text = "This is your last warning. You will become a prisoner if you kill an innocent player 1 more time."
+            WarnGui.Frame.desc.Text =
+                "This is your last warning. You will become a prisoner if you kill an innocent player 1 more time."
         else
-            WarnGui.Frame.desc.Text = "Do not kill innocent people! You will be arrested and jailed if you kill " .. Text .. " more times."
+            WarnGui.Frame.desc.Text = "Do not kill innocent people! You will be arrested and jailed if you kill " ..
+                                          Text .. " more times."
         end
         WarnGui.Frame.LocalScript.Disabled = false
     end)
@@ -3787,24 +3918,13 @@ local function PlayerCheckCommand(G)
     end
 end
 function AdminChatted(Text, Speaker)
-    local Commands = { --//Actual commands
-        Prefix .. "car",
-        Prefix .. "arrest [PLAYER,ALL]",
-        Prefix .. "kill [PLAYER,ALL,TEAM]",
-        Prefix .. "opendoors",
-        Prefix .. "loopkill [PLAYER,ALL]",
-        Prefix .. "unloopkill [PLAYER,ALL]",
-        Prefix .. "bring [PLAYER]",
-        Prefix .. "goto [PLAYER]",
-    }
-    local Commands2 = { --//Teleports
-        Prefix .. "nex [ME,PLAYER]",
-        Prefix .. "prison [ME,PLAYER]",
-        Prefix .. "cbase [ME,PLAYER]",
-        Prefix .. "yard [ME,PLAYER]",
-        Prefix .. "tower [ME,PLAYER]",
-        Prefix .. "armory [ME,PLAYER]",
-    }
+    local Commands = { -- //Actual commands
+    Prefix .. "car", Prefix .. "arrest [PLAYER,ALL]", Prefix .. "kill [PLAYER,ALL,TEAM]", Prefix .. "opendoors",
+    Prefix .. "loopkill [PLAYER,ALL]", Prefix .. "unloopkill [PLAYER,ALL]", Prefix .. "bring [PLAYER]",
+    Prefix .. "goto [PLAYER]"}
+    local Commands2 = { -- //Teleports
+    Prefix .. "nex [ME,PLAYER]", Prefix .. "prison [ME,PLAYER]", Prefix .. "cbase [ME,PLAYER]",
+    Prefix .. "yard [ME,PLAYER]", Prefix .. "tower [ME,PLAYER]", Prefix .. "armory [ME,PLAYER]"}
     Speaker = game:GetService("Players"):FindFirstChild(Speaker)
     if Unloaded then
         return
@@ -3867,7 +3987,9 @@ function AdminChatted(Text, Speaker)
         if Arg2_P == "all" then
             local Lastp = API:GetPosition()
             for i, v in pairs(game:GetService("Players"):GetPlayers()) do
-                if v ~= Player and v.Team ~= game.Teams.Guards and v.Team ~= game.Teams.Neutral and v ~= plr and API:BadArea(v) or v.Team == game.Teams.Criminals and v.Character:FindFirstChildOfClass("Humanoid") and v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
+                if v ~= Player and v.Team ~= game.Teams.Guards and v.Team ~= game.Teams.Neutral and v ~= plr and
+                    API:BadArea(v) or v.Team == game.Teams.Criminals and v.Character:FindFirstChildOfClass("Humanoid") and
+                    v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
                     local d = false
                     task.spawn(function()
                         repeat
@@ -3905,7 +4027,9 @@ function AdminChatted(Text, Speaker)
             local Player = API:FindPlayer(Arg2_P)
             local v = Player
             local Lastp = API:GetPosition()
-            if v.Team ~= game.Teams.Guards and v.Team ~= game.Teams.Neutral and v ~= plr and API:BadArea(v) or v.Team == game.Teams.Criminals and v.Character:FindFirstChildOfClass("Humanoid") and v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
+            if v.Team ~= game.Teams.Guards and v.Team ~= game.Teams.Neutral and v ~= plr and API:BadArea(v) or v.Team ==
+                game.Teams.Criminals and v.Character:FindFirstChildOfClass("Humanoid") and
+                v.Character:FindFirstChildOfClass("Humanoid").Health > 0 then
                 if v == Player then
                     local d = false
                     task.spawn(function()
@@ -3969,21 +4093,23 @@ function AdminChatted(Text, Speaker)
             API:ChangeTeam(game.Teams.Guards)
             wait()
             task.spawn(function()
-                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                    game:GetService("Players").LocalPlayer.Backpack.Taser)
             end)
             local ohTable1 = {
                 [1] = {
                     ["RayObject"] = Ray.new(Vector3.new(), Vector3.new()),
                     ["Distance"] = -1,
                     ["Cframe"] = CFrame.new(),
-                    ["Hit"] = Player.Character.Head,
-                },
+                    ["Hit"] = Player.Character.Head
+                }
             }
             local ohInstance2 = game:GetService("Players").LocalPlayer.Backpack.Taser
 
             game:GetService("ReplicatedStorage").ShootEvent:FireServer(ohTable1, ohInstance2)
             task.spawn(function()
-                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(game:GetService("Players").LocalPlayer.Backpack.Taser)
+                game:GetService("ReplicatedStorage").ReloadEvent:FireServer(
+                    game:GetService("Players").LocalPlayer.Backpack.Taser)
             end)
             wait(0.1)
             API:ChangeTeam(Oldt)
@@ -4003,7 +4129,8 @@ function AdminChatted(Text, Speaker)
     end
     if PlayerCheckCommand("opengate") then
         local OldPos = game:GetService("Players").LocalPlayer.Character:GetPrimaryPartCFrame()
-        API:MoveTo(CFrame.new(503.998993, 102.039917, 2242.79907, 0.99996537, -1.0554821e-08, -0.00832392555, 1.00791926e-08, 1, -5.71817864e-08, 0.00832392555, 5.70959067e-08, 0.99996537))
+        API:MoveTo(CFrame.new(503.998993, 102.039917, 2242.79907, 0.99996537, -1.0554821e-08, -0.00832392555,
+            1.00791926e-08, 1, -5.71817864e-08, 0.00832392555, 5.70959067e-08, 0.99996537))
         wait(0.1)
         workspace.Remote.ItemHandler:InvokeServer(workspace.Prison_ITEMS.buttons["Prison Gate"]["Prison Gate"])
         API:MoveTo(OldPos)
@@ -4053,86 +4180,122 @@ function AdminChatted(Text, Speaker)
     end
     if PlayerCheckCommand("nex") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                -0.00796249602, 0, 0.99996829))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+                API:bring(Target, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                    -0.00796249602, 0, 0.99996829))
             end
         else
-            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                -0.00796249602, 0, 0.99996829))
         end
     end
     if PlayerCheckCommand("prison") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                -0.00796249602, 0, 0.99996829))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+                API:bring(Target, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                    -0.00796249602, 0, 0.99996829))
             end
         else
-            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0, -0.00796249602, 0, 0.99996829))
+            API:bring(Speaker, CFrame.new(916.738098, 99.989975, 2375.38403, 0.99996829, 0, 0.00796249602, 0, 1, 0,
+                -0.00796249602, 0, 0.99996829))
         end
     end
     if PlayerCheckCommand("yard") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
+            API:bring(Speaker,
+                CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08,
+                    1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
+                API:bring(Target,
+                    CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082,
+                        -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
             end
         else
-            API:bring(Speaker, CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08, 1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
+            API:bring(Speaker,
+                CFrame.new(792.50885, 97.9999237, 2467.05664, 0.999635994, 2.4151424e-08, -0.0269802082, -2.5547001e-08,
+                    1, -5.13812246e-08, 0.0269802082, 5.20517851e-08, 0.999635994))
         end
     end
     if PlayerCheckCommand("tower") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861, -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
+            API:bring(Speaker,
+                CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861,
+                    -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861, -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
+                API:bring(Target,
+                    CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861,
+                        -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
             end
         else
-            API:bring(Speaker, CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861, -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
+            API:bring(Speaker,
+                CFrame.new(822.355164, 142.638184, 2587.71753, 0.999500692, 1.78500699e-08, -0.0315965861,
+                    -1.87901747e-08, 1, -2.94564462e-08, 0.0315965861, 3.00354444e-08, 0.999500692))
         end
     end
     if PlayerCheckCommand("cbase") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998, 6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
+            API:bring(Speaker,
+                CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998,
+                    6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998, 6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
+                API:bring(Target,
+                    CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998,
+                        6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
             end
         else
-            API:bring(Speaker, CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998, 6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
+            API:bring(Speaker,
+                CFrame.new(-843.855469, 93.7955246, 2058.3606, 0.00948868692, -4.14198537e-10, 0.999954998,
+                    6.77936429e-10, 1, 4.07784168e-10, -0.999954998, 6.74036604e-10, 0.00948868692))
         end
     end
     if PlayerCheckCommand("armory") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177, -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
+            API:bring(Speaker,
+                CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177,
+                    -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177, -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
+                API:bring(Target,
+                    CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177,
+                        -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
             end
         else
-            API:bring(Speaker, CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177, -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
+            API:bring(Speaker,
+                CFrame.new(840.902344, 99.9899826, 2265.74536, 0.0302555375, -3.3549501e-08, 0.999542177,
+                    -4.92125558e-08, 1, 3.50545015e-08, -0.999542177, -5.02506197e-08, 0.0302555375))
         end
     end
     if PlayerCheckCommand("saferoom") then
         if Arg2_P == "me" then
-            API:bring(Speaker, CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956, -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
+            API:bring(Speaker,
+                CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956,
+                    -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
         elseif Arg2_P then
             local Target = API:FindPlayer(Arg2_P)
             if Target then
-                API:bring(Target, CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956, -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
+                API:bring(Target,
+                    CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956,
+                        -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
             end
         else
-            API:bring(Speaker, CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956, -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
+            API:bring(Speaker,
+                CFrame.new(704.895935, 99.9899826, 2373.47876, 0.0323696211, -1.06273255e-07, -0.999475956,
+                    -4.96659567e-08, 1, -1.07937481e-07, 0.999475956, 5.3133828e-08, 0.0323696211))
         end
     end
     if PlayerCheckCommand("car") then
@@ -4152,7 +4315,8 @@ function AdminChatted(Text, Speaker)
             until car
             repeat
                 task.wait()
-            until car:FindFirstChild("RWD") and car:FindFirstChild("Body") and car:FindFirstChild("Body"):FindFirstChild("VehicleSeat")
+            until car:FindFirstChild("RWD") and car:FindFirstChild("Body") and
+                car:FindFirstChild("Body"):FindFirstChild("VehicleSeat")
             car.PrimaryPart = car.RWD
             game:GetService("Players").LocalPlayer.Character:SetPrimaryPartCFrame(OldPos)
             wait(1)
@@ -4161,8 +4325,11 @@ function AdminChatted(Text, Speaker)
             repeat
                 game:GetService("RunService").RenderStepped:Wait()
                 car:SetPrimaryPartCFrame(OldPos)
-                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(car.Body.VehicleSeat.Position)
-                car.Body.VehicleSeat:Sit(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"))
+                game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(car.Body
+                                                                                                          .VehicleSeat
+                                                                                                          .Position)
+                car.Body.VehicleSeat:Sit(game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass(
+                    "Humanoid"))
                 if game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid").Sit == true then
                     Done = true
                 end
@@ -4173,8 +4340,9 @@ function AdminChatted(Text, Speaker)
         end)
     end
 end
-game:GetService("RunService").RenderStepped:Connect(function() --//Global Runservice
-    if not Unloaded and States.killaura and Temp.KillPart and plr.Character:FindFirstChildOfClass("Humanoid") and plr.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
+game:GetService("RunService").RenderStepped:Connect(function() -- //Global Runservice
+    if not Unloaded and States.killaura and Temp.KillPart and plr.Character:FindFirstChildOfClass("Humanoid") and
+        plr.Character:FindFirstChildOfClass("Humanoid").Health > 1 then
         Temp.KillPart.CFrame = CFrame.new(API:GetPosition().Position)
     else
         if Temp.KillPart and States.killaura then
@@ -4206,8 +4374,10 @@ local function PlayerAddedANTIFLING(Player)
     Player.CharacterAdded:Connect(CharacterAdded)
     game:GetService("RunService").Heartbeat:Connect(function()
         if not Unloaded and States.AntiFling then
-            if (Character and Character:IsDescendantOf(workspace)) and (PrimaryPart and PrimaryPart:IsDescendantOf(Character)) then
-                if PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 or PrimaryPart.AssemblyLinearVelocity.Magnitude > 100 then
+            if (Character and Character:IsDescendantOf(workspace)) and
+                (PrimaryPart and PrimaryPart:IsDescendantOf(Character)) then
+                if PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 or PrimaryPart.AssemblyLinearVelocity.Magnitude >
+                    100 then
                     Detected = true
                     for i, v in ipairs(Character:GetDescendants()) do
                         if v:IsA("BasePart") then
@@ -4242,7 +4412,8 @@ game:GetService("RunService").Heartbeat:Connect(function()
                 PrimaryPart.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
                 PrimaryPart.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
                 PrimaryPart.CFrame = LastPosition
-            elseif PrimaryPart.AssemblyLinearVelocity.Magnitude < 50 or PrimaryPart.AssemblyAngularVelocity.Magnitude > 50 then
+            elseif PrimaryPart.AssemblyLinearVelocity.Magnitude < 50 or PrimaryPart.AssemblyAngularVelocity.Magnitude >
+                50 then
                 LastPosition = PrimaryPart.CFrame
             end
         end)
