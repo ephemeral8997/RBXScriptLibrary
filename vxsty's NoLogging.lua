@@ -1,7 +1,6 @@
 -- MADE BY ballsman3761 ON DISCORD OR libary.hello
 -- JOIN THE DISCORD: https://discord.gg/gYhqMRBeZV
 -- https://scriptblox.com/script/Universal-Script-NoLogging-13339
-
 local randomstr = Instance.new("ScreenGui")
 local Holder = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
@@ -59,7 +58,8 @@ Info.Position = UDim2.new(0.00990098994, 0, 0.524271846, 0)
 Info.Selectable = true
 Info.Size = UDim2.new(0, 198, 0, 98)
 Info.Font = Enum.Font.GothamBold
-Info.Text = "This will add a chat cooldown whenever you clear your logs, It might not let you chat for a little after you clear depending on which clear you used."
+Info.Text =
+    "This will add a chat cooldown whenever you clear your logs, It might not let you chat for a little after you clear depending on which clear you used."
 Info.TextColor3 = Color3.fromRGB(255, 255, 255)
 Info.TextScaled = true
 Info.TextSize = 14.000
@@ -156,7 +156,8 @@ local frameStartPos = nil
 local function handleInput(input)
     if isDragging then
         local delta = input.Position - dragStartPos
-        Holder.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, frameStartPos.Y.Scale, frameStartPos.Y.Offset + delta.Y)
+        Holder.Position = UDim2.new(frameStartPos.X.Scale, frameStartPos.X.Offset + delta.X, frameStartPos.Y.Scale,
+            frameStartPos.Y.Offset + delta.Y)
     end
 end
 

@@ -1,9 +1,10 @@
 assert(rconsoleprint, "Your exploit doesn't support rconsoleprint")
 assert((setreadonly or make_writeable), "Your exploit doesn't support setreadonly or make_writeable")
-assert((getnamecallmethod or get_namecall_method), "Your exploit doesn't support getnamecallmethod or get_namecall_method")
+assert((getnamecallmethod or get_namecall_method),
+    "Your exploit doesn't support getnamecallmethod or get_namecall_method")
 assert(getrawmetatable, "Your exploit doesn't support getrawmetatable")
 
---get table function I stole from google
+-- get table function I stole from google
 local function get_table(node)
     local cache, stack, output = {}, {}, {}
     local depth = 1
@@ -115,8 +116,10 @@ end
 
 meta.__namecall = newClosure(function(Event, ...)
     local cmethod = callMethod()
-    local arguments = { ... }
-    local color = (getgenv().Methods["FireServer"] and tostring(cmethod) == "FireServer" and "@@YELLOW@@") or (getgenv().Methods["InvokeServer"] and tostring(cmethod) == "InvokeServer" and "@@LIGHT_MAGENTA@@") or nil
+    local arguments = {...}
+    local color = (getgenv().Methods["FireServer"] and tostring(cmethod) == "FireServer" and "@@YELLOW@@") or
+                      (getgenv().Methods["InvokeServer"] and tostring(cmethod) == "InvokeServer" and "@@LIGHT_MAGENTA@@") or
+                      nil
 
     if color and not getgenv().Blacklisted[tostring(Event)] then
         log(cmethod, Event, arguments, color)
