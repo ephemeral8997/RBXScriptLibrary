@@ -10,6 +10,22 @@ local cloneref = cloneref or function(...)
     return ...
 end
 
+function _G.profile(name, fn)
+    local start = tick()
+    local ok, result_or_err = pcall(fn)
+    local elapsed = (tick() - start) * 1000
+
+    if elapsed > 1 then
+        print(string.format("[PROFILING WARNING] %s took %.2f ms", name, elapsed))
+    end
+
+    if not ok then
+        warn(string.format("[ERROR] %s error: %s", name, result_or_err))
+    end
+
+    return result_or_err
+end
+
 local service = setmetatable({}, {
     __index = function(self, name)
         self[name] = cloneref(game:GetService(name))
@@ -14631,6 +14647,8 @@ Main = (function()
 
     Main.FetchRMD = function()
         local rawXML
+        local success, result
+
         if Main.Elevated then
             if Main.LocalDepsUpToDate() then
                 local localRMD = Lib.ReadFile("dex/rbx_rmd.dat")
@@ -14640,22 +14658,56 @@ Main = (function()
                     Main.DepsVersionData[1] = ""
                 end
             end
-            rawXML = rawXML or oldgame:HttpGet(
-                "https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/DexUtils/ReflectionMetadata.xml")
+
+            if not rawXML then
+                success, result = pcall(function()
+                    return oldgame:HttpGet(
+                        "https://raw.githubusercontent.com/ephemeral8997/RBXScriptLibrary/refs/heads/main/DexUtils/ReflectionMetadata.xml")
+                end)
+                if success then
+                    rawXML = result
+                else
+                    warn("Failed to fetch remote RMD:", result)
+                    return nil
+                end
+            end
         else
             if script:FindFirstChild("RMD") then
-                rawXML = require(script.RMD)
+                success, result = pcall(function()
+                    return require(script.RMD)
+                end)
+                if success then
+                    rawXML = result
+                else
+                    error("Failed to require RMD module: " .. tostring(result))
+                end
             else
                 error("NO RMD EXISTS")
             end
         end
+
         Main.RawRMD = rawXML
-        local parsed = Lib.ParseXML(rawXML)
+
+        success, result = pcall(function()
+            return Lib.ParseXML(rawXML)
+        end)
+        if not success then
+            error("Failed to parse XML: " .. tostring(result))
+        end
+
+        local parsed = result
         local classList = parsed.children[1].children[1].children
         local enumList = parsed.children[1].children[2].children
         local propertyOrders = {}
 
         local classes, enums = {}, {}
+
+        -- Helper function to capitalize property names
+        local function cap(name)
+            return name:sub(1, 1):upper() .. name:sub(2)
+        end
+
+        -- Class parsing
         for _, class in pairs(classList) do
             local className = ""
             for _, child in pairs(class.children) do
@@ -14664,62 +14716,47 @@ Main = (function()
                         Properties = {},
                         Functions = {}
                     }
-                    local props = child.children
-                    for _, prop in pairs(props) do
-                        local name = prop.attrs.name
-                        name = name:sub(1, 1):upper() .. name:sub(2)
+                    for _, prop in pairs(child.children) do
+                        local name = cap(prop.attrs.name)
                         data[name] = prop.children[1].text
                     end
                     className = data.Name
                     classes[className] = data
                 elseif child.attrs.class == "ReflectionMetadataProperties" then
-                    local members = child.children
-                    for _, member in pairs(members) do
-                        if member.attrs.class == "ReflectionMetadataMember" then
+                    for _, member in pairs(child.children) do
+                        if member.attrs.class == "ReflectionMetadataMember" and member.children[1].tag == "Properties" then
                             local data = {}
-                            if member.children[1].tag == "Properties" then
-                                local props = member.children[1].children
-                                for _, prop in pairs(props) do
-                                    if prop.attrs then
-                                        local name = prop.attrs.name
-                                        name = name:sub(1, 1):upper() .. name:sub(2)
-                                        data[name] = prop.children[1].text
-                                    end
+                            for _, prop in pairs(member.children[1].children) do
+                                if prop.attrs then
+                                    local name = cap(prop.attrs.name)
+                                    data[name] = prop.children[1].text
                                 end
-                                if data.PropertyOrder then
-                                    local orders = propertyOrders[className]
-                                    if not orders then
-                                        orders = {}
-                                        propertyOrders[className] = orders
-                                    end
-                                    orders[data.Name] = tonumber(data.PropertyOrder)
-                                end
-                                classes[className].Properties[data.Name] = data
                             end
+                            if data.PropertyOrder then
+                                propertyOrders[className] = propertyOrders[className] or {}
+                                propertyOrders[className][data.Name] = tonumber(data.PropertyOrder)
+                            end
+                            classes[className].Properties[data.Name] = data
                         end
                     end
                 elseif child.attrs.class == "ReflectionMetadataFunctions" then
-                    local members = child.children
-                    for _, member in pairs(members) do
-                        if member.attrs.class == "ReflectionMetadataMember" then
+                    for _, member in pairs(child.children) do
+                        if member.attrs.class == "ReflectionMetadataMember" and member.children[1].tag == "Properties" then
                             local data = {}
-                            if member.children[1].tag == "Properties" then
-                                local props = member.children[1].children
-                                for _, prop in pairs(props) do
-                                    if prop.attrs then
-                                        local name = prop.attrs.name
-                                        name = name:sub(1, 1):upper() .. name:sub(2)
-                                        data[name] = prop.children[1].text
-                                    end
+                            for _, prop in pairs(member.children[1].children) do
+                                if prop.attrs then
+                                    local name = cap(prop.attrs.name)
+                                    data[name] = prop.children[1].text
                                 end
-                                classes[className].Functions[data.Name] = data
                             end
+                            classes[className].Functions[data.Name] = data
                         end
                     end
                 end
             end
         end
 
+        -- Enum parsing
         for _, enum in pairs(enumList) do
             local enumName = ""
             for _, child in pairs(enum.children) do
@@ -14727,25 +14764,19 @@ Main = (function()
                     local data = {
                         Items = {}
                     }
-                    local props = child.children
-                    for _, prop in pairs(props) do
-                        local name = prop.attrs.name
-                        name = name:sub(1, 1):upper() .. name:sub(2)
+                    for _, prop in pairs(child.children) do
+                        local name = cap(prop.attrs.name)
                         data[name] = prop.children[1].text
                     end
                     enumName = data.Name
                     enums[enumName] = data
-                elseif child.attrs.class == "ReflectionMetadataEnumItem" then
+                elseif child.attrs.class == "ReflectionMetadataEnumItem" and child.children[1].tag == "Properties" then
                     local data = {}
-                    if child.children[1].tag == "Properties" then
-                        local props = child.children[1].children
-                        for _, prop in pairs(props) do
-                            local name = prop.attrs.name
-                            name = name:sub(1, 1):upper() .. name:sub(2)
-                            data[name] = prop.children[1].text
-                        end
-                        enums[enumName].Items[data.Name] = data
+                    for _, prop in pairs(child.children[1].children) do
+                        local name = cap(prop.attrs.name)
+                        data[name] = prop.children[1].text
                     end
+                    enums[enumName].Items[data.Name] = data
                 end
             end
         end
@@ -15589,27 +15620,33 @@ Main = (function()
         API = Main.FetchAPI()
         Lib.FastWait()
         intro.SetProgress("Fetching RMD", 0.5)
+
         RMD = Main.FetchRMD()
+
         Lib.FastWait()
 
-        -- Save external deps locally if needed
         if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
             env.writefile("dex/deps_version.dat", Main.ClientVersion .. "\n" .. Main.RobloxVersion)
             env.writefile("dex/rbx_api.dat", Main.RawAPI)
             env.writefile("dex/rbx_rmd.dat", Main.RawRMD)
         end
 
-        -- Load other modules
         intro.SetProgress("Loading Modules", 0.75)
-        Main.AppControls.Lib.InitDeps(Main.GetInitDeps()) -- Missing deps now available
+
+        Main.AppControls.Lib.InitDeps(Main.GetInitDeps())
+
         Main.LoadModules()
+
         Lib.FastWait()
 
-        -- Init other modules
         intro.SetProgress("Initializing Modules", 0.9)
+
         Explorer.Init()
+
         Properties.Init()
+
         ScriptViewer.Init()
+
         Lib.FastWait()
 
         -- Done
