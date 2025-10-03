@@ -2,26 +2,28 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
 end
 
-if not game:GetService("ReplicatedStorage").StarterGui.Area51Personnel then
+if not workspace:FindFirstChild("AREA51") then
     return
 end
 
-function profile(name, fn)
-    local start = tick()
-    local ok, result_or_err = pcall(fn)
-    local elapsed = (tick() - start) * 1000
+-- Constants
+local DROP_COOLDOWN = 10 -- seconds
 
-    if elapsed > 1 then
-        print(string.format("[PROFILING WARNING] %s took %.2f ms", name, elapsed))
-    end
+-- Singleton setup
+local RS = game:GetService("ReplicatedStorage")
+local SCRIPT_ID = "SurvivorESPController"
 
-    if not ok then
-        warn(string.format("[ERROR] %s error: %s", name, result_or_err))
-    end
-
-    return result_or_err
+local existing = RS:FindFirstChild(SCRIPT_ID)
+if existing and existing:IsA("BindableEvent") then
+    existing:Fire()
+    existing:Destroy()
 end
 
+local shutdownSignal = Instance.new("BindableEvent")
+shutdownSignal.Name = SCRIPT_ID
+shutdownSignal.Parent = RS
+
+-- Service wrapper
 Services = setmetatable({}, {
     __index = function(self, key)
         local service = game:GetService(key)
@@ -33,17 +35,133 @@ Services = setmetatable({}, {
     end
 })
 
-function PlayerIsSurvivor()
-    local player = Services.Players.LocalPlayer
+-- State
+local shuttingDown = false
+local activeHighlights = {}
+local espCache = {}
+local connections = {}
+local ammoTouchStarted = false
 
-    if (player.Team and player.Team.Name == "Survivors") or #Services.Teams:GetChildren() == 0 then
-        return true
+-- Shutdown handler
+shutdownSignal.Event:Connect(function()
+    shuttingDown = true
+    for _, conn in ipairs(connections) do
+        if conn and conn.Disconnect then
+            conn:Disconnect()
+        end
     end
+    connections = {}
+    for _, highlight in ipairs(activeHighlights) do
+        if highlight and highlight.Parent then
+            highlight:Destroy()
+        end
+    end
+    activeHighlights = {}
+    espCache = {}
+    print("Previous instance shut down.")
+end)
 
-    return false
+-- Utility
+local function PlayerIsSurvivor()
+    local player = Services.Players.LocalPlayer
+    return (player.Team and player.Team.Name == "Survivors") or #Services.Teams:GetChildren() == 0
 end
 
-function ApplySurvivorLogic()
+local function CreateOrUpdateESP(target, color)
+    if not target:IsA("Model") or espCache[target] then
+        return
+    end
+
+    local root = target:FindFirstChild("HumanoidRootPart") or target:FindFirstChildWhichIsA("BasePart")
+    if root then
+        local highlight = Instance.new("Highlight")
+        highlight.Adornee = target
+        highlight.FillColor = color
+        highlight.FillTransparency = 0.5
+        highlight.OutlineColor = color
+        highlight.OutlineTransparency = 0
+        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        highlight.Parent = target
+        espCache[target] = highlight
+        table.insert(activeHighlights, highlight)
+    end
+end
+
+local function ClearESP()
+    for target, highlight in pairs(espCache) do
+        if highlight and highlight.Parent then
+            highlight:Destroy()
+        end
+    end
+    espCache = {}
+    activeHighlights = {}
+end
+
+local function FindAmmoBox()
+    local area51 = workspace:FindFirstChild("AREA51")
+    if not area51 then
+        return nil
+    end
+
+    for _, descendant in ipairs(area51:GetDescendants()) do
+        if descendant.Name == "Box of Shells" and descendant:IsA("Model") then
+            local box = descendant:FindFirstChild("Box")
+            if box and box:IsA("BasePart") and box:FindFirstChild("TouchInterest") then
+                return box
+            end
+        end
+    end
+    return nil
+end
+
+local function SimulateTouch(partA, partB)
+    firetouchinterest(partA, partB, 0)
+    -- task.wait(0.1)
+    -- firetouchinterest(partA, partB, 1)
+end
+
+local function SustainAmmoTouch(rootPart)
+    if ammoTouchStarted then
+        return
+    end
+    ammoTouchStarted = true
+
+    local box = FindAmmoBox()
+    if not box then
+        return
+    end
+
+    task.spawn(function()
+        while not shuttingDown do
+            box.CanCollide = false
+            SimulateTouch(box, rootPart)
+            task.wait(1.5)
+        end
+    end)
+end
+
+-- Logic
+local recentlyDroppedWeapons = {}
+
+local function TrackDroppedWeapons()
+    local backpack = Services.Players.LocalPlayer:FindFirstChild("Backpack")
+    if not backpack then
+        return
+    end
+
+    for _, tool in ipairs(backpack:GetChildren()) do
+        recentlyDroppedWeapons[tool.Name] = os.clock()
+    end
+end
+
+local function IsRecentlyDropped(weapon)
+    local lastSeen = recentlyDroppedWeapons[weapon.Name]
+    return lastSeen and (os.clock() - lastSeen < DROP_COOLDOWN)
+end
+
+local function ApplySurvivorLogic()
+    TrackDroppedWeapons()
+
     local player = Services.Players.LocalPlayer
     local character = player.Character
     if not character then
@@ -60,70 +178,83 @@ function ApplySurvivorLogic()
         return
     end
 
+    local killersFolder = workspace:FindFirstChild("Killers")
+    if killersFolder then
+        ClearESP()
+        for _, killer in ipairs(killersFolder:GetChildren()) do
+            CreateOrUpdateESP(killer, Color3.fromRGB(255, 0, 0))
+        end
+    end
+
     coroutine.wrap(function()
         for _, weapon in ipairs(weaponsFolder:GetChildren()) do
-            local hitbox = weapon:FindFirstChild("Hitbox")
-            if hitbox and hitbox:IsA("BasePart") then
-                -- Store original state
-                local originalCFrame = hitbox.CFrame
-                local originalPosition = hitbox.Position
-                local originalAnchored = hitbox.Anchored
-                local originalCanCollide = hitbox.CanCollide
-                local originalTransparency = hitbox.Transparency
-                local originalSize = hitbox.Size
-                local originalColor = hitbox.Color
-                local originalMaterial = hitbox.Material
-
-                -- Temporarily disable collision and move away from character
-                hitbox.Anchored = true
-                hitbox.CanCollide = false
-                hitbox.CFrame = rootPart.CFrame + Vector3.new(0, 5, 0)
-
-                -- Simulate touch safely
-                firetouchinterest(hitbox, rootPart, 0)
-                task.wait(0.1) -- Add delay between begin and end
-                firetouchinterest(hitbox, rootPart, 1)
-
-                -- Restore original state
-                hitbox.CFrame = originalCFrame
-                hitbox.Position = originalPosition
-                hitbox.Anchored = originalAnchored
-                hitbox.CanCollide = originalCanCollide
-                hitbox.Transparency = originalTransparency
-                hitbox.Size = originalSize
-                hitbox.Color = originalColor
-                hitbox.Material = originalMaterial
-
-                task.wait(0.2) -- Delay before moving to next weapon
+            if not IsRecentlyDropped(weapon) then
+                local hitbox = weapon:FindFirstChild("Hitbox")
+                if hitbox and hitbox:IsA("BasePart") then
+                    hitbox.CanCollide = false
+                    SimulateTouch(hitbox, rootPart)
+                    task.wait(0.2)
+                end
             end
         end
+        SustainAmmoTouch(rootPart)
     end)()
 end
 
-function ApplyNonSurvivorLogic()
+local function ApplyNonSurvivorLogic()
     local player = Services.Players.LocalPlayer
-
-    if player.Character then
+    if not player.Character then
         return
+    end
+
+    local survivorsTeam = Services.Teams:FindFirstChild("Survivors")
+    if survivorsTeam then
+        ClearESP()
+        for _, plr in ipairs(Services.Players:GetPlayers()) do
+            if plr.Team == survivorsTeam and plr.Character then
+                CreateOrUpdateESP(plr.Character, Color3.fromRGB(0, 255, 0))
+            end
+        end
     end
 end
 
 local function ApplyTeamLogic()
-    profile("TeamLogic", function()
-        if PlayerIsSurvivor() then
-            ApplySurvivorLogic()
-        else
-            ApplyNonSurvivorLogic()
-        end
-    end)
+    if shuttingDown then
+        return
+    end
+    if PlayerIsSurvivor() then
+        ApplySurvivorLogic()
+    else
+        ApplyNonSurvivorLogic()
+    end
 end
 
+-- Connections
 local player = Services.Players.LocalPlayer
 
-player.CharacterAdded:Connect(function()
-    ApplyTeamLogic()
-end)
+local function SetupPlayerEvents(plr)
+    table.insert(connections, plr.CharacterAdded:Connect(function()
+        if plr == player or not PlayerIsSurvivor() then
+            ApplyTeamLogic()
+        end
+    end))
+end
+
+SetupPlayerEvents(player)
+table.insert(connections, player:GetPropertyChangedSignal("Team"):Connect(ApplyTeamLogic))
+
+table.insert(connections, Services.Players.PlayerAdded:Connect(function(plr)
+    SetupPlayerEvents(plr)
+end))
 
 if player.Character then
     ApplyTeamLogic()
 end
+
+-- Periodic refresh
+task.spawn(function()
+    while not shuttingDown do
+        ApplyTeamLogic()
+        task.wait(3)
+    end
+end)
