@@ -2858,8 +2858,6 @@ local EmbeddedModules = {
 
                 -- Settings
                 autoUpdateSearch = Settings.Explorer.AutoUpdateSearch
-
-                -- Fill in nodes
                 nodes[game] = {
                     Obj = game
                 }
@@ -2873,32 +2871,41 @@ local EmbeddedModules = {
                 Explorer.SetupConnections()
 
                 local insts = getDescendants(game)
-                if Main.Elevated then
-                    for i = 1, #insts do
-                        local obj = insts[i]
-                        local par = nodes[ffa(obj, "Instance")]
-                        if par then
-                            local newNode = {
-                                Obj = obj,
-                                Parent = par
-                            }
-                            nodes[obj] = newNode
-                            par[#par + 1] = newNode
-                        end
+
+                -- Cache ffa results to avoid redundant calls
+                local ffaCache = {}
+
+                local function safeFFA(obj)
+                    if ffaCache[obj] ~= nil then
+                        return ffaCache[obj]
                     end
-                else
-                    for i = 1, #insts do
-                        local obj = insts[i]
-                        local s, parObj = pcall(ffa, obj, "Instance")
-                        local par = nodes[parObj]
-                        if par then
-                            local newNode = {
-                                Obj = obj,
-                                Parent = par
-                            }
-                            nodes[obj] = newNode
-                            par[#par + 1] = newNode
-                        end
+
+                    local result
+                    if Main.Elevated then
+                        result = ffa(obj, "Instance")
+                    else
+                        local success, value = pcall(ffa, obj, "Instance")
+                        result = success and value or nil
+                    end
+
+                    ffaCache[obj] = result
+                    return result
+                end
+
+                -- Preallocate node table size if possible
+                local instCount = #insts
+                for i = 1, instCount do
+                    local obj = insts[i]
+                    local parObj = safeFFA(obj)
+                    local par = nodes[parObj]
+
+                    if par then
+                        local newNode = {
+                            Obj = obj,
+                            Parent = par
+                        }
+                        nodes[obj] = newNode
+                        par[#par + 1] = newNode
                     end
                 end
             end
