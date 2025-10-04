@@ -173,7 +173,6 @@ local function IsPlayerInPackAPunchRoom()
         return false
     end
 
-    -- Calculate bounds using part positions
     local minX = math.min(left.Position.X, right.Position.X)
     local maxX = math.max(left.Position.X, right.Position.X)
     local minY = ground.Position.Y
@@ -186,7 +185,6 @@ local function IsPlayerInPackAPunchRoom()
     return (pos.X >= minX and pos.X <= maxX) and (pos.Y >= minY and pos.Y <= maxY) and (pos.Z >= minZ and pos.Z <= maxZ)
 end
 
--- Replace IsRecentlyDropped with mode-aware logic
 local function ShouldSkipDrop(weapon)
     local inRoom = IsPlayerInPackAPunchRoom()
     if inRoom then
@@ -195,7 +193,6 @@ local function ShouldSkipDrop(weapon)
     return inRoom
 end
 
--- Update ApplySurvivorLogic to use ShouldSkipDrop
 local function ApplySurvivorLogic()
     TrackDroppedWeapons()
 
@@ -211,27 +208,27 @@ local function ApplySurvivorLogic()
     end
 
     local weaponsFolder = workspace:FindFirstChild("Weapons")
-    if not weaponsFolder then
+    local killersFolder = workspace:FindFirstChild("Killers")
+    if not weaponsFolder or not killersFolder then
         return
     end
 
-    local killersFolder = workspace:FindFirstChild("Killers")
-    if killersFolder then
-        ClearESP()
-        for _, killer in ipairs(killersFolder:GetChildren()) do
-            CreateOrUpdateESP(killer, Color3.fromRGB(255, 0, 0))
-        end
+    ClearESP()
+
+    local killers = killersFolder:GetChildren()
+    for i = 1, #killers do
+        CreateOrUpdateESP(killers[i], Color3.fromRGB(255, 0, 0))
     end
 
-    for _, weapon in ipairs(weaponsFolder:GetChildren()) do
+    local weapons = weaponsFolder:GetChildren()
+    for i = 1, #weapons do
+        local weapon = weapons[i]
         if not ShouldSkipDrop(weapon) then
-            coroutine.wrap(function()
-                local hitbox = weapon:FindFirstChild("Hitbox")
-                if hitbox and hitbox:IsA("BasePart") then
-                    hitbox.CanCollide = false
-                    SimulateTouch(hitbox, rootPart)
-                end
-            end)()
+            local hitbox = weapon:FindFirstChild("Hitbox")
+            if hitbox and hitbox:IsA("BasePart") then
+                hitbox.CanCollide = false
+                task.defer(SimulateTouch, hitbox, rootPart)
+            end
         end
     end
 end
@@ -259,6 +256,7 @@ local function ApplyNonSurvivorLogic()
         if humanoid and humanoid:IsA("Humanoid") and humanoid.DisplayName == player.Name then
             killername = killer.Name
             killermodel = killer
+            humanoid.WalkSpeed = 25
             break
         end
     end
