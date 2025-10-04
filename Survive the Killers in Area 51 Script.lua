@@ -113,8 +113,6 @@ end
 
 local function SimulateTouch(partA, partB)
     firetouchinterest(partA, partB, 0)
-    -- task.wait(0.1)
-    -- firetouchinterest(partA, partB, 1)
 end
 
 local ammoTouchLoopRunning = false
@@ -225,19 +223,17 @@ local function ApplySurvivorLogic()
         end
     end
 
-    coroutine.wrap(function()
-        SustainAmmoTouch(rootPart)
-        for _, weapon in ipairs(weaponsFolder:GetChildren()) do
-            if not ShouldSkipDrop(weapon) then
+    for _, weapon in ipairs(weaponsFolder:GetChildren()) do
+        if not ShouldSkipDrop(weapon) then
+            coroutine.wrap(function()
                 local hitbox = weapon:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") then
                     hitbox.CanCollide = false
                     SimulateTouch(hitbox, rootPart)
-                    task.wait(0.2)
                 end
-            end
+            end)()
         end
-    end)()
+    end
 end
 
 local function ApplyNonSurvivorLogic()
@@ -253,6 +249,17 @@ local function ApplyNonSurvivorLogic()
             if plr.Team == survivorsTeam and plr.Character then
                 CreateOrUpdateESP(plr.Character, Color3.fromRGB(0, 255, 0))
             end
+        end
+    end
+
+    local killername, killermodel
+
+    for _, killer in ipairs(workspace.Killers:GetChildren()) do
+        local humanoid = killer:FindFirstChild("Humanoid")
+        if humanoid and humanoid:IsA("Humanoid") and humanoid.DisplayName == player.Name then
+            killername = killer.Name
+            killermodel = killer
+            break
         end
     end
 end
