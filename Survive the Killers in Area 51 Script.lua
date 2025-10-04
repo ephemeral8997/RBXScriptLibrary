@@ -6,9 +6,6 @@ if not workspace:FindFirstChild("AREA51") then
     return
 end
 
--- Constants
-local DROP_COOLDOWN = 10 -- seconds
-
 -- Singleton setup
 local RS = game:GetService("ReplicatedStorage")
 local SCRIPT_ID = "SurvivorESPController"
@@ -120,21 +117,21 @@ local function SimulateTouch(partA, partB)
     -- firetouchinterest(partA, partB, 1)
 end
 
-local function SustainAmmoTouch(rootPart)
-    if ammoTouchStarted then
-        return
-    end
-    ammoTouchStarted = true
+local ammoTouchLoopRunning = false
 
-    local box = FindAmmoBox()
-    if not box then
+local function SustainAmmoTouch(rootPart)
+    if ammoTouchLoopRunning then
         return
     end
+    ammoTouchLoopRunning = true
 
     task.spawn(function()
         while not shuttingDown do
-            box.CanCollide = false
-            SimulateTouch(box, rootPart)
+            local box = FindAmmoBox()
+            if box then
+                box.CanCollide = false
+                SimulateTouch(box, rootPart)
+            end
             task.wait(1.5)
         end
     end)
@@ -154,11 +151,53 @@ local function TrackDroppedWeapons()
     end
 end
 
-local function IsRecentlyDropped(weapon)
-    local lastSeen = recentlyDroppedWeapons[weapon.Name]
-    return lastSeen and (os.clock() - lastSeen < DROP_COOLDOWN)
+local function IsPlayerInPackAPunchRoom()
+    local player = Services.Players.LocalPlayer
+    local character = player and player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    if not root then
+        return false
+    end
+
+    local room = workspace:FindFirstChild("AREA51") and workspace.AREA51:FindFirstChild("SecretTeleportRoom")
+    if not room then
+        return false
+    end
+
+    local front = room:GetChildren()[12]
+    local back = room:FindFirstChild("Part")
+    local right = room:GetChildren()[11]
+    local left = room:GetChildren()[10]
+    local roof = room:GetChildren()[14]
+    local ground = room:GetChildren()[13]
+
+    if not (front and back and right and left and roof and ground) then
+        return false
+    end
+
+    -- Calculate bounds using part positions
+    local minX = math.min(left.Position.X, right.Position.X)
+    local maxX = math.max(left.Position.X, right.Position.X)
+    local minY = ground.Position.Y
+    local maxY = roof.Position.Y
+    local minZ = math.min(front.Position.Z, back.Position.Z)
+    local maxZ = math.max(front.Position.Z, back.Position.Z)
+
+    local pos = root.Position
+
+    return (pos.X >= minX and pos.X <= maxX) and (pos.Y >= minY and pos.Y <= maxY) and (pos.Z >= minZ and pos.Z <= maxZ)
 end
 
+-- Replace IsRecentlyDropped with mode-aware logic
+local function ShouldSkipDrop(weapon)
+    local inRoom = IsPlayerInPackAPunchRoom()
+    if inRoom then
+        print("Skipping drop for", weapon.Name, "because player is in Pack-a-Punch room")
+    end
+    return inRoom
+end
+
+-- Update ApplySurvivorLogic to use ShouldSkipDrop
 local function ApplySurvivorLogic()
     TrackDroppedWeapons()
 
@@ -187,8 +226,9 @@ local function ApplySurvivorLogic()
     end
 
     coroutine.wrap(function()
+        SustainAmmoTouch(rootPart)
         for _, weapon in ipairs(weaponsFolder:GetChildren()) do
-            if not IsRecentlyDropped(weapon) then
+            if not ShouldSkipDrop(weapon) then
                 local hitbox = weapon:FindFirstChild("Hitbox")
                 if hitbox and hitbox:IsA("BasePart") then
                     hitbox.CanCollide = false
@@ -197,7 +237,6 @@ local function ApplySurvivorLogic()
                 end
             end
         end
-        SustainAmmoTouch(rootPart)
     end)()
 end
 
